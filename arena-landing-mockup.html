@@ -73,6 +73,27 @@
   .corner-link:hover { color: var(--cream); }
   .corner-link u { text-decoration: underline; text-underline-offset: 3px; }
 
+  /* ========== ORB MARKER TOOLTIP ========== */
+  .orb-tooltip {
+    position: fixed;
+    pointer-events: none;
+    z-index: 20;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cream);
+    background: rgba(10, 8, 7, 0.88);
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(12px, -8px);
+    transition: opacity .15s var(--ease-out);
+    backdrop-filter: blur(4px);
+  }
+  .orb-tooltip.is-visible { opacity: 1; }
+
   /* ========== PAGES ========== */
   .page {
     display: none;
@@ -512,6 +533,7 @@
 <body>
 
 <a class="corner-link" href="#"><u>NY Times</u></a>
+<div class="orb-tooltip" aria-hidden="true"></div>
 
 <div class="beam" aria-hidden="true"></div>
 <div class="horizon" aria-hidden="true"></div>
@@ -636,12 +658,14 @@
     const RIM_POWER        = 2.4;
     const RIM_BOOST        = 0.65;
 
-    /* Marker locations (lat, lon) — no labels per design, just gold dots. */
+    /* Marker locations: [lat, lon, label]. Tooltip shows label on hover. */
     const MARKER_LOCATIONS = [
-      [33.95,  -84.34], [26.94,  -80.09], [36.16,  -86.78],
-      [32.78,  -96.80], [35.23,  -80.84], [40.71,  -74.01],
-      [41.88,  -87.63], [34.05, -118.24], [29.76,  -95.37],
-      [39.95,  -75.16], [38.91,  -77.03], [42.36,  -71.06],
+      [26.93,  -80.09, 'Jupiter, FL'],
+      [40.71,  -74.01, 'New York, NY'],
+      [25.76,  -80.19, 'Miami, FL'],
+      [37.77, -122.42, 'San Francisco, CA'],
+      [30.52,  -87.90, 'Fairhope, AL'],
+      [30.63,  -97.68, 'Georgetown, TX'],
     ];
 
     /* ---------- THREE setup ---------- */
@@ -817,6 +841,53 @@
       try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
     });
 
+    /* ---------- Marker hover tooltips ----------
+       Raycast against the markerPoints buffer. Filter out hits on the far side
+       of the orb (markers behind the globe shouldn't trigger tooltips). The
+       marker buffer is in the same order as MARKER_LOCATIONS so hit.index maps
+       directly back to the label. */
+    const tooltipEl  = document.querySelector('.orb-tooltip');
+    const raycaster  = new THREE.Raycaster();
+    raycaster.params.Points.threshold = 0.08;
+    const mouseNDC   = new THREE.Vector2();
+    const tmpWorld   = new THREE.Vector3();
+    const tmpToCam   = new THREE.Vector3();
+    const tmpNormal  = new THREE.Vector3();
+
+    function updateHover(clientX, clientY) {
+      if (isDragging || !tooltipEl) {
+        if (tooltipEl) tooltipEl.classList.remove('is-visible');
+        return;
+      }
+      const rect = canvas.getBoundingClientRect();
+      mouseNDC.x =  ((clientX - rect.left) / rect.width)  * 2 - 1;
+      mouseNDC.y = -((clientY - rect.top)  / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouseNDC, camera);
+      const hits = raycaster.intersectObject(markerPoints);
+
+      for (const hit of hits) {
+        const idx = hit.index;
+        tmpWorld.fromBufferAttribute(markerGeom.attributes.position, idx);
+        markerPoints.localToWorld(tmpWorld);
+        tmpNormal.copy(tmpWorld).normalize();
+        tmpToCam.subVectors(camera.position, tmpWorld).normalize();
+        // Only show tooltip when the marker is on the near hemisphere.
+        if (tmpNormal.dot(tmpToCam) > 0.1) {
+          tooltipEl.textContent = MARKER_LOCATIONS[idx][2] || '';
+          tooltipEl.style.left = `${clientX}px`;
+          tooltipEl.style.top  = `${clientY}px`;
+          tooltipEl.classList.add('is-visible');
+          return;
+        }
+      }
+      tooltipEl.classList.remove('is-visible');
+    }
+
+    canvas.addEventListener('pointermove', (e) => updateHover(e.clientX, e.clientY));
+    canvas.addEventListener('pointerleave', () => {
+      if (tooltipEl) tooltipEl.classList.remove('is-visible');
+    });
+
     /* ---------- animation loop ---------- */
     function tick() {
       requestAnimationFrame(tick);
@@ -894,14 +965,19 @@
     });
   }
 
-  /* Lat/lon → unit vector on sphere (matches our equirect UV convention). */
+  /* Lat/lon → unit vector on sphere. Convention matches the earth-mask sampler
+     elsewhere in this file, which reads u = atan2(z, x)/(2π) + 0.5 — i.e. lon
+     is measured around the y-axis from the +x axis toward +z. So +x is the
+     Greenwich (lon=0) ray, +z is +90°E, and the Americas (negative lon) sit on
+     the -z side. The previous version used flipped signs and shifted theta,
+     which placed US-coord markers visually onto Asia. */
   function latLonToVec3(lat, lon) {
-    const phi = (90 - lat) * Math.PI / 180;
-    const theta = (lon + 180) * Math.PI / 180;
+    const latR = lat * Math.PI / 180;
+    const lonR = lon * Math.PI / 180;
     return {
-      x: -Math.sin(phi) * Math.cos(theta),
-      y:  Math.cos(phi),
-      z:  Math.sin(phi) * Math.sin(theta),
+      x: Math.cos(latR) * Math.cos(lonR),
+      y: Math.sin(latR),
+      z: Math.cos(latR) * Math.sin(lonR),
     };
   }
 
