@@ -33,6 +33,7 @@ export default function ArenaLandingPage() {
   const [nominatorModalOpen, setNominatorModalOpen] = useState(false);
   const [nominateModalOpen, setNominateModalOpen] = useState(false);
   const [thesisExpanded, setThesisExpanded] = useState(false);
+  const [scrollHintHidden, setScrollHintHidden] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const thesisElaborationRef = useRef<HTMLDivElement>(null);
@@ -48,18 +49,25 @@ export default function ArenaLandingPage() {
   }, []);
 
   // When user navigates to thesis, watch for the elaboration scrolling into
-  // view and reveal it with motion. Reset visibility on leaving thesis so the
-  // animation plays again next visit.
+  // view and reveal it with motion. Also auto-hide the scroll-hint chevron
+  // after 3s. Reset both on leaving thesis so the animations re-arm.
   useEffect(() => {
     if (activePage !== "thesis") {
       setThesisExpanded(false);
-      // Reset scroll to top when entering/leaving so first view is centered.
+      setScrollHintHidden(false);
       window.scrollTo({ top: 0, behavior: "auto" });
       return;
     }
     window.scrollTo({ top: 0, behavior: "auto" });
+
+    // Hide scroll hint after 3 seconds.
+    const hintTimer = setTimeout(() => setScrollHintHidden(true), 3000);
+
+    // Reveal elaboration when it scrolls into view.
     const el = thesisElaborationRef.current;
-    if (!el) return;
+    if (!el) {
+      return () => clearTimeout(hintTimer);
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
@@ -70,7 +78,10 @@ export default function ArenaLandingPage() {
       { threshold: 0.2 },
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(hintTimer);
+      observer.disconnect();
+    };
   }, [activePage]);
 
   useEffect(() => {
@@ -158,24 +169,37 @@ export default function ArenaLandingPage() {
               <h1 className={styles.thesisWord}>The future belongs to the young.</h1>
               <h1 className={styles.thesisWord}>Underestimate them at your peril.</h1>
             </div>
-            <div className={styles.thesisScrollHint} aria-hidden>
-              scroll
+            <div
+              className={`${styles.thesisScrollHint} ${scrollHintHidden ? styles.isHidden : ""}`}
+              aria-hidden
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </div>
           </div>
+
           <div
             ref={thesisElaborationRef}
             className={`${styles.thesisElaboration} ${thesisExpanded ? styles.isThesisVisible : ""}`}
           >
-            <p>
-              Most rooms full of teenagers are organized around what adults
-              think they should learn. This one is organized around what they
-              are already capable of doing.
-            </p>
-            <p>
-              We don&rsquo;t run a class. We don&rsquo;t hand out trophies.
-              We put the kids who are already building in the same room, give
-              them real work, and get out of the way.
-            </p>
+            <div className={styles.thesisElaborationInner}>
+              <span className={styles.thesisLine}>
+                Most rooms full of teenagers are organized around what adults
+                think they should learn.
+              </span>
+              <span className={styles.thesisLine}>
+                This one is organized around what they are already capable of
+                doing.
+              </span>
+              <span className={`${styles.thesisLine} ${styles.thesisLineParaBreak}`}>
+                We don&rsquo;t run a class. We don&rsquo;t hand out trophies.
+              </span>
+              <span className={styles.thesisLine}>
+                We put the kids who are already building in the same room,
+                give them real work, and get out of the way.
+              </span>
+            </div>
           </div>
         </section>
 

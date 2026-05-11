@@ -492,42 +492,57 @@
     position: absolute;
     bottom: 96px;
     left: 50%;
-    transform: translate(-50%, 0);
-    font-size: 11px;
+    width: 18px;
+    height: 18px;
     color: var(--cream-faint);
-    letter-spacing: 0.08em;
-    text-transform: lowercase;
     pointer-events: none;
     user-select: none;
-    animation: scrollHint 2.6s var(--ease-out) infinite;
+    transform: translate(-50%, 0);
+    animation: scrollHint 2.4s var(--ease-out) infinite;
+    transition: opacity .6s var(--ease-out);
   }
+  .thesis__scroll-hint svg { display: block; width: 100%; height: 100%; }
+  .thesis__scroll-hint.is-hidden { opacity: 0 !important; animation: none; }
   @keyframes scrollHint {
     0%, 100% { opacity: 0.35; transform: translate(-50%, 0); }
     50%      { opacity: 0.85; transform: translate(-50%, 6px); }
   }
 
+  /* Elaboration: centered in its own viewport, lines reveal in sequence. */
   .thesis__elaboration {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 32px 140px;
+  }
+  .thesis__elaboration-inner {
     max-width: 560px;
     margin: 0 auto;
-    padding: 80px 32px 200px;
     font-family: var(--font-sans);
     font-size: 17px;
     line-height: 1.65;
     color: var(--cream-soft);
     letter-spacing: -0.005em;
+  }
+  .thesis__line {
+    display: block;
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity .9s var(--ease-out), transform .9s var(--ease-out);
+    transform: translateY(8px);
   }
-  .thesis__elaboration.is-visible {
-    opacity: 1;
-    transform: translateY(0);
+  .thesis__line--para-break { margin-top: 1.2em; }
+
+  .thesis__elaboration.is-visible .thesis__line {
+    animation: thesisLineReveal .8s var(--ease-out) both;
   }
-  .thesis__elaboration p {
-    margin: 0 0 1.1em;
-  }
-  .thesis__elaboration p:last-child {
-    margin: 0;
+  .thesis__elaboration.is-visible .thesis__line:nth-child(1) { animation-delay: 0s; }
+  .thesis__elaboration.is-visible .thesis__line:nth-child(2) { animation-delay: .5s; }
+  .thesis__elaboration.is-visible .thesis__line:nth-child(3) { animation-delay: 1.1s; }
+  .thesis__elaboration.is-visible .thesis__line:nth-child(4) { animation-delay: 1.6s; }
+  .thesis__elaboration.is-visible .thesis__line:nth-child(5) { animation-delay: 2.1s; }
+  @keyframes thesisLineReveal {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ========== TEAM ========== */
@@ -749,11 +764,19 @@
         <h1 class="thesis__word">The future belongs to the young.</h1>
         <h1 class="thesis__word">Underestimate them at your peril.</h1>
       </div>
-      <div class="thesis__scroll-hint" aria-hidden="true">scroll</div>
+      <div class="thesis__scroll-hint" data-thesis-scroll-hint aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
     </div>
     <div class="thesis__elaboration" data-thesis-elaboration>
-      <p>Most rooms full of teenagers are organized around what adults think they should learn. This one is organized around what they are already capable of doing.</p>
-      <p>We don&rsquo;t run a class. We don&rsquo;t hand out trophies. We put the kids who are already building in the same room, give them real work, and get out of the way.</p>
+      <div class="thesis__elaboration-inner">
+        <span class="thesis__line">Most rooms full of teenagers are organized around what adults think they should learn.</span>
+        <span class="thesis__line">This one is organized around what they are already capable of doing.</span>
+        <span class="thesis__line thesis__line--para-break">We don&rsquo;t run a class. We don&rsquo;t hand out trophies.</span>
+        <span class="thesis__line">We put the kids who are already building in the same room, give them real work, and get out of the way.</span>
+      </div>
     </div>
   </section>
 
@@ -841,9 +864,11 @@
   const pages = document.querySelectorAll('.page');
   const navLinks = document.querySelectorAll('.nav a');
 
-  // Thesis elaboration: fade-up when scrolled into view.
+  // Thesis elaboration + scroll-hint chevron auto-hide.
   const thesisElaboration = document.querySelector('[data-thesis-elaboration]');
+  const thesisScrollHint  = document.querySelector('[data-thesis-scroll-hint]');
   let thesisObserver = null;
+  let scrollHintTimer = null;
 
   function setupThesisObserver() {
     if (!thesisElaboration || thesisObserver) return;
@@ -865,6 +890,23 @@
     if (thesisElaboration) thesisElaboration.classList.remove('is-visible');
   }
 
+  function setupScrollHint() {
+    if (!thesisScrollHint) return;
+    thesisScrollHint.classList.remove('is-hidden');
+    if (scrollHintTimer) clearTimeout(scrollHintTimer);
+    scrollHintTimer = setTimeout(() => {
+      thesisScrollHint.classList.add('is-hidden');
+    }, 3000);
+  }
+
+  function teardownScrollHint() {
+    if (scrollHintTimer) {
+      clearTimeout(scrollHintTimer);
+      scrollHintTimer = null;
+    }
+    if (thesisScrollHint) thesisScrollHint.classList.remove('is-hidden');
+  }
+
   function activate(id) {
     const target = id || 'home';
     pages.forEach(p => p.classList.toggle('is-active', p.id === target));
@@ -873,11 +915,12 @@
     // Always reset scroll on page change so first-view content is centered.
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    // Wire / unwire the thesis observer based on which page is active.
     if (target === 'thesis') {
       setupThesisObserver();
+      setupScrollHint();
     } else {
       teardownThesisObserver();
+      teardownScrollHint();
     }
   }
 

@@ -352,44 +352,69 @@
   position: absolute;
   bottom: 96px;
   left: 50%;
-  transform: translate(-50%, 0);
-  font-size: 11px;
+  width: 18px;
+  height: 18px;
   color: var(--cream-faint);
-  letter-spacing: 0.08em;
-  text-transform: lowercase;
   pointer-events: none;
   user-select: none;
-  animation: scrollHint 2.6s var(--ease-out) infinite;
+  transform: translate(-50%, 0);
+  animation: scrollHint 2.4s var(--ease-out) infinite;
+  transition: opacity .6s var(--ease-out);
+}
+.thesisScrollHint svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.thesisScrollHint.isHidden {
+  opacity: 0 !important;
+  /* Override the infinite animation by stopping it. */
+  animation: none;
 }
 @keyframes scrollHint {
   0%, 100% { opacity: 0.35; transform: translate(-50%, 0); }
   50%      { opacity: 0.85; transform: translate(-50%, 6px); }
 }
 
+/* Elaboration: centered in its own viewport, lines reveal in sequence. */
 .thesisElaboration {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 32px 140px;
+}
+.thesisElaborationInner {
   max-width: 560px;
   margin: 0 auto;
-  padding: 80px 32px 200px;
   font-family: var(--font-sans);
   font-size: 17px;
   line-height: 1.65;
   color: var(--cream-soft);
   letter-spacing: -0.005em;
-
-  /* Hidden until IntersectionObserver fires `.isThesisVisible` */
+}
+.thesisLine {
+  display: block;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity .9s var(--ease-out), transform .9s var(--ease-out);
+  transform: translateY(8px);
 }
-.thesisElaboration.isThesisVisible {
-  opacity: 1;
-  transform: translateY(0);
+.thesisLineParaBreak {
+  margin-top: 1.2em;
 }
-.thesisElaboration p {
-  margin: 0 0 1.1em;
+
+/* Trigger: parent gets .isThesisVisible (IntersectionObserver) → each line
+   plays a staggered reveal. animation-fill-mode: both keeps final state. */
+.thesisElaboration.isThesisVisible .thesisLine {
+  animation: thesisLineReveal .8s var(--ease-out) both;
 }
-.thesisElaboration p:last-child {
-  margin: 0;
+.thesisElaboration.isThesisVisible .thesisLine:nth-child(1) { animation-delay: 0s; }
+.thesisElaboration.isThesisVisible .thesisLine:nth-child(2) { animation-delay: .5s; }
+.thesisElaboration.isThesisVisible .thesisLine:nth-child(3) { animation-delay: 1.1s; }
+.thesisElaboration.isThesisVisible .thesisLine:nth-child(4) { animation-delay: 1.6s; }
+.thesisElaboration.isThesisVisible .thesisLine:nth-child(5) { animation-delay: 2.1s; }
+@keyframes thesisLineReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ========== TEAM ========== */
