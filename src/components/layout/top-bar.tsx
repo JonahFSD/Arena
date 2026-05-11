@@ -22,12 +22,20 @@ import { MembersHeaderActions } from "@/components/community/members-header-acti
 import { MessagesHeaderActions } from "@/components/community/messages-header-actions";
 import { LeaderboardRangeSubTabs } from "@/components/community/leaderboard-range-sub-tabs";
 
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
 export function TopBar() {
   const pathname = usePathname();
   const onBountiesList =
     pathname.startsWith("/bounties") && !isBountiesDetailRoute(pathname);
 
-  const subTabBadges = useQuery(api.sidebarBadges.getSubTabBadges);
+  const liveSubTabBadges = useQuery(
+    api.sidebarBadges.getSubTabBadges,
+    DEMO_MODE ? "skip" : {}
+  );
+  const subTabBadges = DEMO_MODE
+    ? ({ communityChat: 0 } as unknown as NonNullable<typeof liveSubTabBadges>)
+    : liveSubTabBadges;
 
   const subTabs = useMemo(() => {
     let tabs: SubTab[] | null;

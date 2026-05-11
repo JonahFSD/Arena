@@ -4,6 +4,25 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+const DEMO_LEADERSHIP = {
+  executives: [
+    { _id: "l1", name: "Jake Oswald", role: "Co-Founder", userId: "u9", school: "ACU", graduation: 2026, company: null, jobTitle: null, avatarUrl: null },
+    { _id: "l2", name: "Connor", role: "Co-Founder", userId: "u4", school: "ACU", graduation: 2026, company: null, jobTitle: null, avatarUrl: null },
+    { _id: "l3", name: "Yichi Zhang", role: "VP Operations", userId: "u2", school: "Valley Christian", graduation: 2028, company: null, jobTitle: null, avatarUrl: null },
+  ],
+  regionalDirectors: [
+    { _id: "rd1", name: "Toi Stepp", role: "Regional Director", userId: "u6", school: "Jefferson Christian", graduation: 2027, avatarUrl: null, region: "Southeast" },
+    { _id: "rd2", name: "Seowoong Park", role: "Regional Director", userId: "u5", school: "Cedar Park", graduation: 2028, avatarUrl: null, region: "South Central" },
+  ],
+  ambassadors: [
+    { _id: "a1", name: "Alex Mi", role: "Ambassador", userId: "u1", school: "Valley Christian", graduation: 2027, avatarUrl: null, state: "California" },
+    { _id: "a2", name: "Jonah Elliot", role: "Ambassador", userId: "u3", school: "ACU", graduation: 2028, avatarUrl: null, state: "Texas" },
+    { _id: "a3", name: "Chelsea Gunn", role: "Ambassador", userId: "u7", school: "Jefferson Christian", graduation: 2026, avatarUrl: null, state: "Florida" },
+  ],
+};
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -394,7 +413,13 @@ export default function LeadershipPage() {
   const [leadershipExperience, setLeadershipExperience] = useState("");
   const [city, setCity] = useState("");
 
-  const leadershipData = useQuery(api.leadership.list);
+  const liveLeadership = useQuery(
+    api.leadership.list,
+    DEMO_MODE ? "skip" : {}
+  );
+  const leadershipData = DEMO_MODE
+    ? (DEMO_LEADERSHIP as unknown as NonNullable<typeof liveLeadership>)
+    : liveLeadership;
   const submitApplication = useMutation(api.leadership.submitAmbassadorApplication);
 
   // Build lookup maps from leadership positions

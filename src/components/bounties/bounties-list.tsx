@@ -5,6 +5,17 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+const DEMO_BOUNTIES = [
+  { _id: "b1", title: "Build a landing page for a roofing app", bountyAmount: 500, dueDate: Date.now() + 1000 * 60 * 60 * 24 * 6, status: "active", submissionsCount: 4 },
+  { _id: "b2", title: "Design system audit for a fintech MVP", bountyAmount: 750, dueDate: Date.now() + 1000 * 60 * 60 * 24 * 12, status: "active", submissionsCount: 2 },
+  { _id: "b3", title: "Write 5 landing-page hooks for an AI app", bountyAmount: 250, dueDate: Date.now() + 1000 * 60 * 60 * 24 * 3, status: "active", submissionsCount: 9 },
+  { _id: "b4", title: "Integrate Stripe checkout in a Next.js app", bountyAmount: 600, dueDate: Date.now() + 1000 * 60 * 60 * 24 * 8, status: "active", submissionsCount: 1 },
+  { _id: "b5", title: "Ship a Chrome extension that captures highlights", bountyAmount: 400, dueDate: Date.now() + 1000 * 60 * 60 * 24 * 14, status: "active", submissionsCount: 0 },
+  { _id: "b6", title: "Old: Build the original waitlist site", bountyAmount: 300, dueDate: Date.now() - 1000 * 60 * 60 * 24 * 18, status: "completed", submissionsCount: 6 },
+];
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CircleDollarSign, Clock, Send } from "lucide-react";
@@ -49,10 +60,19 @@ function BountiesListInner({ mode }: { mode: "active" | "past" }) {
   const searchQuery = parseBountiesSearchFromSearch(searchParams);
   const bountyFilter = parseBountiesFilterFromSearch(pathname, searchParams);
 
-  const rawBounties = useQuery(api.bounties.list, {}) ?? [];
+  const liveBounties = useQuery(
+    api.bounties.list,
+    DEMO_MODE ? "skip" : {}
+  );
+  const rawBounties = (
+    DEMO_MODE
+      ? (DEMO_BOUNTIES as unknown as NonNullable<typeof liveBounties>)
+      : liveBounties
+  ) ?? [];
   const markBountiesViewed = useMutation(api.sidebarBadges.markBountiesViewed);
 
   useEffect(() => {
+    if (DEMO_MODE) return;
     void markBountiesViewed();
   }, [markBountiesViewed]);
 

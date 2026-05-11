@@ -4,6 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+const DEMO_EXPLORE = [
+  { _id: "ep1", title: "Onion: Privacy-First Messaging", description: "E2E encrypted messaging for students.", monthYear: "Mar 2026", user: { fullName: "Connor", avatarUrl: null, schoolName: "ACU" }, aiScore: { overallScore: 88 } },
+  { _id: "ep2", title: "Dermi: At-Home Skin Diagnostics", description: "Computer vision skin assessment.", monthYear: "Mar 2026", user: { fullName: "Alex Mi", avatarUrl: null, schoolName: "Valley Christian" }, aiScore: { overallScore: 91 } },
+  { _id: "ep3", title: "Safelock: Locker Security", description: "Bluetooth-controlled school lockers.", monthYear: "Mar 2026", user: { fullName: "Yichi Zhang", avatarUrl: null, schoolName: "Valley Christian" }, aiScore: { overallScore: 84 } },
+  { _id: "ep4", title: "Sola: Christian Apologetics", description: "Theology drops + AMA for Gen Z.", monthYear: "Feb 2026", user: { fullName: "Jonah Elliot", avatarUrl: null, schoolName: "ACU" }, aiScore: { overallScore: 87 } },
+  { _id: "ep5", title: "Milestone: Teen Driver Coach", description: "Real-time driving feedback.", monthYear: "Feb 2026", user: { fullName: "Seowoong Park", avatarUrl: null, schoolName: "Cedar Park" }, aiScore: { overallScore: 79 } },
+  { _id: "ep6", title: "Lexx AI: Construction Litigation", description: "AI-powered legal research for builders.", monthYear: "Feb 2026", user: { fullName: "Lars Ostervold", avatarUrl: null, schoolName: "ACU" }, aiScore: { overallScore: 82 } },
+];
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -13,9 +24,18 @@ import { Search, Compass, Sparkles } from "lucide-react";
 
 export default function ExplorePage() {
   const [search, setSearch] = useState("");
-  const submissions = useQuery(api.submissions.listAll, {
-    search: search || undefined,
-  });
+  const liveSubmissions = useQuery(
+    api.submissions.listAll,
+    DEMO_MODE ? "skip" : { search: search || undefined }
+  );
+  const submissions = DEMO_MODE
+    ? (DEMO_EXPLORE.filter((s) =>
+        search
+          ? s.title.toLowerCase().includes(search.toLowerCase()) ||
+            s.user.fullName.toLowerCase().includes(search.toLowerCase())
+          : true
+      ) as unknown as NonNullable<typeof liveSubmissions>)
+    : liveSubmissions;
 
   return (
     <div className="space-y-6">

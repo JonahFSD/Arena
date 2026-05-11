@@ -2,6 +2,19 @@
 
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+const DEMO_LEADERS = [
+  { _id: "u1", fullName: "Alex Mi", schoolName: "Valley Christian", graduationYear: 2027, totalEarnings: 2400, networkCount: 142, leaderboardPoints: 4280, rank: 1, avatarUrl: null },
+  { _id: "u2", fullName: "Yichi Zhang", schoolName: "Valley Christian", graduationYear: 2028, totalEarnings: 1800, networkCount: 98, leaderboardPoints: 4110, rank: 2, avatarUrl: null },
+  { _id: "u3", fullName: "Jonah Elliot", schoolName: "ACU", graduationYear: 2028, totalEarnings: 1200, networkCount: 76, leaderboardPoints: 3905, rank: 3, avatarUrl: null },
+  { _id: "u4", fullName: "Connor", schoolName: "ACU", graduationYear: 2026, totalEarnings: 1250, networkCount: 87, leaderboardPoints: 3780, rank: 4, avatarUrl: null },
+  { _id: "u5", fullName: "Seowoong Park", schoolName: "Cedar Park", graduationYear: 2028, totalEarnings: 900, networkCount: 64, leaderboardPoints: 3540, rank: 5, avatarUrl: null },
+  { _id: "u6", fullName: "Toi Stepp", schoolName: "Jefferson Christian", graduationYear: 2027, totalEarnings: 750, networkCount: 58, leaderboardPoints: 3200, rank: 6, avatarUrl: null },
+  { _id: "u7", fullName: "Chelsea Gunn", schoolName: "Jefferson Christian", graduationYear: 2026, totalEarnings: 600, networkCount: 51, leaderboardPoints: 2980, rank: 7, avatarUrl: null },
+  { _id: "u8", fullName: "Adam Richardson", schoolName: "Jefferson Christian", graduationYear: 2027, totalEarnings: 500, networkCount: 44, leaderboardPoints: 2750, rank: 8, avatarUrl: null },
+];
 import Link from "next/link";
 import { InfoCallout } from "@/components/ui/info-callout";
 import { cn } from "@/lib/utils";
@@ -93,7 +106,13 @@ export type LeaderboardRangeMode = "thisMonth" | "allTime";
 
 export function LeaderboardContent({ range }: { range: LeaderboardRangeMode }) {
   const convexRange = range === "thisMonth" ? "thisMonth" : "allTime";
-  const rawLeaders = useQuery(api.users.getLeaderboard, { range: convexRange });
+  const liveLeaders = useQuery(
+    api.users.getLeaderboard,
+    DEMO_MODE ? "skip" : { range: convexRange }
+  );
+  const rawLeaders = DEMO_MODE
+    ? (DEMO_LEADERS as unknown as NonNullable<typeof liveLeaders>)
+    : liveLeaders;
 
   const rows =
     rawLeaders?.map((l) => ({

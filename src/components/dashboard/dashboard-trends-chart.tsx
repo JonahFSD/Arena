@@ -10,7 +10,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import {
   DASHBOARD_TREND_METRICS,
@@ -59,13 +58,13 @@ export function DashboardTrendsChart({ className }: { className?: string }) {
   );
 
   return (
-    <Card
+    <div
       className={cn(
-        "flex flex-col bg-transparent",
+        "flex w-full min-w-0 flex-col bg-transparent",
         className
       )}
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between shrink-0 px-4 pt-4 pb-2">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between shrink-0 pb-4">
         <div>
           <h2 className="text-sm font-semibold text-text-primary">
             Your trends
@@ -89,7 +88,7 @@ export function DashboardTrendsChart({ className }: { className?: string }) {
           />
         </div>
       </div>
-      <div className="h-72 w-full px-2 pb-2 sm:px-4 sm:pb-4">
+      <div className="relative h-72 w-full min-w-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={chartData}
@@ -161,6 +160,6 @@ export function DashboardTrendsChart({ className }: { className?: string }) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </Card>
+    </div>
   );
 }

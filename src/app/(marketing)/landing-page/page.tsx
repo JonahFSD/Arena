@@ -144,6 +144,9 @@ export default function ArenaLandingPage() {
         {navLink("home", "Home")}
         {navLink("thesis", "Thesis")}
         {navLink("team", "Team")}
+        {/* Real-route tab — leaves /landing-page for the existing marketing site at /.
+            Not a section, so no isActive treatment. */}
+        <a href="/">Login</a>
       </nav>
 
       <div className={styles.whisper}>
