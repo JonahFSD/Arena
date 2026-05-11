@@ -633,7 +633,10 @@
 <script type="module">
   import * as THREE from 'three';
 
-  const TEX_URL = 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg';
+  /* Use the specular map (ocean = white, land = black, NO clouds) as our
+     land/sea mask. The previous earth_atmos texture had clouds baked in, which
+     polluted the mask and turned continent edges into mush. */
+  const TEX_URL = 'https://threejs.org/examples/textures/planets/earth_specular_2048.jpg';
 
   const canvas = document.querySelector('.orb-canvas');
   if (canvas) {
@@ -642,21 +645,22 @@
 
   async function initOrb(canvas) {
     /* ---------- tuning ---------- */
-    const N_CANDIDATES = 14000;   // uniform Fibonacci dots — same density everywhere
+    const N_CANDIDATES = 32000;   // doubled+ from 14k for sharper coastlines
     const RADIUS       = 1.45;
-    const POINT_SIZE   = 0.024;   // world-unit-ish; shader uses 300/dist factor
+    const POINT_SIZE   = 0.022;   // base size; land dots get a multiplier in shader
     const ROT_SPEED_Y  = 0.0010;
     const DRAG_SENSITIVITY = 0.006;
     const STAR_COUNT   = 320;
     const MARKER_SIZE  = 0.045;
 
-    /* Brightness tiers — applied uniformly via shader, not via density.
-       Same dots everywhere, ocean = dim, land = brighter, silhouette = brightest.
-       Back-facing particles are culled in the shader so the orb reads solid. */
-    const OCEAN_BRIGHTNESS = 0.14;
-    const LAND_BRIGHTNESS  = 0.36;
+    /* Brightness tiers — wide gap so continents pop against ocean.
+       Ocean dots are dim enough to read as sphere texture without competing
+       with land. Land dots are bright + slightly larger (see shader). */
+    const OCEAN_BRIGHTNESS = 0.06;
+    const LAND_BRIGHTNESS  = 0.92;
+    const LAND_SIZE_BOOST  = 0.55;  // land dots are (1 + this) × base size
     const RIM_POWER        = 2.4;
-    const RIM_BOOST        = 0.65;
+    const RIM_BOOST        = 0.55;
 
     /* Marker locations: [lat, lon, label]. Tooltip shows label on hover. */
     const MARKER_LOCATIONS = [
@@ -701,9 +705,10 @@
       const v = lat / Math.PI + 0.5;
       const px = earthMask.sample(u, v);
 
-      const isOcean = px.b > px.r + 14 && px.b > px.g + 4;
-      const isIce   = px.r > 220 && px.g > 220 && px.b > 220;
-      landFlags[i]  = (isOcean || isIce) ? 0.0 : 1.0;
+      /* Specular map: ocean is bright (reflective), land is dark.
+         A simple luminance threshold cleanly separates the two. */
+      const lum = (px.r + px.g + px.b) / 3;
+      landFlags[i] = lum < 100 ? 1.0 : 0.0;
     }
 
     const dotsGeom = new THREE.BufferGeometry();
@@ -719,6 +724,7 @@
         uPixelRatio:      { value: Math.min(window.devicePixelRatio, 2) },
         uOceanBrightness: { value: OCEAN_BRIGHTNESS },
         uLandBrightness:  { value: LAND_BRIGHTNESS },
+        uLandSizeBoost:   { value: LAND_SIZE_BOOST },
         uRimPower:        { value: RIM_POWER },
         uRimBoost:        { value: RIM_BOOST },
         uColor:           { value: new THREE.Color(0xF5EFE0) },
@@ -731,6 +737,7 @@
         uniform float uPixelRatio;
         uniform float uOceanBrightness;
         uniform float uLandBrightness;
+        uniform float uLandSizeBoost;
         uniform float uRimPower;
         uniform float uRimBoost;
 
@@ -744,7 +751,7 @@
           float ndotv = dot(viewDir, worldN);
 
           /* Cull back-facing particles via brightness multiplier (smooth fade
-             through the silhouette band). Without this all 32k dots render. */
+             through the silhouette band). Without this all dots render. */
           float front = smoothstep(-0.05, 0.10, ndotv);
 
           /* Fresnel rim — peaks at silhouette (ndotv≈0), zero when facing camera */
@@ -755,8 +762,9 @@
 
           vec4 mvPosition = viewMatrix * worldPos4;
           gl_Position = projectionMatrix * mvPosition;
-          /* Match Three.js PointsMaterial size attenuation convention. */
-          gl_PointSize = uPointSize * uPixelRatio * (300.0 / -mvPosition.z);
+          /* Land dots are bigger than ocean dots so coastlines read sharper. */
+          float sizeMul = 1.0 + uLandSizeBoost * aLand;
+          gl_PointSize = uPointSize * sizeMul * uPixelRatio * (300.0 / -mvPosition.z);
         }
       `,
       fragmentShader: /* glsl */ `
