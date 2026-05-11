@@ -98,6 +98,9 @@ export default defineSchema({
     ),
     reviewerId: v.optional(v.id("users")),
     referralCode: v.optional(v.string()),
+    /** Nomination token presented at /apply?n=TOKEN. v1 = audit hint only,
+     *  not cryptographically verified. v2 will link to a nominators table. */
+    nominationToken: v.optional(v.string()),
     reviewerNotes: v.optional(v.string()),
     reviewedAt: v.optional(v.number()),
     // Profile fields (captured at application time)
@@ -385,6 +388,30 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_reviewToken", ["reviewToken"])
     .index("by_creatorUserId", ["creatorUserId"]),
+
+  // ============================================
+  // NOMINATOR REQUESTS — public "request to become a nominator" form
+  // ============================================
+  nominatorRequests: defineTable({
+    fullName: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    linkedinUrl: v.optional(v.string()),
+    /** Optional free-form context the submitter provides. */
+    note: v.optional(v.string()),
+    status: v.union(
+      v.literal("new"),
+      v.literal("approved"),
+      v.literal("rejected"),
+      v.literal("contacted")
+    ),
+    /** Admin's free-form notes after triage. */
+    reviewerNotes: v.optional(v.string()),
+    reviewedAt: v.optional(v.number()),
+    reviewerId: v.optional(v.id("users")),
+  })
+    .index("by_status", ["status"])
+    .index("by_email", ["email"]),
 
   // ============================================
   // BOUNTY SUBMISSIONS

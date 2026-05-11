@@ -21,6 +21,7 @@ import type * as http from "../http.js";
 import type * as leadership from "../leadership.js";
 import type * as memberships from "../memberships.js";
 import type * as messages from "../messages.js";
+import type * as nominators from "../nominators.js";
 import type * as notifications from "../notifications.js";
 import type * as prizes from "../prizes.js";
 import type * as resetAuth from "../resetAuth.js";
@@ -54,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   leadership: typeof leadership;
   memberships: typeof memberships;
   messages: typeof messages;
+  nominators: typeof nominators;
   notifications: typeof notifications;
   prizes: typeof prizes;
   resetAuth: typeof resetAuth;

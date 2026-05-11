@@ -73,6 +73,63 @@
   .corner-link:hover { color: var(--cream); }
   .corner-link u { text-decoration: underline; text-underline-offset: 3px; }
 
+  /* ========== NOMINATOR REQUEST MODAL ========== */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    z-index: 30;
+    background: rgba(5, 4, 3, 0.78);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: modalFade .25s var(--ease-out);
+  }
+  .modal-backdrop.is-open { display: flex; }
+  @keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal-card {
+    background: #0e0b09;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    animation: modalRise .35s var(--ease-out);
+  }
+  @keyframes modalRise {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-title { font-size: 22px; font-weight: 500; color: var(--cream); letter-spacing: -0.015em; margin: 0 0 6px; }
+  .modal-subtitle { font-size: 13px; color: var(--cream-muted); line-height: 1.55; margin: 0 0 22px; }
+  .modal-form { display: flex; flex-direction: column; gap: 14px; }
+  .modal-field { display: flex; flex-direction: column; gap: 5px; }
+  .modal-field > span { font-size: 11px; font-weight: 500; color: var(--cream-muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  .modal-field input, .modal-field textarea {
+    font-family: var(--font-sans); font-size: 14px;
+    background: rgba(255, 255, 255, 0.02); color: var(--cream);
+    border: 1px solid var(--border); border-radius: 7px;
+    padding: 9px 11px; resize: vertical;
+    transition: border-color .15s var(--ease-out), background .15s var(--ease-out);
+  }
+  .modal-field input::placeholder, .modal-field textarea::placeholder { color: var(--cream-faint); }
+  .modal-field input:focus, .modal-field textarea:focus { outline: none; border-color: var(--gold); background: rgba(255,255,255,0.035); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+  .modal-primary, .modal-secondary {
+    font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+    padding: 9px 16px; border-radius: 7px; cursor: pointer;
+    transition: all .15s var(--ease-out); letter-spacing: -0.005em;
+  }
+  .modal-primary { background: var(--gold); color: #1a1410; border: 1px solid var(--gold); }
+  .modal-primary:hover { background: #d6b66f; border-color: #d6b66f; }
+  .modal-secondary { background: transparent; color: var(--cream-soft); border: 1px solid var(--border); }
+  .modal-secondary:hover { color: var(--cream); border-color: var(--cream-faint); }
+  .modal-success { text-align: center; padding: 12px 0 4px; display: none; }
+  .modal-backdrop.is-success .modal-form { display: none; }
+  .modal-backdrop.is-success .modal-success { display: block; }
+
   /* ========== ORB MARKER TOOLTIP ========== */
   .orb-tooltip {
     position: fixed;
@@ -593,6 +650,48 @@
   <a href="#" data-action="nominate">request to nominate</a>
 </div>
 
+<!-- ===================== NOMINATOR REQUEST MODAL ===================== -->
+<div class="modal-backdrop" data-modal="nominator" role="presentation">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="nom-modal-title">
+    <form class="modal-form" data-nom-form>
+      <h2 class="modal-title" id="nom-modal-title">Request to nominate</h2>
+      <p class="modal-subtitle">Tell us who you are. If you check out, you&rsquo;ll get a private link to nominate students.</p>
+
+      <label class="modal-field">
+        <span>Name</span>
+        <input type="text" name="fullName" required autofocus placeholder="First Last">
+      </label>
+      <label class="modal-field">
+        <span>Email</span>
+        <input type="email" name="email" required placeholder="you@example.com">
+      </label>
+      <label class="modal-field">
+        <span>Phone</span>
+        <input type="tel" name="phone" placeholder="optional">
+      </label>
+      <label class="modal-field">
+        <span>LinkedIn</span>
+        <input type="url" name="linkedinUrl" placeholder="linkedin.com/in/…">
+      </label>
+      <label class="modal-field">
+        <span>Who would you nominate?</span>
+        <textarea name="note" rows="3" placeholder="optional — names, schools, anything that helps"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-secondary" data-modal-close>Cancel</button>
+        <button type="submit" class="modal-primary">Send request</button>
+      </div>
+    </form>
+
+    <div class="modal-success">
+      <h2 class="modal-title">Got it.</h2>
+      <p class="modal-subtitle">We&rsquo;ll be in touch.</p>
+      <button type="button" class="modal-primary" data-modal-close>Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // Hash-based page switching. No build step. Easy to port to Next/React later.
   const pages = document.querySelectorAll('.page');
@@ -612,11 +711,37 @@
   window.addEventListener('hashchange', fromHash);
   document.addEventListener('DOMContentLoaded', fromHash);
 
-  // Whisper link — placeholder. Wire to nominator request flow later.
+  // Whisper link → open the nominator-request modal.
+  const nominatorModal = document.querySelector('[data-modal="nominator"]');
+  const nominatorForm  = nominatorModal.querySelector('[data-nom-form]');
+
+  function openNominatorModal() {
+    nominatorModal.classList.remove('is-success');
+    nominatorForm.reset();
+    nominatorModal.classList.add('is-open');
+    setTimeout(() => nominatorForm.querySelector('input[name="fullName"]')?.focus(), 50);
+  }
+  function closeNominatorModal() { nominatorModal.classList.remove('is-open'); }
+
   document.querySelector('[data-action="nominate"]').addEventListener('click', e => {
     e.preventDefault();
-    // TODO: open nominator request modal / route to /nominate
-    console.log('nominator request flow → TBD');
+    openNominatorModal();
+  });
+  nominatorModal.addEventListener('click', e => {
+    if (e.target === nominatorModal) closeNominatorModal();
+  });
+  nominatorModal.querySelectorAll('[data-modal-close]').forEach(btn => {
+    btn.addEventListener('click', closeNominatorModal);
+  });
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && nominatorModal.classList.contains('is-open')) closeNominatorModal();
+  });
+  nominatorForm.addEventListener('submit', e => {
+    e.preventDefault();
+    // Standalone mockup — no backend. Real submit lives in the Next.js port.
+    const data = Object.fromEntries(new FormData(nominatorForm).entries());
+    console.log('[mockup] nominator request:', data);
+    nominatorModal.classList.add('is-success');
   });
 </script>
 
