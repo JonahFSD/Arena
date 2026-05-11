@@ -82,11 +82,11 @@ function ExecutiveTeamMemberContent(props: ExecutiveLeader) {
   const meta = props.company ? (
     <div className="mt-1 flex flex-col items-start gap-1 text-sm text-text-secondary">
       <span className="flex items-center gap-1.5">
-        <Building2 className="h-3.5 w-3.5 shrink-0 text-brand-500" />
+        <Building2 className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
         {props.company}
       </span>
       <span className="flex items-center gap-1.5">
-        <Briefcase className="h-3.5 w-3.5 shrink-0 text-brand-500" />
+        <Briefcase className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
         {props.jobTitle}
       </span>
     </div>
@@ -94,13 +94,13 @@ function ExecutiveTeamMemberContent(props: ExecutiveLeader) {
     <div className="mt-1 flex flex-col items-start gap-1 text-sm text-text-secondary">
       {props.school && (
         <span className="flex items-center gap-1.5">
-          <GraduationCap className="h-3.5 w-3.5 shrink-0 text-brand-500" />
+          <GraduationCap className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
           {props.school}
         </span>
       )}
       {props.graduation && (
         <span className="flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5 shrink-0 text-brand-500" />
+          <Calendar className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
           Class of {props.graduation}
         </span>
       )}
@@ -114,10 +114,7 @@ function ExecutiveTeamMemberContent(props: ExecutiveLeader) {
         <h3 className="mb-1.5 text-base font-medium leading-snug text-text-primary">
           {name}
         </h3>
-        <Badge
-          variant="brand"
-          className="mb-1.5 bg-brand-500/80 text-[10px] font-medium uppercase tracking-wide text-black"
-        >
+        <Badge variant="brand" className="mb-1.5">
           {role}
         </Badge>
         {meta}
@@ -376,7 +373,7 @@ function RegionRow({
                   key={state}
                   className="group flex items-center gap-3 bg-surface-primary px-4 py-3 sm:px-5 md:px-[30px]"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-border-strong text-text-muted transition-colors group-hover:border-brand-500/40 group-hover:text-brand-500">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-border-strong text-text-muted transition-colors group-hover:border-border-strong group-hover:text-text-secondary">
                     <Plus className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -389,7 +386,7 @@ function RegionRow({
                     variant="ghost"
                     size="sm"
                     onClick={() => onApply(state)}
-                    className="shrink-0 text-brand-500 hover:text-brand-400"
+                    className="shrink-0"
                   >
                     <Plus className="mr-1 h-3.5 w-3.5" />
                     Apply
@@ -539,7 +536,7 @@ export default function LeadershipPage() {
         ) : (
           <div className="space-y-4">
             <div className="p-3 rounded-lg bg-surface-elevated border border-border-default">
-              <div className="flex items-center gap-2 text-sm"><MapPin className="h-4 w-4 text-brand-500" /><span className="font-medium text-text-primary">{applyState}</span><Badge variant="brand">Ambassador</Badge></div>
+              <div className="flex items-center gap-2 text-sm"><MapPin className="h-4 w-4 text-text-tertiary" /><span className="font-medium text-text-primary">{applyState}</span><Badge variant="brand">Ambassador</Badge></div>
             </div>
             <p className="text-sm text-text-secondary">As a State Ambassador, you&apos;ll represent the ACU Youth Venture community in your state, recruit new members, organize local events, and serve as a liaison between your region and the leadership team.</p>
             <Textarea label="Why do you want to represent this state?" placeholder="Tell us about your connection to this state and why you'd be a great ambassador..." rows={4} required value={whyStatement} onChange={(e) => setWhyStatement(e.target.value)} />

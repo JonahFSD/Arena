@@ -91,7 +91,7 @@ function SlotCard({
             variant="ghost"
             size="sm"
             onClick={() => onAssign(position._id)}
-            className="text-text-secondary hover:text-brand-500"
+            className="text-text-secondary hover:text-text-primary"
           >
             Change
           </Button>
@@ -100,7 +100,7 @@ function SlotCard({
             variant="outline"
             size="sm"
             onClick={() => onAssign(position._id)}
-            className="text-brand-500 border-brand-500/30"
+            className=""
           >
             <UserPlus className="h-3.5 w-3.5 mr-1" />
             Assign
@@ -252,7 +252,7 @@ function AddPositionForm({
   }
 
   return (
-    <Card padding="md" className="border-brand-500/30 border-dashed">
+    <Card padding="md" className="border border-border-default border-dashed">
       <div className="space-y-3">
         <p className="text-sm font-medium text-text-primary">Add Position</p>
         <div className="flex flex-wrap gap-2">
@@ -263,8 +263,8 @@ function AddPositionForm({
               onClick={() => setRole(r)}
               className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
                 role === r
-                  ? "bg-brand-500/10 border-brand-500 text-brand-500"
-                  : "border-border-default text-text-secondary hover:border-brand-500/30"
+                  ? "bg-surface-elevated border-border-strong text-text-primary"
+                  : "border-border-default text-text-secondary hover:border-border-strong"
               }`}
             >
               {r}
@@ -275,8 +275,8 @@ function AddPositionForm({
             onClick={() => setRole("__custom")}
             className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
               role === "__custom"
-                ? "bg-brand-500/10 border-brand-500 text-brand-500"
-                : "border-border-default text-text-secondary hover:border-brand-500/30"
+                ? "bg-surface-elevated border-border-strong text-text-primary"
+                : "border-border-default text-text-secondary hover:border-border-strong"
             }`}
           >
             Custom...
@@ -364,7 +364,7 @@ export default function AdminLeadershipPage() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-brand-500" />
+            <Crown className="h-5 w-5 text-text-tertiary" />
             <h2 className="text-lg font-semibold text-text-primary">
               Executive Team
             </h2>

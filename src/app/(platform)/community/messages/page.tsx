@@ -351,7 +351,7 @@ function MessagesPageInner() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="w-full justify-center text-brand-500 hover:text-brand-400"
+                  className="w-full justify-center"
                   onClick={() => setShowNewThread(true)}
                   leftIcon={<Plus className="h-4 w-4" />}
                 >

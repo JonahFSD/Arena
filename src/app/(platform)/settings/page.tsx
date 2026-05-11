@@ -247,7 +247,7 @@ export default function SettingsPage() {
                           <button
                             type="button"
                             onClick={openPhotoPicker}
-                            className="absolute -bottom-0.5 -right-0.5 rounded-full bg-brand-500 p-2 text-black hover:bg-brand-400 transition-colors"
+                            className="absolute -bottom-0.5 -right-0.5 rounded-full bg-surface-elevated p-2 text-text-primary border border-border-default hover:bg-surface-overlay transition-colors"
                             aria-label="Upload profile photo"
                           >
                             <Camera className="h-4 w-4" />
@@ -455,7 +455,7 @@ export default function SettingsPage() {
             {activeTab === "subscription" && (
               <div className="space-y-6">
                 {/* Current Plan */}
-                <Card className="bg-gradient-to-r from-brand-500/5 to-transparent border border-dashed border-brand-500/30">
+                <Card className="border border-dashed border-border-default">
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
@@ -469,7 +469,7 @@ export default function SettingsPage() {
                         $10/month &bull; 90% goes to the monthly prize pool
                       </CardDescription>
                     </div>
-                    <p className="text-3xl font-medium text-text-primary">
+                    <p className="text-4xl font-light text-text-primary">
                       $10
                       <span className="text-sm font-normal text-text-muted">
                         /mo

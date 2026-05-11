@@ -45,7 +45,7 @@ export function InviteLinkCard({ referralCode }: { referralCode: string }) {
               type="button"
               onClick={copyLink}
               disabled={!fullUrl}
-              className="rounded-md p-2 text-text-muted transition-colors hover:bg-surface-overlay hover:text-brand-500 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-muted"
+              className="rounded-md p-2 text-text-muted transition-colors hover:bg-surface-overlay hover:text-text-primary disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-muted"
               aria-label="Copy link to clipboard"
             >
               <Copy className="h-4 w-4" aria-hidden />

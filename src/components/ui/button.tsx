@@ -16,8 +16,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
+  // Primary: restrained outlined-cream — matches the landing's CTA aesthetic
+  // (transparent bg, cream-faint border, cream text). Hover fills slightly.
   primary:
-    "bg-white text-black hover:bg-gray-200 active:bg-gray-300",
+    "bg-transparent text-text-primary border border-text-muted hover:bg-surface-elevated hover:text-white hover:border-text-tertiary active:bg-surface-overlay",
   secondary:
     "bg-surface-elevated text-text-primary border border-border-default hover:bg-surface-overlay active:bg-gray-700",
   ghost:

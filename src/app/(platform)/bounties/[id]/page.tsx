@@ -170,7 +170,7 @@ export default function BountyDetailPage() {
             <ul className="space-y-2">
               {bounty.requirements.map((req, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-text-secondary">
-                  <CheckCircle className="h-4 w-4 text-brand-500 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-4 w-4 text-text-tertiary flex-shrink-0 mt-0.5" />
                   {req}
                 </li>
               ))}
@@ -180,12 +180,12 @@ export default function BountyDetailPage() {
 
         <div className="space-y-6">
           <Card className="flex flex-col gap-4">
-            <p className="text-3xl font-medium tabular-nums text-brand-500">
+            <p className="text-4xl font-light tabular-nums text-text-primary">
               ${bounty.bountyAmount.toLocaleString()}
             </p>
             <ul className="flex flex-col gap-1.5 text-sm text-text-secondary border-t border-border-default pt-4">
               <li className="flex items-center gap-1.5">
-                <Send className="h-3.5 w-3.5 text-brand-500" />
+                <Send className="h-3.5 w-3.5 text-text-tertiary" />
                 {bounty.submissionsCount} submission{bounty.submissionsCount !== 1 ? "s" : ""}
               </li>
             </ul>
@@ -255,9 +255,9 @@ export default function BountyDetailPage() {
                 key={sub._id}
                 className={
                   sub.isWinner
-                    ? "border-success/30 bg-success/[0.02]"
+                    ? "border border-success/30 bg-success/[0.02]"
                     : sub.entrepreneurPick
-                      ? "border-brand-500/30 bg-brand-500/[0.02]"
+                      ? "border border-border-strong bg-surface-card-hover"
                       : ""
                 }
               >
@@ -299,7 +299,7 @@ export default function BountyDetailPage() {
                         href={sub.submissionUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-brand-500 hover:text-brand-400 transition-colors"
+                        className="inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text-primary transition-colors"
                       >
                         <ExternalLink className="h-3 w-3" />
                         View submission

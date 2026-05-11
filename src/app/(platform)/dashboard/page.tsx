@@ -257,7 +257,7 @@ export default function DashboardPage() {
                 </p>
               )}
             </div>
-            <p className="mt-3 font-tron text-3xl font-medium tracking-tight text-text-primary">
+            <p className="mt-3 font-tron text-4xl font-light tracking-tight text-text-primary">
               {tile.value}
             </p>
           </div>

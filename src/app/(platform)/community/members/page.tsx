@@ -198,13 +198,13 @@ export default function MembersPage() {
       {networkView === "network" && (
         <InfoCallout>
           <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-brand-500 flex-shrink-0 mt-0.5" />
+            <Info className="h-5 w-5 text-text-tertiary flex-shrink-0 mt-0.5" />
             <p className="text-sm text-text-secondary">
               When you and another member have each exchanged at least{" "}
               <strong className="text-text-primary">10 DMs</strong>, you&apos;re
               automatically added to each other&apos;s network. Each new
               connection earns you{" "}
-              <strong className="text-brand-500">50 points</strong>.
+              <strong className="text-text-primary">50 points</strong>.
             </p>
           </div>
         </InfoCallout>
@@ -468,7 +468,7 @@ export default function MembersPage() {
                       <Link href={`/community/${member.id}`}>
                         <div className="flex items-center gap-3">
                           <Avatar src={member.avatarUrl} name={member.name} size="sm" />
-                          <span className="text-sm font-medium text-text-primary hover:text-brand-500 transition-colors">
+                          <span className="text-sm font-medium text-text-primary hover:text-text-primary transition-colors">
                             {member.name}
                           </span>
                         </div>
@@ -486,7 +486,7 @@ export default function MembersPage() {
                       {member.school || "-"}
                     </td>
                     <td className="px-3 py-4 text-right">
-                      <span className="text-sm font-mono font-medium text-brand-500 tabular-nums">
+                      <span className="text-sm font-mono font-medium text-text-primary tabular-nums">
                         {member.points.toLocaleString()}
                       </span>
                     </td>
@@ -531,7 +531,7 @@ export default function MembersPage() {
                             href={member.linkedinUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-text-primary hover:text-brand-500 transition-colors"
+                            className="text-text-primary hover:text-text-primary transition-colors"
                             aria-label={`${member.name} on LinkedIn`}
                             title="LinkedIn profile"
                             onClick={(e) => e.stopPropagation()}
@@ -541,7 +541,7 @@ export default function MembersPage() {
                         )}
                         <button
                           type="button"
-                          className="text-text-primary hover:text-brand-500 transition-colors"
+                          className="text-text-primary hover:text-text-primary transition-colors"
                           aria-label={`Message ${member.name}`}
                           title="Send message"
                           onClick={(e) => {

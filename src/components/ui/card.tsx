@@ -24,10 +24,10 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border-default bg-surface-card",
+        "rounded-xl bg-surface-card",
         paddingStyles[padding],
         hover &&
-          "transition-all duration-200 hover:bg-surface-card-hover hover:border-border-strong cursor-pointer",
+          "transition-all duration-200 hover:bg-surface-card-hover cursor-pointer",
         glow && "hover:shadow-glow",
         className
       )}

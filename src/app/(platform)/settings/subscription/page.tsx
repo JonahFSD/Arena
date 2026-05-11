@@ -88,7 +88,7 @@ function SettingsSubscriptionPageInner() {
                     Join the arena and compete monthly for real prizes.
                   </CardDescription>
                 </div>
-                <p className="text-3xl font-medium text-brand-500">
+                <p className="text-4xl font-light text-text-primary">
                   $10
                   <span className="text-sm font-normal text-text-muted">
                     /mo
@@ -107,7 +107,7 @@ function SettingsSubscriptionPageInner() {
                     key={perk.label}
                     className="flex items-center gap-2.5 text-sm text-text-secondary"
                   >
-                    <perk.icon className="h-4 w-4 text-brand-500 shrink-0" />
+                    <perk.icon className="h-4 w-4 text-text-tertiary shrink-0" />
                     {perk.label}
                   </div>
                 ))}
@@ -178,7 +178,7 @@ function SettingsSubscriptionPageInner() {
                   $10/month &bull; 90% goes to the monthly prize pool
                 </CardDescription>
               </div>
-              <p className="text-3xl font-medium text-text-primary">
+              <p className="text-4xl font-light text-text-primary">
                 $10
                 <span className="text-sm font-normal text-text-muted">
                   /mo

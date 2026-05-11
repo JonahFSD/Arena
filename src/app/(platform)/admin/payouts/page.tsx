@@ -84,7 +84,7 @@ export default function PayoutsPage() {
         const fee = Math.round(currentPool.totalCollected * (currentPool.operationalFeePct / 100));
         const placements = getPlacements(currentPool);
         return (
-          <Card className="bg-gradient-to-r from-brand-500/5 to-transparent border border-dashed border-brand-500/30">
+          <Card className="border border-dashed border-border-default">
             <CardHeader>
               <div>
                 <CardTitle>{currentPool.monthYear} Prize Pool</CardTitle>
@@ -113,9 +113,9 @@ export default function PayoutsPage() {
                   -${fee.toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 text-center col-span-2 sm:col-span-2">
-                <p className="text-xs text-brand-400">Prize Pool</p>
-                <p className="text-2xl font-medium text-brand-500 mt-1">
+              <div className="p-4 rounded-xl bg-surface-elevated border border-border-default text-center col-span-2 sm:col-span-2">
+                <p className="text-xs text-text-muted">Prize Pool</p>
+                <p className="text-3xl font-light text-text-primary mt-1">
                   ${currentPool.netPrize.toLocaleString()}
                 </p>
               </div>
@@ -188,7 +188,7 @@ export default function PayoutsPage() {
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-brand-500">
+                      <span className="text-sm font-medium text-text-primary">
                         ${pool.netPrize.toLocaleString()} pool
                       </span>
                       <Badge

@@ -154,7 +154,7 @@ export function MessagesHeaderActions() {
         >
           Filter
           {filterLabel && (
-            <span className="ml-1.5 max-w-[7rem] truncate rounded-full bg-brand-500/15 px-1.5 py-0.5 text-[10px] font-medium text-brand-500">
+            <span className="ml-1.5 max-w-[7rem] truncate rounded-full bg-surface-overlay px-1.5 py-0.5 text-[10px] font-medium text-text-secondary">
               {filterLabel}
             </span>
           )}

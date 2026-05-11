@@ -162,7 +162,7 @@ function BountiesListInner({ mode }: { mode: "active" | "past" }) {
                       >
                         <div className="flex flex-col gap-4">
                           <div className="flex items-start justify-between gap-3">
-                            <span className="min-w-0 text-4xl font-light tabular-nums text-brand-500 tracking-tight">
+                            <span className="min-w-0 text-5xl font-light tabular-nums text-text-primary tracking-tight">
                               ${bounty.bountyAmount.toLocaleString()}
                             </span>
                             {bounty.status === "completed" && (

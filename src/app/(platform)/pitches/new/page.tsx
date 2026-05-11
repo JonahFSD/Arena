@@ -320,7 +320,7 @@ export default function NewSubmissionPage() {
                               <p className="text-sm font-medium text-text-primary">{member.name}</p>
                               <p className="text-xs text-text-muted">{member.school}</p>
                             </div>
-                            <Plus className="h-4 w-4 text-brand-500 ml-auto" />
+                            <Plus className="h-4 w-4 text-text-tertiary ml-auto" />
                           </button>
                         ))
                       )}
@@ -338,7 +338,7 @@ export default function NewSubmissionPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-brand-500/5 border border-brand-500/20">
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-surface-elevated border border-border-default">
                       <Avatar name={userName} size="sm" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -347,7 +347,7 @@ export default function NewSubmissionPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className={`text-lg font-medium ${leadSplit >= 0 ? "text-brand-500" : "text-error"}`}>{leadSplit}%</span>
+                        <span className={`text-lg font-medium ${leadSplit >= 0 ? "text-text-primary" : "text-error"}`}>{leadSplit}%</span>
                         <span className="text-xs text-text-muted">(auto)</span>
                       </div>
                     </div>
@@ -402,8 +402,8 @@ export default function NewSubmissionPage() {
             <p className="text-sm text-text-secondary">Record a 2-5 minute video pitching your idea. Be passionate, clear, and concise.</p>
 
             {!videoFile ? (
-              <label className="flex flex-col items-center justify-center p-12 rounded-2xl border-2 border-dashed border-border-default bg-surface-elevated hover:bg-surface-overlay hover:border-brand-500/30 transition-all cursor-pointer group">
-                <div className="p-4 rounded-2xl bg-brand-500/10 text-brand-500 mb-4 group-hover:bg-brand-500/20 transition-colors">
+              <label className="flex flex-col items-center justify-center p-12 rounded-2xl border-2 border-dashed border-border-default bg-surface-elevated hover:bg-surface-overlay hover:border-border-strong transition-all cursor-pointer group">
+                <div className="p-4 rounded-2xl bg-surface-card text-text-secondary mb-4 group-hover:bg-surface-overlay transition-colors">
                   <Upload className="h-8 w-8" />
                 </div>
                 <p className="text-sm font-medium text-text-primary">Drag & drop or click to upload</p>
@@ -414,7 +414,7 @@ export default function NewSubmissionPage() {
               <div className="p-4 rounded-xl border border-border-default bg-surface-elevated">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-brand-500/10"><Video className="h-5 w-5 text-brand-500" /></div>
+                    <div className="p-2 rounded-lg bg-surface-card"><Video className="h-5 w-5 text-text-secondary" /></div>
                     <div>
                       <p className="text-sm font-medium text-text-primary">{videoFile.name}</p>
                       <p className="text-xs text-text-muted">{(videoFile.size / 1024 / 1024).toFixed(1)} MB</p>
@@ -476,28 +476,28 @@ export default function NewSubmissionPage() {
               <div className="p-4 rounded-xl bg-surface-elevated border border-border-default">
                 <h4 className="text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Submission Type</h4>
                 <div className="flex items-center gap-2">
-                  {isTeam ? (<><Users className="h-4 w-4 text-brand-500" /><p className="text-sm text-text-primary">Team Submission ({teamMembers.length + 1} members)</p></>) : (<><User className="h-4 w-4 text-brand-500" /><p className="text-sm text-text-primary">Solo Submission</p></>)}
+                  {isTeam ? (<><Users className="h-4 w-4 text-text-tertiary" /><p className="text-sm text-text-primary">Team Submission ({teamMembers.length + 1} members)</p></>) : (<><User className="h-4 w-4 text-text-tertiary" /><p className="text-sm text-text-primary">Solo Submission</p></>)}
                 </div>
               </div>
 
               <div className="p-4 rounded-xl bg-surface-elevated border border-border-default">
                 <h4 className="text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Video</h4>
                 <div className="flex items-center gap-2">
-                  <Video className="h-4 w-4 text-brand-500" />
+                  <Video className="h-4 w-4 text-text-tertiary" />
                   <p className="text-sm text-text-primary">{videoFile?.name || "No video uploaded"}</p>
                 </div>
               </div>
 
               {isTeam && teamMembers.length > 0 && (
-                <div className="rounded-xl border-2 border-brand-500/30 overflow-hidden">
-                  <div className="bg-brand-500/10 px-4 py-3 flex items-center gap-2">
-                    <Handshake className="h-4 w-4 text-brand-500" />
-                    <h4 className="text-sm font-medium text-brand-500">Revenue Split Agreement</h4>
+                <div className="rounded-xl border border-border-default overflow-hidden">
+                  <div className="bg-surface-elevated px-4 py-3 flex items-center gap-2">
+                    <Handshake className="h-4 w-4 text-text-tertiary" />
+                    <h4 className="text-sm font-medium text-text-primary">Revenue Split Agreement</h4>
                   </div>
                   <div className="p-4 space-y-2">
                     <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface-elevated">
                       <div className="flex items-center gap-2"><Avatar name={userName} size="sm" /><div><p className="text-sm font-medium text-text-primary">{userName}</p><Badge variant="brand" className="mt-0.5">Lead</Badge></div></div>
-                      <span className="text-lg font-medium text-brand-500">{leadSplit}%</span>
+                      <span className="text-lg font-medium text-text-primary">{leadSplit}%</span>
                     </div>
                     {teamMembers.map((member) => (
                       <div key={member.id} className="flex items-center justify-between p-2.5 rounded-lg bg-surface-elevated">

@@ -209,7 +209,7 @@ export function LeaderboardContent({ range }: { range: LeaderboardRangeMode }) {
                     <Link href={`/community/${leader.id}`}>
                       <div className="flex items-center gap-3">
                         <Avatar src={leader.avatarUrl} name={leader.name} size="sm" />
-                        <span className="text-sm font-medium text-text-primary hover:text-brand-500 transition-colors">
+                        <span className="text-sm font-medium text-text-primary hover:text-white transition-colors">
                           {leader.name}
                         </span>
                       </div>
@@ -249,7 +249,7 @@ export function LeaderboardContent({ range }: { range: LeaderboardRangeMode }) {
                       LEADERBOARD_EDGE_PR
                     )}
                   >
-                    <span className="text-sm font-mono font-medium text-brand-500">
+                    <span className="text-sm font-mono font-medium text-text-primary">
                       {leader.points.toLocaleString()}
                     </span>
                   </td>
@@ -262,8 +262,8 @@ export function LeaderboardContent({ range }: { range: LeaderboardRangeMode }) {
 
       <InfoCallout>
         <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-xl bg-brand-500/10 p-2">
-            <Info className="h-5 w-5 text-brand-500" />
+          <div className="rounded-xl bg-surface-elevated p-2">
+            <Info className="h-5 w-5 text-text-tertiary" />
           </div>
           <h2 className="text-lg font-semibold text-text-primary">
             How Points Are Calculated
@@ -275,13 +275,13 @@ export function LeaderboardContent({ range }: { range: LeaderboardRangeMode }) {
               key={item.action}
               className="flex items-center gap-2.5 rounded-lg border border-border-default bg-surface-elevated py-1.5 px-2.5"
             >
-              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-brand-500/10">
-                <item.icon className="h-3.5 w-3.5 text-brand-500" />
+              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-surface-card">
+                <item.icon className="h-3.5 w-3.5 text-text-tertiary" />
               </div>
               <span className="min-w-0 flex-1 text-sm leading-tight text-text-secondary">
                 {item.action}
               </span>
-              <span className="max-w-[min(100%,12rem)] shrink-0 text-right text-sm font-mono font-medium leading-tight text-brand-500 sm:max-w-none">
+              <span className="max-w-[min(100%,12rem)] shrink-0 text-right text-sm font-mono font-medium leading-tight text-text-primary sm:max-w-none">
                 {item.formula ?? `+${item.points!.toLocaleString()}`}
               </span>
             </div>

@@ -289,19 +289,13 @@ function MyPitchesPageContent() {
                   <div className="flex-1 p-5 min-w-0 overflow-hidden flex flex-col">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       {sub.is_team_invitation && (
-                        <Badge
-                          variant="brand"
-                          className="text-xs gap-1 bg-brand-500 text-black font-medium"
-                        >
+                        <Badge variant="brand" className="gap-1">
                           <Mail className="h-3 w-3" />
                           Team invitation
                         </Badge>
                       )}
                       {sub.status === "scored" && sub.score != null && (
-                        <Badge
-                          variant="brand"
-                          className="text-xs bg-brand-500/80 text-black font-medium"
-                        >
+                        <Badge variant="brand">
                           AI Score: {sub.score}
                         </Badge>
                       )}

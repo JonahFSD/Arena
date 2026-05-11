@@ -55,8 +55,8 @@ export function PaywallGate({ children }: { children: React.ReactNode }) {
     <div className="flex items-center justify-center min-h-[50vh] animate-fade-in">
       <div className="w-full max-w-md mx-auto px-4">
         <div className="flex flex-col items-center text-center">
-          <div className="p-4 rounded-2xl bg-brand-500/10 mb-5">
-            <Lock className="h-8 w-8 text-brand-500" />
+          <div className="p-4 rounded-2xl bg-surface-elevated mb-5">
+            <Lock className="h-8 w-8 text-text-secondary" />
           </div>
           <h2 className="text-xl font-medium text-text-primary">
             Membership Required
@@ -72,7 +72,7 @@ export function PaywallGate({ children }: { children: React.ReactNode }) {
               key={perk.label}
               className="flex items-center gap-2.5 text-sm text-text-secondary"
             >
-              <perk.icon className="h-4 w-4 text-brand-500 shrink-0" />
+              <perk.icon className="h-4 w-4 text-text-tertiary shrink-0" />
               {perk.label}
             </div>
           ))}

@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
           </div>
           <div className="mt-4 p-3 rounded-lg bg-surface-elevated border border-border-default">
             <p className="text-xs text-text-secondary">
-              <span className="text-brand-500 font-medium">Target: 250 members</span>{" "}
+              <span className="text-text-primary font-medium">Target: 250 members</span>{" "}
               &bull; At 250+ members, the 10% operational fee covers all
               infrastructure costs
             </p>
@@ -112,7 +112,7 @@ export default function AnalyticsPage() {
               <span className="text-sm text-text-secondary">
                 Avg AI score
               </span>
-              <span className="text-sm font-medium text-brand-500">
+              <span className="text-sm font-medium text-text-primary">
                 {stats ? stats.avgAiScore || "—" : "—"}
               </span>
             </div>

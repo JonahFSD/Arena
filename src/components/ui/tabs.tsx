@@ -47,7 +47,7 @@ export function Tabs({ tabs, defaultTab, onChange, className, children }: TabsPr
                 className={cn(
                   "px-1.5 py-0.5 rounded-full text-xs",
                   active === tab.id
-                    ? "bg-brand-500/10 text-brand-500"
+                    ? "bg-surface-primary text-text-primary"
                     : "bg-surface-primary text-text-muted"
                 )}
               >

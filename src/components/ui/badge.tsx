@@ -6,20 +6,23 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
 }
 
+// HF0 doesn't pill anything — status indicators are tiny tracked uppercase text,
+// no chrome. Variants now adjust color only; the API is preserved so callers
+// don't break.
 const variantStyles: Record<BadgeVariant, string> = {
-  default: "bg-surface-elevated text-text-secondary border-border-default",
-  brand: "bg-brand-500/10 text-brand-500 border-brand-500/20",
-  success: "bg-success/10 text-success border-success/20",
-  warning: "bg-warning/10 text-warning border-warning/20",
-  error: "bg-error/10 text-error border-error/20",
-  outline: "bg-transparent text-text-secondary border-border-strong",
+  default: "text-text-tertiary",
+  brand: "text-text-secondary",
+  success: "text-text-tertiary",
+  warning: "text-text-secondary",
+  error: "text-error/80",
+  outline: "text-text-tertiary",
 };
 
 export function Badge({ className, variant = "default", ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-sans font-medium uppercase tracking-wide border",
+        "inline-flex items-center text-[10px] font-sans font-medium uppercase tracking-[0.08em]",
         variantStyles[variant],
         className
       )}

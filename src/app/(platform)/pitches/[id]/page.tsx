@@ -144,7 +144,7 @@ export default function SubmissionDetailPage() {
       </div>
 
       {pendingInvite && (
-        <Card className="border-brand-500/30 bg-brand-500/5">
+        <Card className="bg-surface-elevated">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-medium text-text-primary">Team invitation</p>
@@ -196,8 +196,8 @@ export default function SubmissionDetailPage() {
             <Card padding="none" className="overflow-hidden">
               <div className="aspect-video bg-surface-elevated flex items-center justify-center relative group cursor-pointer">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <a href={submission.videoUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-brand-500/20 backdrop-blur-sm group-hover:bg-brand-500/30 transition-colors">
-                  <Video className="h-10 w-10 text-brand-500" />
+                <a href={submission.videoUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-surface-elevated/80 backdrop-blur-sm group-hover:bg-surface-overlay/90 transition-colors">
+                  <Video className="h-10 w-10 text-text-primary" />
                 </a>
                 <div className="absolute bottom-4 left-4"><p className="text-sm font-medium text-white">Pitch Video</p></div>
               </div>
@@ -219,11 +219,11 @@ export default function SubmissionDetailPage() {
             <Card>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-brand-500/10"><Brain className="h-5 w-5 text-brand-500" /></div>
+                  <div className="p-2 rounded-xl bg-surface-elevated"><Brain className="h-5 w-5 text-text-secondary" /></div>
                   <div><CardTitle>AI Scoring Results</CardTitle><p className="text-xs text-text-muted mt-0.5">Rubric v2.1</p></div>
                 </div>
                 <div className="text-right">
-                  <p className="text-3xl font-medium text-brand-500">{overallScore}</p>
+                  <p className="text-4xl font-light text-text-primary">{overallScore}</p>
                   <p className="text-xs text-text-muted">/ {maxScore}</p>
                 </div>
               </div>
@@ -232,7 +232,7 @@ export default function SubmissionDetailPage() {
                 {rubricCategories.map((cat, i) => (
                   <div key={i} className="rounded-xl border border-border-default overflow-hidden">
                     <button onClick={() => setExpandedCategory(expandedCategory === i ? null : i)} className="w-full p-4 flex items-center gap-4 hover:bg-surface-card-hover transition-colors">
-                      <div className="p-1.5 rounded-lg bg-brand-500/10"><cat.icon className="h-4 w-4 text-brand-500" /></div>
+                      <div className="p-1.5 rounded-lg bg-surface-elevated"><cat.icon className="h-4 w-4 text-text-secondary" /></div>
                       <div className="flex-1 text-left"><p className="text-sm font-medium text-text-primary">{cat.name}</p></div>
                       <div className="flex items-center gap-3">
                         <Progress value={cat.score} max={cat.max} size="sm" className="w-20" />
@@ -251,7 +251,7 @@ export default function SubmissionDetailPage() {
 
               {submission.aiScore.qualitativeFeedback && (
                 <InfoCallout padding="sm" className="mt-6">
-                  <h4 className="text-sm font-medium text-brand-500 mb-2">Overall Assessment</h4>
+                  <h4 className="text-sm font-medium text-text-primary mb-2">Overall Assessment</h4>
                   <p className="text-sm text-text-secondary leading-relaxed">{submission.aiScore.qualitativeFeedback}</p>
                 </InfoCallout>
               )}
@@ -265,8 +265,8 @@ export default function SubmissionDetailPage() {
               <CardTitle>Supporting Materials</CardTitle>
               <div className="mt-4 space-y-2">
                 {supportingLinks.map((link, i) => (
-                  <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-xl border border-border-default hover:bg-surface-card-hover hover:border-brand-500/30 transition-all group">
-                    <link.icon className="h-4 w-4 text-text-tertiary group-hover:text-brand-500 transition-colors" />
+                  <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-xl border border-border-default hover:bg-surface-card-hover hover:border-border-strong transition-all group">
+                    <link.icon className="h-4 w-4 text-text-tertiary group-hover:text-text-primary transition-colors" />
                     <span className="text-sm text-text-primary">{link.label}</span>
                   </a>
                 ))}
@@ -277,7 +277,7 @@ export default function SubmissionDetailPage() {
           {submission.revenueSplitBreakdown && (
             <Card>
               <div className="flex items-center gap-2 mb-4">
-                <Handshake className="h-4 w-4 text-brand-500" />
+                <Handshake className="h-4 w-4 text-text-tertiary" />
                 <h3 className="text-sm font-medium text-text-primary">Revenue split</h3>
               </div>
               <div className="space-y-3">
@@ -289,7 +289,7 @@ export default function SubmissionDetailPage() {
                       <Badge variant="brand" className="mt-0.5">Lead</Badge>
                     </div>
                   </div>
-                  <span className="text-lg font-medium text-brand-500 tabular-nums shrink-0">{submission.revenueSplitBreakdown.lead.pct}%</span>
+                  <span className="text-lg font-medium text-text-primary tabular-nums shrink-0">{submission.revenueSplitBreakdown.lead.pct}%</span>
                 </div>
                 {submission.revenueSplitBreakdown.collaborators.map((c) => (
                   <div
@@ -338,7 +338,7 @@ export default function SubmissionDetailPage() {
           {teamMembers.length > 0 && (
             <Card>
               <div className="flex items-center gap-2 mb-4">
-                <Users className="h-4 w-4 text-brand-500" />
+                <Users className="h-4 w-4 text-text-tertiary" />
                 <h3 className="text-sm font-medium text-text-primary">Team ({teamMembers.length} member{teamMembers.length !== 1 ? "s" : ""})</h3>
               </div>
               <div className="space-y-2">
@@ -346,7 +346,7 @@ export default function SubmissionDetailPage() {
                   <Link key={i} href={`/community/${member.id}`} className="flex items-center gap-3 p-2.5 rounded-lg bg-surface-elevated hover:bg-surface-overlay transition-colors">
                     <Avatar name={member.name} size="sm" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-text-primary hover:text-brand-500 transition-colors">{member.name}</p>
+                      <p className="text-xs font-medium text-text-primary hover:text-white transition-colors">{member.name}</p>
                       <Badge variant={member.role === "Lead" ? "brand" : "default"} className="mt-0.5">{member.role}</Badge>
                     </div>
                   </Link>

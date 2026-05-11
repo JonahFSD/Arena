@@ -187,7 +187,7 @@ export default function AdminBountiesPage() {
                       </h3>
                       <p className="text-xs text-text-muted mt-0.5">
                         {bounty.founderName} · {bounty.founderCompany} ·{" "}
-                        <span className="font-medium text-brand-500">
+                        <span className="font-medium text-text-primary">
                           ${bounty.bountyAmount.toLocaleString()}
                         </span>{" "}
                         · Due {formatDate(bounty.dueDate)}
@@ -315,7 +315,7 @@ export default function AdminBountiesPage() {
                         </p>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm font-medium tabular-nums text-brand-500">
+                        <span className="text-sm font-medium tabular-nums text-text-primary">
                           ${bounty.bountyAmount.toLocaleString()}
                         </span>
                       </td>
@@ -372,7 +372,7 @@ export default function AdminBountiesPage() {
                               {copiedToken === bounty._id ? (
                                 <Check className="h-3.5 w-3.5 text-success" />
                               ) : (
-                                <Link2 className="h-3.5 w-3.5 text-text-tertiary hover:text-brand-500" />
+                                <Link2 className="h-3.5 w-3.5 text-text-tertiary hover:text-text-primary" />
                               )}
                             </button>
                           )}
@@ -384,7 +384,7 @@ export default function AdminBountiesPage() {
                                 className="p-1 rounded hover:bg-surface-overlay transition-colors"
                                 title="Edit bounty"
                               >
-                                <Pencil className="h-3.5 w-3.5 text-text-tertiary hover:text-brand-500" />
+                                <Pencil className="h-3.5 w-3.5 text-text-tertiary hover:text-text-primary" />
                               </button>
                               <button
                                 type="button"
@@ -400,7 +400,7 @@ export default function AdminBountiesPage() {
                             href={`/bounties/${bounty._id}`}
                             className="p-1 rounded hover:bg-surface-overlay transition-colors"
                           >
-                            <ExternalLink className="h-3.5 w-3.5 text-text-tertiary hover:text-brand-500" />
+                            <ExternalLink className="h-3.5 w-3.5 text-text-tertiary hover:text-text-primary" />
                           </Link>
                         </div>
                       </td>

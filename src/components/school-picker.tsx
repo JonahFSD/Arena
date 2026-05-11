@@ -180,7 +180,7 @@ export function SchoolPicker({
           <div className="shrink-0 border-t border-border-default bg-surface-elevated p-2">
             <button
               type="button"
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-brand-500 hover:bg-surface-overlay"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-text-primary hover:bg-surface-overlay"
               onClick={() => {
                 setAddOpen(true);
                 setOpen(false);

@@ -52,7 +52,7 @@ export default function MemberProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       <Card className="relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-r from-brand-500/10 to-brand-600/5" />
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-r from-surface-elevated to-transparent" />
         <div className="relative pt-12">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
             <Avatar src={member.avatarUrl} name={member.fullName} size="xl" className="ring-4 ring-surface-card" />
@@ -64,7 +64,7 @@ export default function MemberProfilePage() {
                 )}
                 {member.bqType && (
                   <a href={member.bqResultsUrl ?? "https://bq.austinchristianu.org/"} target="_blank" rel="noopener noreferrer">
-                    <Badge variant="outline" className="hover:border-brand-500 transition-colors">
+                    <Badge variant="outline" className="hover:text-text-primary transition-colors">
                       <Brain className="h-3 w-3 mr-1" />BQ: {member.bqType}<ExternalLink className="h-2.5 w-2.5 ml-1 text-text-muted" />
                     </Badge>
                   </a>
@@ -89,12 +89,12 @@ export default function MemberProfilePage() {
           )}
 
           <div className="grid grid-cols-5 gap-4 mt-6 pt-6 border-t border-border-default">
-            <div className="text-center"><p className="text-2xl font-medium text-text-primary">&mdash;</p><p className="text-xs text-text-muted">Pitches</p></div>
-            <div className="text-center"><p className="text-2xl font-medium text-brand-500">&mdash;</p><p className="text-xs text-text-muted">Avg Score</p></div>
-            <div className="text-center"><p className="text-2xl font-medium text-yellow-500">&mdash;</p><p className="text-xs text-text-muted">Wins</p></div>
-            <div className="text-center"><p className="text-2xl font-medium text-success">{formatCurrency(member.totalEarnings ?? 0)}</p><p className="text-xs text-text-muted">Earned</p></div>
+            <div className="text-center"><p className="text-3xl font-light text-text-primary">&mdash;</p><p className="text-xs text-text-muted">Pitches</p></div>
+            <div className="text-center"><p className="text-3xl font-light text-text-primary">&mdash;</p><p className="text-xs text-text-muted">Avg Score</p></div>
+            <div className="text-center"><p className="text-3xl font-light text-text-primary">&mdash;</p><p className="text-xs text-text-muted">Wins</p></div>
+            <div className="text-center"><p className="text-3xl font-light text-text-primary">{formatCurrency(member.totalEarnings ?? 0)}</p><p className="text-xs text-text-muted">Earned</p></div>
             <div className="text-center">
-              <p className="text-2xl font-medium text-brand-500">{member.networkCount ?? 0}</p>
+              <p className="text-3xl font-light text-text-primary">{member.networkCount ?? 0}</p>
               <p className="text-xs text-text-muted flex items-center justify-center gap-1"><Network className="h-3 w-3" />Network</p>
             </div>
           </div>

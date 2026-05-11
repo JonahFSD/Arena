@@ -10,7 +10,7 @@ export function InfoCallout({
   return (
     <Card
       className={cn(
-        "border-dashed bg-surface-elevated/50 border-brand-500/30",
+        "border border-dashed bg-surface-elevated/50 border-border-default",
         className
       )}
       {...props}

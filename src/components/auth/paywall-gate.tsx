@@ -30,8 +30,8 @@ export function PaywallGate({ feature, children }: PaywallGateProps) {
       <div className="absolute inset-0 flex items-center justify-center z-10">
         <Card padding="lg" className="max-w-md text-center shadow-elevated">
           <div className="flex flex-col items-center gap-4">
-            <div className="p-3 rounded-2xl bg-brand-500/10">
-              <Lock className="h-6 w-6 text-brand-500" />
+            <div className="p-3 rounded-2xl bg-surface-elevated">
+              <Lock className="h-6 w-6 text-text-secondary" />
             </div>
             <div className="space-y-1.5">
               <h3 className="text-lg font-medium text-text-primary">

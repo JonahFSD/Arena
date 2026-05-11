@@ -283,7 +283,7 @@ export default function VotingPage() {
   return (
     <div className="space-y-6">
       {/* Voting Round Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-brand-500/5 to-transparent border border-solid border-border-default">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-surface-card border border-solid border-border-default">
         <div>
           <h2 className="text-lg font-medium text-text-primary">
             {roundLabel} Voting Round
@@ -325,7 +325,7 @@ export default function VotingPage() {
 
       {/* Instruction */}
       <InfoCallout padding="none" className="flex items-center gap-2 px-4 py-2.5">
-        <Info className="h-4 w-4 text-brand-500 flex-shrink-0" />
+        <Info className="h-4 w-4 text-text-tertiary flex-shrink-0" />
         <p className="text-sm text-text-secondary">
           {isLocked ? (
             <>
@@ -439,10 +439,7 @@ export default function VotingPage() {
 
                   {/* Details */}
                   <div className="flex-1 p-5 min-w-0 overflow-hidden">
-                    <Badge
-                      variant="brand"
-                      className="text-xs bg-brand-500/80 text-black font-medium mb-2"
-                    >
+                    <Badge variant="brand" className="mb-2">
                       AI Score: {sub.score}
                     </Badge>
                     <h3 className="text-base font-medium text-text-primary truncate">

@@ -70,7 +70,7 @@ export function StatCard({
                 className={cn(
                   "text-sm shrink-0 tabular-nums",
                   labelTrailingTone === "positive"
-                    ? "text-brand-500"
+                    ? "text-text-primary"
                     : "text-text-muted"
                 )}
               >
@@ -78,7 +78,7 @@ export function StatCard({
               </p>
             )}
           </div>
-          <p className="mt-2 text-3xl font-medium text-brand-500 tracking-tight">
+          <p className="mt-2 text-4xl font-light text-text-primary tracking-tight">
             {value}
           </p>
           {change !== undefined && (
@@ -111,17 +111,14 @@ export function StatCard({
         {icon && (
           <div
             className={cn(
-              "p-2.5 rounded-xl text-brand-500",
-              !plain && "bg-brand-500/10"
+              "p-2.5 rounded-xl text-text-secondary",
+              !plain && "bg-surface-elevated"
             )}
           >
             {icon}
           </div>
         )}
       </div>
-      {!plain && (
-        <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full bg-brand-500/5 blur-2xl" />
-      )}
     </Card>
   );
 }

@@ -134,8 +134,8 @@ function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
       <div className="px-3 py-3 sm:px-4 hover:bg-white/[0.03] transition-colors">
         <div className="flex gap-4 items-start">
           <div className="flex flex-col items-center gap-1 shrink-0 w-14">
-            <Trophy className="h-5 w-5 text-brand-500" aria-hidden />
-            <span className="text-[10px] font-mono text-brand-500 tabular-nums text-center leading-tight">Points</span>
+            <Trophy className="h-5 w-5 text-text-tertiary" aria-hidden />
+            <span className="text-[10px] font-mono text-text-tertiary tabular-nums text-center leading-tight">Points</span>
           </div>
 
           <div className="min-w-0 flex-1">
