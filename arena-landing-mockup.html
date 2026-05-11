@@ -120,7 +120,7 @@
      reference / quick rollback. The canvas inside .orb takes over.
      ============================================================ */
   .orb {
-    --d: clamp(320px, 42vw, 480px);
+    --d: clamp(380px, 52vw, 640px);
     width: var(--d);
     height: var(--d);
     position: relative;
@@ -644,23 +644,25 @@
   }
 
   async function initOrb(canvas) {
-    /* ---------- tuning ---------- */
-    const N_CANDIDATES = 32000;   // doubled+ from 14k for sharper coastlines
+    /* ---------- tuning ----------
+       Dialed for Anduril-style readability: very high dot density so continents
+       are solid shapes, ocean dots visible enough to read as a sphere, land
+       dots near full-bright, and a strong fresnel halo on the silhouette. */
+    const N_CANDIDATES = 60000;   // density up from 32k → tight, solid coastlines
     const RADIUS       = 1.45;
-    const POINT_SIZE   = 0.022;   // base size; land dots get a multiplier in shader
+    const POINT_SIZE   = 0.018;   // smaller base; higher density compensates
     const ROT_SPEED_Y  = 0.0010;
     const DRAG_SENSITIVITY = 0.006;
     const STAR_COUNT   = 320;
     const MARKER_SIZE  = 0.045;
 
-    /* Brightness tiers — wide gap so continents pop against ocean.
-       Ocean dots are dim enough to read as sphere texture without competing
-       with land. Land dots are bright + slightly larger (see shader). */
-    const OCEAN_BRIGHTNESS = 0.06;
-    const LAND_BRIGHTNESS  = 0.92;
+    /* Brightness tiers. Ocean reads as a soft gray sphere; land near full
+       intensity; silhouette boosted hard so the orb has a luminous halo. */
+    const OCEAN_BRIGHTNESS = 0.20;
+    const LAND_BRIGHTNESS  = 1.00;
     const LAND_SIZE_BOOST  = 0.55;  // land dots are (1 + this) × base size
-    const RIM_POWER        = 2.4;
-    const RIM_BOOST        = 0.55;
+    const RIM_POWER        = 1.8;   // lower = broader silhouette band
+    const RIM_BOOST        = 0.95;  // strong silhouette halo
 
     /* Marker locations: [lat, lon, label]. Tooltip shows label on hover. */
     const MARKER_LOCATIONS = [
