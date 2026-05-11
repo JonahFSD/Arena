@@ -60,14 +60,14 @@ export default function PlatformLayout({
                 <Sidebar isAdmin={true} />
               </div>
               <PlatformMainPadding>
-                <div className="relative z-10">
+                <div className="relative z-10 pt-14 lg:pt-0">
                   <TopBar />
-                  <main className="p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
+                  <main className="p-4 md:p-6 lg:p-8">
                     {children}
                   </main>
                 </div>
               </PlatformMainPadding>
-              <MobileNav />
+              <MobileNav isAdmin={true} />
             </div>
           </SidebarProvider>
         </CommunityMembersFiltersWrapper>
@@ -112,16 +112,17 @@ export default function PlatformLayout({
               <Sidebar isAdmin={isAdmin} />
             </div>
 
-            {/* Main Content — padding tracks sidebar width when collapsed */}
+            {/* Main Content — padding tracks sidebar width when collapsed.
+                pt-14 on mobile leaves room for the fixed mobile header. */}
             <PlatformMainPadding>
-              <div className="relative z-10">
+              <div className="relative z-10 pt-14 lg:pt-0">
                 <TopBar />
-                <main className="p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">{children}</main>
+                <main className="p-4 md:p-6 lg:p-8">{children}</main>
               </div>
             </PlatformMainPadding>
 
-            {/* Mobile Bottom Nav */}
-            <MobileNav />
+            {/* Mobile chrome — hamburger top header + slide-in drawer */}
+            <MobileNav isAdmin={isAdmin} />
           </div>
         </SidebarProvider>
       </CommunityMembersFiltersWrapper>
