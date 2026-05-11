@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+/* ============================================
+   ACU Youth Venture Community Platform
+   Design System - Factory.ai Typography + Gold Brand
+   Brand Color: Gold (#C49A22)
+   Font: Geist Sans / Geist Mono
+   ============================================ */
+
+@theme inline {
+  /* Brand Colors - Gold */
+  --color-brand-50: #fdf8e8;
+  --color-brand-100: #f9edc0;
+  --color-brand-200: #f3db85;
+  --color-brand-300: #e8c44d;
+  --color-brand-400: #d4ab2a;
+  --color-brand-500: #C49A22;
+  --color-brand-600: #9d7b1b;
+  --color-brand-700: #765c14;
+  --color-brand-800: #4f3d0e;
+  --color-brand-900: #271f07;
+
+  /* Neutral Scale - Factory-style pure neutrals */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-850: #1c1c1c;
+  --color-gray-900: #171717;
+  --color-gray-950: #0a0a0a;
+
+  /* Semantic Surface Colors */
+  --color-surface-primary: #050505;
+  --color-surface-secondary: #050505;
+  /* Sidebar, top bar, mobile nav — hair brighter than page bg */
+  --color-surface-chrome: #0c0c0c;
+  --color-surface-tertiary: #111111;
+  --color-surface-elevated: #171717;
+  --color-surface-overlay: #1c1c1c;
+  /* Card panels — stay just above page bg (#050505) so tiles don’t read as grey slabs */
+  --color-surface-card: #080808;
+  --color-surface-card-hover: #0d0d0d;
+
+  /* Semantic Text Colors */
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a3a3a3;
+  --color-text-tertiary: #737373;
+  --color-text-muted: #525252;
+  --color-text-brand: #C49A22;
+
+  /* Semantic Border Colors — one line color site-wide (subtle/strong match default) */
+  --color-border-default: #262626;
+  --color-border-subtle: #262626;
+  --color-border-strong: #262626;
+  --color-border-brand: #9d7b1b;
+
+  /* Status Colors */
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-error: #ef4444;
+  --color-info: #C49A22;
+
+  /* Glow Effects */
+  --color-glow-brand: rgba(196, 154, 34, 0.1);
+  --color-glow-brand-strong: rgba(196, 154, 34, 0.2);
+
+  /* Fonts - Geist (matching Factory.ai) */
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), "Fira Code", monospace;
+  /* Tron-style display (Orbitron) — THE ARENA, etc. */
+  --font-tron: var(--font-orbitron), ui-sans-serif, sans-serif;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px rgba(196, 154, 34, 0.08);
+  --shadow-glow-strong: 0 0 40px rgba(196, 154, 34, 0.15);
+
+  /*
+   * Border radius: zero site-wide — rounded-sm through rounded-4xl are square.
+   * `.rounded-full` is forced to 0 in @layer utilities below.
+   * Use `.rounded-circle` for true circles (e.g. loading spinners).
+   */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+  --radius: 0;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-slide-down: slide-down 0.2s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
+  --animate-glow-pulse: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Square corners everywhere — overrides Tailwind’s circular `rounded-full` */
+@layer utilities {
+  .rounded-full {
+    border-radius: 0 !important;
+  }
+  /* True circle (spinners, dots). `rounded-full` is intentionally square above. */
+  .rounded-circle {
+    border-radius: 9999px !important;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(0, 229, 220, 0.06); }
+  50% { box-shadow: 0 0 25px rgba(0, 229, 220, 0.12); }
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #262626 transparent;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: #050505;
+  color: #a3a3a3;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Factory-style headings: sans-serif, lighter weight, tight tracking */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #fafafa;
+  text-wrap: pretty;
+}
+
+h1 { font-weight: 400; letter-spacing: -0.03em; }
+h2 { font-weight: 400; letter-spacing: -0.025em; }
+
+/* Selection */
+::selection {
+  background: rgba(0, 229, 220, 0.25);
+  color: #fafafa;
+}
+
+/* Focus — single white ring; native fields use border in Input/Textarea/Select */
+:focus-visible {
+  outline: 1px solid #fafafa;
+  outline-offset: 0;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
+/* Light mode overrides */
+@media (prefers-color-scheme: light) {
+  .auto-theme {
+    color-scheme: light;
+  }
+}

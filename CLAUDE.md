@@ -1,0 +1,4 @@
+@AGENTS.md
+@docs/ARCHITECTURE.md
+@docs/CONVEX-MIGRATION-PLAN.md
+@docs/SEED-DATA.md
