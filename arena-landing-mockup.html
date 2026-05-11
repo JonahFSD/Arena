@@ -700,7 +700,13 @@
       positions[3*i + 2] = dz * RADIUS;
 
       const lat = Math.asin(dy);
-      const lon = Math.atan2(dz, dx);
+      /* Longitude convention: we want the +z hemisphere (facing the camera)
+         to show the western longitudes (Americas), so that east appears on
+         the observer's right and west on the left — i.e. how every world
+         map is drawn. That means lon = atan2(-z, x), not atan2(z, x). The
+         placement function latLonToVec3 below mirrors this with -sin(lon)
+         on the z component; both have to agree or dots and markers drift. */
+      const lon = Math.atan2(-dz, dx);
       const u = (lon / (2 * Math.PI)) + 0.5;
       const v = lat / Math.PI + 0.5;
       const px = earthMask.sample(u, v);
@@ -973,19 +979,19 @@
     });
   }
 
-  /* Lat/lon → unit vector on sphere. Convention matches the earth-mask sampler
-     elsewhere in this file, which reads u = atan2(z, x)/(2π) + 0.5 — i.e. lon
-     is measured around the y-axis from the +x axis toward +z. So +x is the
-     Greenwich (lon=0) ray, +z is +90°E, and the Americas (negative lon) sit on
-     the -z side. The previous version used flipped signs and shifted theta,
-     which placed US-coord markers visually onto Asia. */
+  /* Lat/lon → unit vector on sphere. Must match the earth-mask sampler above,
+     which uses lon = atan2(-z, x). That puts Greenwich at +x, the date line
+     at -x, +90°E at -z (back of orb), and -90° (Americas longitude) at +z
+     (facing the camera). End result: standard map orientation — looking at
+     the orb head-on shows the Americas with the Pacific on the left and the
+     Atlantic on the right. */
   function latLonToVec3(lat, lon) {
     const latR = lat * Math.PI / 180;
     const lonR = lon * Math.PI / 180;
     return {
-      x: Math.cos(latR) * Math.cos(lonR),
-      y: Math.sin(latR),
-      z: Math.cos(latR) * Math.sin(lonR),
+      x:  Math.cos(latR) * Math.cos(lonR),
+      y:  Math.sin(latR),
+      z: -Math.cos(latR) * Math.sin(lonR),
     };
   }
 
