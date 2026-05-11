@@ -12,14 +12,12 @@ import {
   bottomNavItems,
   mainNavItems,
 } from "@/lib/platform-nav";
-import { ChevronLeft, ChevronRight, LogOut, Swords } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 interface SidebarProps {
   isAdmin?: boolean;
 }
-
-const tronLogoClass =
-  "font-tron font-medium uppercase text-brand-500 tracking-[0.18em]";
 
 /** Same horizontal inset as nav rows (`px-3` shell + `px-3` control) so collapse chevron lines up with nav icons. */
 const shellPadX = "px-3";
@@ -101,26 +99,15 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
       >
         <Link
           href="/dashboard"
-          aria-label={collapsed ? "021 — home" : undefined}
+          aria-label="021 — home"
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium min-w-0 w-full",
-            "transition-colors duration-200",
-            "text-brand-500 hover:text-brand-400",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-chrome"
+            "flex items-center gap-3 px-3 py-2.5 rounded-xl min-w-0 w-full",
+            "transition-opacity duration-200",
+            "text-text-primary hover:opacity-75",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-primary/25 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-chrome"
           )}
         >
-          <Swords className="h-5 w-5 flex-shrink-0" aria-hidden />
-          {!collapsed && (
-            <span
-              className={cn(
-                "text-[13px] leading-none",
-                sidebarLabelClass,
-                tronLogoClass
-              )}
-            >
-              021
-            </span>
-          )}
+          <Logo variant={collapsed ? "mark" : "wordmark"} size="md" />
         </Link>
       </div>
 

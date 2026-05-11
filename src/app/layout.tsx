@@ -1,18 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Orbitron } from "next/font/google";
+import { Inter } from "next/font/google";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-});
-
-/** Tron-style display (grid / sci-fi UI) — used for THE ARENA branding + dashboard numerals */
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["300", "400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +18,10 @@ export const metadata: Metadata = {
     "A faith-driven entrepreneurship community for high school students. Submit video pitches, receive AI-powered feedback, compete for monthly prizes, and connect with like-minded young founders.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
   },
 };
 
@@ -41,10 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${orbitron.variable} dark`}
-    >
+    <html lang="en" className={`${inter.variable} dark`}>
       <body className="min-h-dvh bg-surface-primary text-text-primary antialiased">
         <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>

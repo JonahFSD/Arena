@@ -58,6 +58,33 @@
   }
 
   /* ========== TOP-RIGHT CORNER (press flex slot) ========== */
+  /* ========== BRAND SLOT (top-left wordmark) ========== */
+  .brand-slot {
+    position: fixed;
+    top: 24px;
+    left: 32px;
+    z-index: 10;
+    color: var(--cream);
+    text-decoration: none;
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    display: inline-flex;
+    align-items: baseline;
+    user-select: none;
+    transition: opacity .2s var(--ease-out);
+    animation: brandIntro 1.4s var(--ease-out) .25s backwards;
+  }
+  .brand-slot:hover { opacity: 0.78; }
+  .brand-slot__zero { font-size: 1.15em; line-height: 1; }
+  .brand-slot__trail { font-size: 1em; line-height: 1; }
+  @keyframes brandIntro {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   .corner-link {
     position: fixed;
     top: 28px; right: 32px;
@@ -627,11 +654,16 @@
     .team__grid { grid-template-columns: 1fr; gap: 36px; }
     .plaque { min-width: 0; padding: 22px 36px; }
     .corner-link { top: 18px; right: 18px; font-size: 12px; }
+    .brand-slot { top: 18px; left: 18px; font-size: 16px; }
     .page { padding: 60px 24px 160px; }
   }
 </style>
 </head>
 <body>
+
+<a class="brand-slot" href="#home" aria-label="021 home">
+  <span class="brand-slot__zero">0</span><span class="brand-slot__trail">21</span>
+</a>
 
 <a class="corner-link" href="#"><u>NY Times</u></a>
 <div class="orb-tooltip" aria-hidden="true"></div>

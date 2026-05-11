@@ -122,6 +122,23 @@
 }
 .stage > * { position: relative; z-index: 1; }
 
+/* ========== BRAND SLOT (top-left wordmark) ========== */
+.brandSlot {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+  z-index: 10;
+  color: var(--cream);
+  text-decoration: none;
+  transition: opacity .2s var(--ease-out);
+  animation: brandIntro 1.4s var(--ease-out) .25s backwards;
+}
+.brandSlot:hover { opacity: 0.78; }
+@keyframes brandIntro {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ========== CORNER LINK (reserved for press) ========== */
 .cornerLink {
   position: fixed;
@@ -528,5 +545,6 @@
   .teamGrid { gap: 36px; }
   .plaque { min-width: 0; padding: 22px 36px; }
   .cornerLink { top: 18px; right: 18px; font-size: 12px; }
+  .brandSlot { top: 18px; left: 18px; }
   .page { padding: 60px 24px 160px; }
 }

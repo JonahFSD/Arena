@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Inter, Newsreader } from "next/font/google";
 import styles from "./landing-page.module.css";
 import { initOrb } from "./orb";
 import { NominatorRequestModal } from "./nominator-request-modal";
 import { NominateSomeoneModal } from "./nominate-someone-modal";
+import { Logo } from "@/components/logo";
 
 const arenaSans = Inter({
   subsets: ["latin"],
@@ -86,6 +88,10 @@ export default function ArenaLandingPage() {
     <div
       className={`${arenaSans.variable} ${arenaSerif.variable} ${styles.root}`}
     >
+      <Link href="/" className={styles.brandSlot} aria-label="021 home">
+        <Logo size="md" />
+      </Link>
+
       <a className={styles.cornerLink} href="#" aria-hidden>
         <u>NY Times</u>
       </a>
