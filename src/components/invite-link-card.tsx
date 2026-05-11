@@ -28,7 +28,7 @@ export function InviteLinkCard({ referralCode }: { referralCode: string }) {
     <Card className="flex h-full min-h-0 flex-col">
       <CardTitle>Unique Invite Link</CardTitle>
       <CardDescription className="mt-1">
-        Invite your friends to join The Arena. Approved members you invited will earn you 500
+        Invite your friends to join 021. Approved members you invited will earn you 500
         points each.
       </CardDescription>
       <div className="relative mt-4 rounded-lg border border-border-default bg-surface-elevated">

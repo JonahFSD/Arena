@@ -54,10 +54,27 @@ export const submitApplication = mutation({
       );
     }
 
-    return await ctx.db.insert("applications", {
+    const applicationId = await ctx.db.insert("applications", {
       ...args,
       status: "pending",
     });
+
+    // If a nomination token was supplied, backfill the nominations row.
+    // Soft-fails — token is also valid as an audit hint by itself.
+    if (args.nominationToken) {
+      const nomination = await ctx.db
+        .query("nominations")
+        .withIndex("by_token", (q) => q.eq("token", args.nominationToken!))
+        .first();
+      if (nomination) {
+        await ctx.db.patch(nomination._id, {
+          status: "applied",
+          applicationId,
+        });
+      }
+    }
+
+    return applicationId;
   },
 });
 

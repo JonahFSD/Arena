@@ -414,6 +414,56 @@ export default defineSchema({
     .index("by_email", ["email"]),
 
   // ============================================
+  // NOMINATORS — approved nominators (admins or self-requested + promoted)
+  // ============================================
+  nominators: defineTable({
+    email: v.string(),
+    fullName: v.string(),
+    phone: v.optional(v.string()),
+    linkedinUrl: v.optional(v.string()),
+    companyWebsite: v.optional(v.string()),
+    status: v.union(
+      v.literal("approved"),
+      v.literal("paused"),
+      v.literal("revoked")
+    ),
+    source: v.union(
+      v.literal("admin_added"),
+      v.literal("self_request")
+    ),
+    fromRequestId: v.optional(v.id("nominatorRequests")),
+    approvedById: v.optional(v.id("users")),
+    approvedAt: v.optional(v.number()),
+  })
+    .index("by_email", ["email"])
+    .index("by_status", ["status"]),
+
+  // ============================================
+  // NOMINATIONS — a nominator nominating a specific student
+  // ============================================
+  nominations: defineTable({
+    nominatorId: v.id("nominators"),
+    nominatorEmailAtTime: v.string(),
+    nomineeFirstName: v.string(),
+    nomineeLastName: v.string(),
+    nomineeEmail: v.string(),
+    nomineePhone: v.optional(v.string()),
+    nomineeLinks: v.optional(v.array(v.string())),
+    token: v.string(),
+    status: v.union(
+      v.literal("sent"),
+      v.literal("applied"),
+      v.literal("approved"),
+      v.literal("rejected"),
+      v.literal("expired")
+    ),
+    applicationId: v.optional(v.id("applications")),
+  })
+    .index("by_token", ["token"])
+    .index("by_nominator", ["nominatorId"])
+    .index("by_nomineeEmail", ["nomineeEmail"]),
+
+  // ============================================
   // BOUNTY SUBMISSIONS
   // ============================================
   bountySubmissions: defineTable({

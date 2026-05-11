@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>The Arena</title>
+<title>021</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
@@ -169,7 +169,40 @@
   /* ========== HOME ========== */
   .home {
     flex-direction: column;
-    gap: 88px;
+    gap: 56px;
+  }
+  .hero-line {
+    font-family: var(--font-sans);
+    font-size: clamp(20px, 2.2vw, 28px);
+    font-weight: 400;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-align: center;
+    animation: heroIntro 1.2s var(--ease-out) .3s backwards;
+  }
+  @keyframes heroIntro {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .cta-button {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    background: rgba(201, 169, 97, 0.08);
+    border: 1px solid rgba(201, 169, 97, 0.45);
+    border-radius: 999px;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: background .2s var(--ease-out), border-color .2s var(--ease-out), color .2s var(--ease-out);
+    animation: plaqueIntro 1s var(--ease-out) .5s backwards;
+  }
+  .cta-button:hover {
+    background: rgba(201, 169, 97, 0.16);
+    border-color: var(--gold);
+    color: #fff;
   }
   /* ============================================================
      ORB v4 — WebGL point cloud (Three.js)
@@ -390,18 +423,28 @@
   .thesis {
     flex-direction: column;
   }
+  .thesis__lines {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
+  }
   .thesis__word {
     font-family: var(--font-sans);
     font-weight: 400;
-    font-size: clamp(56px, 8vw, 96px);
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.15;
     color: var(--cream);
     letter-spacing: -0.025em;
     margin: 0;
-    animation: wordIntro 1s var(--ease-out) .2s backwards;
+    animation: wordIntro 1.1s var(--ease-out) backwards;
   }
+  .thesis__word:nth-child(1) { animation-delay: .15s; }
+  .thesis__word:nth-child(2) { animation-delay: .45s; }
   @keyframes wordIntro {
-    from { opacity: 0; letter-spacing: 0.04em; }
-    to   { opacity: 1; letter-spacing: -0.025em; }
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ========== TEAM ========== */
@@ -423,6 +466,7 @@
   .team__member:nth-child(1) { animation-delay: .15s; }
   .team__member:nth-child(2) { animation-delay: .25s; }
   .team__member:nth-child(3) { animation-delay: .35s; }
+  .team__member:nth-child(4) { animation-delay: .45s; }
   @keyframes memberIntro {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -599,38 +643,43 @@
 
   <!-- ===================== HOME ===================== -->
   <section id="home" class="page home is-active">
+    <p class="hero-line">The Teenage Venture Studio.</p>
+
     <div class="orb">
       <canvas class="orb-canvas" aria-hidden="true"></canvas>
     </div>
 
-    <div class="plaque">
-      <div class="plaque__line">By nomination only.</div>
-      <div class="plaque__date">
-        <span class="plaque__dot"></span>
-        S1 Demo Day: TBA
-      </div>
-    </div>
+    <button type="button" class="cta-button" data-action="nominate-someone">
+      Nominate Someone
+    </button>
   </section>
 
   <!-- ===================== THESIS ===================== -->
   <section id="thesis" class="page thesis">
-    <h1 class="thesis__word">Worthy.</h1>
+    <div class="thesis__lines">
+      <h1 class="thesis__word">The future belongs to the young.</h1>
+      <h1 class="thesis__word">Underestimate them at your peril.</h1>
+    </div>
   </section>
 
   <!-- ===================== TEAM ===================== -->
   <section id="team" class="page team">
     <div class="team__grid">
       <div class="team__member">
-        <p class="team__name">Jake Oswald</p>
-        <p class="team__role">Founder</p>
+        <p class="team__name">Connor Dore</p>
+        <p class="team__role">President</p>
+      </div>
+      <div class="team__member">
+        <p class="team__name">Jonah Elliott</p>
+        <p class="team__role">Builder</p>
       </div>
       <div class="team__member">
         <p class="team__name">Braden Peays</p>
-        <p class="team__role">General Partner</p>
+        <p class="team__role">VP, Operations</p>
       </div>
       <div class="team__member">
-        <p class="team__name">Connor Doore</p>
-        <p class="team__role">General Partner</p>
+        <p class="team__name">Jake Oswald</p>
+        <p class="team__role">Advisor</p>
       </div>
     </div>
   </section>
@@ -647,7 +696,7 @@
 
 <!-- ===================== WHISPER LINK ===================== -->
 <div class="whisper">
-  <a href="#" data-action="nominate">request to nominate</a>
+  <a href="#" data-action="nominate">request to become a nominator</a>
 </div>
 
 <!-- ===================== NOMINATOR REQUEST MODAL ===================== -->
@@ -724,6 +773,12 @@
   function closeNominatorModal() { nominatorModal.classList.remove('is-open'); }
 
   document.querySelector('[data-action="nominate"]').addEventListener('click', e => {
+    e.preventDefault();
+    openNominatorModal();
+  });
+  // Sandbox: the home "Nominate Someone" CTA stubs into the same form
+  // since this mockup has no backend.
+  document.querySelector('[data-action="nominate-someone"]').addEventListener('click', e => {
     e.preventDefault();
     openNominatorModal();
   });

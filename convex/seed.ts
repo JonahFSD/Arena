@@ -1238,6 +1238,36 @@ export const insertAll = internalMutation({
 
     console.log("   ✅ Created leadership positions");
 
+    // ============================================
+    // NOMINATORS (approved nominators — demo)
+    // ============================================
+    await ctx.db.insert("nominators", {
+      email: "adam@jupiter-school.example",
+      fullName: "Adam Richardson",
+      companyWebsite: "https://jupiter-school.example",
+      status: "approved",
+      source: "admin_added",
+      approvedById: users.jake,
+      approvedAt: Date.now(),
+    });
+    await ctx.db.insert("nominators", {
+      email: "connor.precisionworks@gmail.com",
+      fullName: "Connor Dore",
+      status: "approved",
+      source: "admin_added",
+      approvedById: users.jake,
+      approvedAt: Date.now(),
+    });
+    await ctx.db.insert("nominators", {
+      email: "jonahwelliott@gmail.com",
+      fullName: "Jonah Elliott",
+      status: "approved",
+      source: "admin_added",
+      approvedById: users.jake,
+      approvedAt: Date.now(),
+    });
+    console.log("   ✅ Created 3 approved nominators");
+
     console.log("\n🎉 Seed complete! All demo data is live.");
     console.log("   View it at: https://dashboard.convex.dev/d/energetic-okapi-601");
   },
@@ -1255,6 +1285,7 @@ export const clearAll = internalMutation({
       "authRateLimits", "authRefreshTokens", "authSessions",
       "authVerificationCodes", "authVerifiers", "authAccounts",
       "ambassadorApplications", "leadershipPositions",
+      "nominations", "nominators", "nominatorRequests",
       "auditLog", "ventureStudioFlags", "bountySubmissions", "bounties",
       "notifications", "messages", "votes", "prizePools", "votingRounds",
       "aiScores", "submissionCollaborators", "submissions", "applications",

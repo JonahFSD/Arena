@@ -22,8 +22,8 @@ const orbitron = Orbitron({
 
 export const metadata: Metadata = {
   title: {
-    default: "ACU Youth Venture",
-    template: "%s | ACU Youth Venture",
+    default: "021",
+    template: "%s | 021",
   },
   description:
     "A faith-driven entrepreneurship community for high school students. Submit video pitches, receive AI-powered feedback, compete for monthly prizes, and connect with like-minded young founders.",

@@ -66,7 +66,7 @@ export default function LoginPage() {
           <Swords className="h-6 w-6 text-black" />
         </div>
         <span className="text-xl font-bold text-text-primary">
-          The Arena
+          021
         </span>
       </div>
 

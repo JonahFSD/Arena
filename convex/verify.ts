@@ -21,6 +21,9 @@ export const counts = query({
       auditLog: (await ctx.db.query("auditLog").collect()).length,
       leadershipPositions: (await ctx.db.query("leadershipPositions").collect()).length,
       ambassadorApplications: (await ctx.db.query("ambassadorApplications").collect()).length,
+      nominatorRequests: (await ctx.db.query("nominatorRequests").collect()).length,
+      nominators: (await ctx.db.query("nominators").collect()).length,
+      nominations: (await ctx.db.query("nominations").collect()).length,
     };
     return tables;
   },

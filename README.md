@@ -35,7 +35,7 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## The Arena Landing Page
+## 021 Landing Page
 
 A separate public-facing landing page lives in this repo, distinct from the
 authenticated platform UI. It exists in two parallel forms — a static HTML
@@ -47,21 +47,22 @@ sandbox for fast iteration, and a Next.js port that runs as a real route.
   root. Open it directly in a browser to iterate on the design. No build step.
   This is where new visual ideas get tried first, since edits show up on reload
   without going through Next's dev server.
-- **`src/app/(marketing)/landing-page/`** — the Next.js port. Same design,
-  ported to React + TypeScript + a CSS Module. Accessible at `/landing-page`
-  when the dev server is running. Files:
+- **`src/app/(marketing)/`** — the Next.js port, now the public root route
+  (`/`). Same design, ported to React + TypeScript + a CSS Module. Files:
   - `page.tsx` — client component, syncs the active section (Home / Thesis /
     Team) with the URL hash, loads Inter + Newsreader via `next/font`.
   - `landing-page.module.css` — all styles, scoped via CSS Module. Preserves
     the mockup's animations, gradients, and noise overlay verbatim.
   - `orb.ts` — typed Three.js setup. Exports `initOrb(canvas, tooltip)` which
     returns a disposer for `useEffect` cleanup.
+  - `nominate-someone-modal.tsx` / `nominator-request-modal.tsx` — public
+    nomination flows wired to Convex.
 
 ### Design
 
-Three sections, hash-routed: `#home` (the WebGL orb + "By nomination only"
-plaque), `#thesis` ("Worthy."), `#team` (Jake Oswald + Braden Peays + Connor
-Doore). Palette is intentionally warm cream/gold against deep near-black,
+Three sections, hash-routed: `#home` (hero line + the WebGL orb + a
+"Nominate Someone" CTA), `#thesis` (two-line statement), `#team` (the 021
+team). Palette is intentionally warm cream/gold against deep near-black,
 which is *different* from the platform's gold-on-darker UI — this is the
 public-facing front, not part of the logged-in app.
 
@@ -109,9 +110,7 @@ the change is dialed in, port the diff to `orb.ts` and/or
 `landing-page.module.css`. The two are kept structurally parallel so a port is
 mostly a copy-paste with type annotations.
 
-### Promoting to the public landing
+### Routing
 
-Right now `src/app/(marketing)/page.tsx` is the marketing route at `/`, and
-the new design lives at `/landing-page`. When the new design is ready to
-replace the existing landing, either redirect `/` to `/landing-page` or move
-the contents of `landing-page/` up one level.
+The orb landing is now the public root route (`/`). The old hardcoded
+marketing page has been removed.

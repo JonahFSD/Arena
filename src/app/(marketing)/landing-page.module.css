@@ -1,5 +1,5 @@
 /* =========================================================
-   THE ARENA — landing page (Next.js port of the static mockup)
+   021 — landing page (Next.js port of the static mockup)
    Three pages (Home / Thesis / Team) with a WebGL point-cloud
    orb on Home. Palette and motion are intentionally distinct
    from the platform's gold/dark UI — this is the public face.
@@ -175,8 +175,46 @@
 /* ========== HOME ========== */
 .home {
   flex-direction: column;
-  gap: 88px;
+  gap: 56px;
 }
+
+/* Restrained hero above the orb. */
+.heroLine {
+  font-family: var(--font-sans);
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 400;
+  color: var(--cream);
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-align: center;
+  animation: heroIntro 1.2s var(--ease-out) .3s backwards;
+}
+@keyframes heroIntro {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* "Nominate Someone" CTA below the orb. */
+.ctaButton {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--cream);
+  background: rgba(201, 169, 97, 0.08);
+  border: 1px solid rgba(201, 169, 97, 0.45);
+  border-radius: 999px;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: background .2s var(--ease-out), border-color .2s var(--ease-out), color .2s var(--ease-out);
+  animation: plaqueIntro 1s var(--ease-out) .5s backwards;
+}
+.ctaButton:hover {
+  background: rgba(201, 169, 97, 0.16);
+  border-color: var(--gold);
+  color: #fff;
+}
+
 .orb {
   --d: clamp(320px, 42vw, 480px);
   width: var(--d);
@@ -249,18 +287,28 @@
 
 /* ========== THESIS ========== */
 .thesis { flex-direction: column; }
+.thesisLines {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
 .thesisWord {
   font-family: var(--font-sans);
   font-weight: 400;
-  font-size: clamp(56px, 8vw, 96px);
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.15;
   color: var(--cream);
   letter-spacing: -0.025em;
   margin: 0;
-  animation: wordIntro 1s var(--ease-out) .2s backwards;
+  animation: wordIntro 1.1s var(--ease-out) backwards;
 }
+.thesisWord:nth-child(1) { animation-delay: .15s; }
+.thesisWord:nth-child(2) { animation-delay: .45s; }
 @keyframes wordIntro {
-  from { opacity: 0; letter-spacing: 0.04em; }
-  to   { opacity: 1; letter-spacing: -0.025em; }
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ========== TEAM ========== */
@@ -279,6 +327,7 @@
 .teamMember:nth-child(1) { animation-delay: .15s; }
 .teamMember:nth-child(2) { animation-delay: .25s; }
 .teamMember:nth-child(3) { animation-delay: .35s; }
+.teamMember:nth-child(4) { animation-delay: .45s; }
 @keyframes memberIntro {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }

@@ -101,7 +101,7 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
       >
         <Link
           href="/dashboard"
-          aria-label={collapsed ? "The Arena — home" : undefined}
+          aria-label={collapsed ? "021 — home" : undefined}
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium min-w-0 w-full",
             "transition-colors duration-200",

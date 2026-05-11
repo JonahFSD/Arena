@@ -846,7 +846,7 @@ function NominationLocked() {
           By nomination only
         </h1>
         <p className="mt-3 text-text-secondary">
-          The Arena is invite-only. Members are nominated by trusted partners
+          021 is invite-only. Members are nominated by trusted partners
           at participating schools. If you&rsquo;ve been nominated, use the
           private link your nominator sent you.
         </p>
@@ -856,7 +856,7 @@ function NominationLocked() {
           Think you should be a nominator? Request access on the landing page.
         </p>
         <Link
-          href="/landing-page#home"
+          href="/#home"
           className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg border border-border-default text-text-primary hover:bg-surface-card-hover transition-colors text-sm font-medium"
         >
           Back to landing
