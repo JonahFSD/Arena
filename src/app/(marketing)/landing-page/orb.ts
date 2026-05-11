@@ -17,7 +17,7 @@ export type MarkerLocation = readonly [lat: number, lon: number, label: string];
 export const MARKER_LOCATIONS: readonly MarkerLocation[] = [
   [26.93, -80.09, "Jupiter, FL"],
   [30.52, -87.90, "Fairhope, AL"],
-  [30.63, -97.68, "Georgetown, TX"],
+  [30.27, -97.74, "Austin, TX"],
 ];
 
 const TEX_URL =
