@@ -32,8 +32,10 @@ export default function ArenaLandingPage() {
   const [activePage, setActivePage] = useState<PageId>("home");
   const [nominatorModalOpen, setNominatorModalOpen] = useState(false);
   const [nominateModalOpen, setNominateModalOpen] = useState(false);
+  const [thesisExpanded, setThesisExpanded] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const thesisElaborationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sync = () => {
@@ -44,6 +46,32 @@ export default function ArenaLandingPage() {
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
   }, []);
+
+  // When user navigates to thesis, watch for the elaboration scrolling into
+  // view and reveal it with motion. Reset visibility on leaving thesis so the
+  // animation plays again next visit.
+  useEffect(() => {
+    if (activePage !== "thesis") {
+      setThesisExpanded(false);
+      // Reset scroll to top when entering/leaving so first view is centered.
+      window.scrollTo({ top: 0, behavior: "auto" });
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "auto" });
+    const el = thesisElaborationRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setThesisExpanded(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [activePage]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -123,11 +151,31 @@ export default function ArenaLandingPage() {
           </button>
         </section>
 
-        {/* THESIS */}
+        {/* THESIS — first view (existing two lines) + scroll-revealed elaboration */}
         <section className={pageClass("thesis")}>
-          <div className={styles.thesisLines}>
-            <h1 className={styles.thesisWord}>The future belongs to the young.</h1>
-            <h1 className={styles.thesisWord}>Underestimate them at your peril.</h1>
+          <div className={styles.thesisFirstView}>
+            <div className={styles.thesisLines}>
+              <h1 className={styles.thesisWord}>The future belongs to the young.</h1>
+              <h1 className={styles.thesisWord}>Underestimate them at your peril.</h1>
+            </div>
+            <div className={styles.thesisScrollHint} aria-hidden>
+              scroll
+            </div>
+          </div>
+          <div
+            ref={thesisElaborationRef}
+            className={`${styles.thesisElaboration} ${thesisExpanded ? styles.isThesisVisible : ""}`}
+          >
+            <p>
+              Most rooms full of teenagers are organized around what adults
+              think they should learn. This one is organized around what they
+              are already capable of doing.
+            </p>
+            <p>
+              We don&rsquo;t run a class. We don&rsquo;t hand out trophies.
+              We put the kids who are already building in the same room, give
+              them real work, and get out of the way.
+            </p>
           </div>
         </section>
 

@@ -29,7 +29,9 @@
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
+  /* Allow vertical scroll for the thesis elaboration; lock horizontal. */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .root a { color: inherit; text-decoration: none; }
@@ -302,8 +304,26 @@
   50%      { opacity: 1; transform: scale(1.15); }
 }
 
-/* ========== THESIS ========== */
-.thesis { flex-direction: column; }
+/* ========== THESIS ==========
+   First view: two thesis lines, viewport-tall, centered (existing treatment).
+   Scroll down: an elaboration paragraph fades up via IntersectionObserver. */
+.thesis {
+  flex-direction: column;
+  /* Override .page centering so first view + elaboration stack naturally */
+  align-items: stretch;
+  justify-content: flex-start;
+  /* Override .page padding so first view truly fills viewport */
+  padding: 0;
+}
+.thesisFirstView {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 32px 140px;
+}
 .thesisLines {
   display: flex;
   flex-direction: column;
@@ -326,6 +346,50 @@
 @keyframes wordIntro {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+.thesisScrollHint {
+  position: absolute;
+  bottom: 96px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  font-size: 11px;
+  color: var(--cream-faint);
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  pointer-events: none;
+  user-select: none;
+  animation: scrollHint 2.6s var(--ease-out) infinite;
+}
+@keyframes scrollHint {
+  0%, 100% { opacity: 0.35; transform: translate(-50%, 0); }
+  50%      { opacity: 0.85; transform: translate(-50%, 6px); }
+}
+
+.thesisElaboration {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 80px 32px 200px;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--cream-soft);
+  letter-spacing: -0.005em;
+
+  /* Hidden until IntersectionObserver fires `.isThesisVisible` */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .9s var(--ease-out), transform .9s var(--ease-out);
+}
+.thesisElaboration.isThesisVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.thesisElaboration p {
+  margin: 0 0 1.1em;
+}
+.thesisElaboration p:last-child {
+  margin: 0;
 }
 
 /* ========== TEAM ========== */

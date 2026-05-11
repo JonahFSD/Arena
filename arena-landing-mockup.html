@@ -446,9 +446,23 @@
     50%      { opacity: 1; transform: scale(1.15); }
   }
 
-  /* ========== THESIS ========== */
+  /* ========== THESIS ==========
+     First view: two lines, viewport-tall, centered.
+     Scroll down: an elaboration paragraph fades up via IntersectionObserver. */
   .thesis {
     flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+  }
+  .thesis__first-view {
+    position: relative;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 32px 140px;
   }
   .thesis__lines {
     display: flex;
@@ -472,6 +486,48 @@
   @keyframes wordIntro {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .thesis__scroll-hint {
+    position: absolute;
+    bottom: 96px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 11px;
+    color: var(--cream-faint);
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+    pointer-events: none;
+    user-select: none;
+    animation: scrollHint 2.6s var(--ease-out) infinite;
+  }
+  @keyframes scrollHint {
+    0%, 100% { opacity: 0.35; transform: translate(-50%, 0); }
+    50%      { opacity: 0.85; transform: translate(-50%, 6px); }
+  }
+
+  .thesis__elaboration {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 80px 32px 200px;
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--cream-soft);
+    letter-spacing: -0.005em;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .9s var(--ease-out), transform .9s var(--ease-out);
+  }
+  .thesis__elaboration.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .thesis__elaboration p {
+    margin: 0 0 1.1em;
+  }
+  .thesis__elaboration p:last-child {
+    margin: 0;
   }
 
   /* ========== TEAM ========== */
@@ -688,9 +744,16 @@
 
   <!-- ===================== THESIS ===================== -->
   <section id="thesis" class="page thesis">
-    <div class="thesis__lines">
-      <h1 class="thesis__word">The future belongs to the young.</h1>
-      <h1 class="thesis__word">Underestimate them at your peril.</h1>
+    <div class="thesis__first-view">
+      <div class="thesis__lines">
+        <h1 class="thesis__word">The future belongs to the young.</h1>
+        <h1 class="thesis__word">Underestimate them at your peril.</h1>
+      </div>
+      <div class="thesis__scroll-hint" aria-hidden="true">scroll</div>
+    </div>
+    <div class="thesis__elaboration" data-thesis-elaboration>
+      <p>Most rooms full of teenagers are organized around what adults think they should learn. This one is organized around what they are already capable of doing.</p>
+      <p>We don&rsquo;t run a class. We don&rsquo;t hand out trophies. We put the kids who are already building in the same room, give them real work, and get out of the way.</p>
     </div>
   </section>
 
@@ -778,10 +841,44 @@
   const pages = document.querySelectorAll('.page');
   const navLinks = document.querySelectorAll('.nav a');
 
+  // Thesis elaboration: fade-up when scrolled into view.
+  const thesisElaboration = document.querySelector('[data-thesis-elaboration]');
+  let thesisObserver = null;
+
+  function setupThesisObserver() {
+    if (!thesisElaboration || thesisObserver) return;
+    thesisObserver = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        thesisElaboration.classList.add('is-visible');
+        thesisObserver.disconnect();
+        thesisObserver = null;
+      }
+    }, { threshold: 0.2 });
+    thesisObserver.observe(thesisElaboration);
+  }
+
+  function teardownThesisObserver() {
+    if (thesisObserver) {
+      thesisObserver.disconnect();
+      thesisObserver = null;
+    }
+    if (thesisElaboration) thesisElaboration.classList.remove('is-visible');
+  }
+
   function activate(id) {
     const target = id || 'home';
     pages.forEach(p => p.classList.toggle('is-active', p.id === target));
     navLinks.forEach(a => a.classList.toggle('is-active', a.dataset.page === target));
+
+    // Always reset scroll on page change so first-view content is centered.
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    // Wire / unwire the thesis observer based on which page is active.
+    if (target === 'thesis') {
+      setupThesisObserver();
+    } else {
+      teardownThesisObserver();
+    }
   }
 
   function fromHash() {
