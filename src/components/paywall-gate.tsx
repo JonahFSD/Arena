@@ -58,7 +58,7 @@ export function PaywallGate({ children }: { children: React.ReactNode }) {
           <div className="p-4 rounded-2xl bg-brand-500/10 mb-5">
             <Lock className="h-8 w-8 text-brand-500" />
           </div>
-          <h2 className="text-xl font-bold text-text-primary">
+          <h2 className="text-xl font-medium text-text-primary">
             Membership Required
           </h2>
           <p className="text-sm text-text-secondary mt-2 max-w-sm">

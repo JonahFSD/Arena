@@ -73,7 +73,7 @@ export function CategorizedMultiSelectDropdown({
         >
           {categories.map((cat) => (
             <div key={cat.title} role="group" aria-label={cat.title}>
-              <div className="sticky top-0 z-30 border-b border-border-subtle bg-surface-elevated px-3 py-2 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+              <div className="sticky top-0 z-30 border-b border-border-subtle bg-surface-elevated px-3 py-2 text-[10px] font-medium uppercase tracking-wide text-text-muted">
                 {cat.title}
               </div>
               <ul className="relative z-0 py-1">

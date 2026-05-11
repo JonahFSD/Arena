@@ -100,7 +100,7 @@ export function SubmissionHero({
 
         {phase === "no_submission" ? (
           <>
-            <h2 className="mt-4 text-2xl font-bold tracking-tight text-text-primary md:text-3xl">
+            <h2 className="mt-4 text-2xl font-medium tracking-tight text-text-primary md:text-3xl">
               Your move.
             </h2>
             <p className="mt-2 max-w-xl text-sm text-text-secondary md:text-base">
@@ -109,7 +109,7 @@ export function SubmissionHero({
           </>
         ) : (
           <>
-            <h2 className="mt-4 text-2xl font-bold tracking-tight text-text-primary md:text-3xl">
+            <h2 className="mt-4 text-2xl font-medium tracking-tight text-text-primary md:text-3xl">
               {pitchTitle ?? "Untitled Pitch"}
             </h2>
             {teamName && (
@@ -132,7 +132,7 @@ export function SubmissionHero({
               <p className="text-[11px] font-medium uppercase tracking-wider text-text-tertiary">
                 Placement
               </p>
-              <p className="mt-1 font-tron text-2xl font-bold text-text-primary">
+              <p className="mt-1 font-tron text-2xl font-medium text-text-primary">
                 #{placement}
               </p>
             </div>
@@ -142,7 +142,7 @@ export function SubmissionHero({
               <p className="text-[11px] font-medium uppercase tracking-wider text-text-tertiary">
                 AI Score
               </p>
-              <p className="mt-1 font-tron text-2xl font-bold text-text-primary">
+              <p className="mt-1 font-tron text-2xl font-medium text-text-primary">
                 {aiScore}
                 <span className="text-base text-text-tertiary">/100</span>
               </p>
@@ -153,7 +153,7 @@ export function SubmissionHero({
               <p className="text-[11px] font-medium uppercase tracking-wider text-text-tertiary">
                 Community Votes
               </p>
-              <p className="mt-1 font-tron text-2xl font-bold text-text-primary">
+              <p className="mt-1 font-tron text-2xl font-medium text-text-primary">
                 {voteCount.toLocaleString()}
               </p>
             </div>

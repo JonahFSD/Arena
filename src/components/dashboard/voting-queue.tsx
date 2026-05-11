@@ -41,7 +41,7 @@ export function VotingQueue({
         </div>
         <Link
           href={href}
-          className="inline-flex items-center gap-1.5 bg-brand-500 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-black transition-colors hover:bg-brand-400"
+          className="inline-flex items-center gap-1.5 bg-brand-500 px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-black transition-colors hover:bg-brand-400"
         >
           Vote now
         </Link>
@@ -54,7 +54,7 @@ export function VotingQueue({
             href={`${href}?pitch=${item.id}`}
             className="group flex items-center gap-4 bg-surface-primary px-6 py-3 transition-colors hover:bg-surface-card-hover md:px-8"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-border-default bg-surface-elevated font-tron text-[11px] font-bold uppercase text-text-secondary">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-border-default bg-surface-elevated font-tron text-[11px] font-medium uppercase text-text-secondary">
               {item.initials ?? item.team.slice(0, 2).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">

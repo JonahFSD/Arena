@@ -90,7 +90,7 @@ export function AIFeedbackCard({
                         style={{ width: `${(d.score / 10) * 100}%` }}
                       />
                     </div>
-                    <span className="font-tron text-sm font-semibold tabular-nums text-text-primary">
+                    <span className="font-tron text-sm font-medium tabular-nums text-text-primary">
                       {d.score.toFixed(1)}
                     </span>
                   </div>

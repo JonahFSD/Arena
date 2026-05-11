@@ -200,7 +200,7 @@ export default function NewSubmissionPage() {
         {steps.map((s, i) => (
           <div key={i} className="flex items-center gap-2 flex-1">
             <div
-              className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
+              className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-medium ${
                 i <= step
                   ? "bg-brand-500 text-black"
                   : "bg-surface-elevated text-text-muted"
@@ -272,7 +272,7 @@ export default function NewSubmissionPage() {
                   className={`h-5 w-5 ${!isTeam ? "text-brand-500" : "text-text-tertiary"}`}
                 />
                 <div className="text-left">
-                  <p className={`text-sm font-semibold ${!isTeam ? "text-brand-500" : "text-text-primary"}`}>Solo</p>
+                  <p className={`text-sm font-medium ${!isTeam ? "text-brand-500" : "text-text-primary"}`}>Solo</p>
                   <p className="text-xs text-text-muted">Submit on your own</p>
                 </div>
               </button>
@@ -286,7 +286,7 @@ export default function NewSubmissionPage() {
               >
                 <Users className={`h-5 w-5 ${isTeam ? "text-brand-500" : "text-text-tertiary"}`} />
                 <div className="text-left">
-                  <p className={`text-sm font-semibold ${isTeam ? "text-brand-500" : "text-text-primary"}`}>Team</p>
+                  <p className={`text-sm font-medium ${isTeam ? "text-brand-500" : "text-text-primary"}`}>Team</p>
                   <p className="text-xs text-text-muted">Up to {MAX_TEAM} members</p>
                 </div>
               </button>
@@ -347,7 +347,7 @@ export default function NewSubmissionPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className={`text-lg font-bold ${leadSplit >= 0 ? "text-brand-500" : "text-error"}`}>{leadSplit}%</span>
+                        <span className={`text-lg font-medium ${leadSplit >= 0 ? "text-brand-500" : "text-error"}`}>{leadSplit}%</span>
                         <span className="text-xs text-text-muted">(auto)</span>
                       </div>
                     </div>
@@ -492,22 +492,22 @@ export default function NewSubmissionPage() {
                 <div className="rounded-xl border-2 border-brand-500/30 overflow-hidden">
                   <div className="bg-brand-500/10 px-4 py-3 flex items-center gap-2">
                     <Handshake className="h-4 w-4 text-brand-500" />
-                    <h4 className="text-sm font-semibold text-brand-500">Revenue Split Agreement</h4>
+                    <h4 className="text-sm font-medium text-brand-500">Revenue Split Agreement</h4>
                   </div>
                   <div className="p-4 space-y-2">
                     <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface-elevated">
                       <div className="flex items-center gap-2"><Avatar name={userName} size="sm" /><div><p className="text-sm font-medium text-text-primary">{userName}</p><Badge variant="brand" className="mt-0.5">Lead</Badge></div></div>
-                      <span className="text-lg font-bold text-brand-500">{leadSplit}%</span>
+                      <span className="text-lg font-medium text-brand-500">{leadSplit}%</span>
                     </div>
                     {teamMembers.map((member) => (
                       <div key={member.id} className="flex items-center justify-between p-2.5 rounded-lg bg-surface-elevated">
                         <div className="flex items-center gap-2"><Avatar name={member.name} size="sm" /><div><p className="text-sm font-medium text-text-primary">{member.name}</p><Badge variant={member.status === "accepted" ? "success" : "warning"} className="mt-0.5">{member.status === "accepted" ? "Accepted" : "Pending"}</Badge></div></div>
-                        <span className="text-lg font-bold text-text-primary">{member.splitPct}%</span>
+                        <span className="text-lg font-medium text-text-primary">{member.splitPct}%</span>
                       </div>
                     ))}
                     <div className="mt-3 pt-3 border-t border-border-default flex items-center justify-between">
                       <span className="text-xs text-text-muted">Total</span>
-                      <span className={`text-sm font-bold ${leadSplit + teamMembers.reduce((s, m) => s + m.splitPct, 0) === 100 ? "text-success" : "text-error"}`}>{leadSplit + teamMembers.reduce((s, m) => s + m.splitPct, 0)}%</span>
+                      <span className={`text-sm font-medium ${leadSplit + teamMembers.reduce((s, m) => s + m.splitPct, 0) === 100 ? "text-success" : "text-error"}`}>{leadSplit + teamMembers.reduce((s, m) => s + m.splitPct, 0)}%</span>
                     </div>
                   </div>
                   <div className="bg-warning/5 px-4 py-3 border-t border-warning/10">

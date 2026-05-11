@@ -111,12 +111,12 @@ function ExecutiveTeamMemberContent(props: ExecutiveLeader) {
     <div className="flex flex-row items-start gap-3 sm:gap-4">
       <Avatar src={avatarUrl ?? undefined} name={name} size="lg" className="shrink-0" />
       <div className="min-w-0 flex-1 text-left">
-        <h3 className="mb-1.5 text-base font-bold leading-snug text-text-primary">
+        <h3 className="mb-1.5 text-base font-medium leading-snug text-text-primary">
           {name}
         </h3>
         <Badge
           variant="brand"
-          className="mb-1.5 bg-brand-500/80 text-[10px] font-bold uppercase tracking-wide text-black"
+          className="mb-1.5 bg-brand-500/80 text-[10px] font-medium uppercase tracking-wide text-black"
         >
           {role}
         </Badge>
@@ -320,7 +320,7 @@ function RegionRow({
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-bold text-text-primary">{region.name}</h3>
+          <h3 className="text-sm font-medium text-text-primary">{region.name}</h3>
           {director ? (
             <p className="mt-0.5 truncate text-[10px] text-text-muted">
               {director.name}
@@ -516,12 +516,12 @@ export default function LeadershipPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-lg font-bold text-text-primary mb-4">Executive Team</h2>
+        <h2 className="text-lg font-medium text-text-primary mb-4">Executive Team</h2>
         <ExecutiveTeamGrid leaders={executives} />
       </div>
 
       <div className="pt-[25px]">
-        <h2 className="text-lg font-bold text-text-primary mb-4">Regional Directors &amp; State Ambassadors</h2>
+        <h2 className="text-lg font-medium text-text-primary mb-4">Regional Directors &amp; State Ambassadors</h2>
         <RegionalDirectorsPane
           directors={directorsByRegion}
           ambassadors={ambassadorsByState}
@@ -533,7 +533,7 @@ export default function LeadershipPage() {
         {applied ? (
           <div className="text-center py-4">
             <div className="w-16 h-16 rounded-2xl bg-success/10 flex items-center justify-center mx-auto mb-4"><CheckCircle className="h-8 w-8 text-success" /></div>
-            <p className="text-sm text-text-secondary">Your application for <span className="font-semibold text-text-primary">{applyState} Ambassador</span> has been submitted. The venture studio team will review your application and reach out during the November interview cycle.</p>
+            <p className="text-sm text-text-secondary">Your application for <span className="font-medium text-text-primary">{applyState} Ambassador</span> has been submitted. The venture studio team will review your application and reach out during the November interview cycle.</p>
             <Button variant="brand" className="mt-6" onClick={() => setApplyModalOpen(false)}>Done</Button>
           </div>
         ) : (

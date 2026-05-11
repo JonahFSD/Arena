@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
         <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
           <Zap className="h-6 w-6 text-black" />
         </div>
-        <span className="text-xl font-bold text-text-primary">
+        <span className="text-xl font-medium text-text-primary">
           ACU Youth Venture
         </span>
       </div>
@@ -102,7 +102,7 @@ export default function ForgotPasswordPage() {
         {step === "request" ? (
           <>
             <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold text-text-primary">
+              <h1 className="text-2xl font-medium text-text-primary">
                 Reset your password
               </h1>
               <p className="mt-2 text-sm text-text-secondary">
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand-500/10">
                 <ShieldCheck className="h-6 w-6 text-brand-500" />
               </div>
-              <h1 className="text-2xl font-bold text-text-primary">
+              <h1 className="text-2xl font-medium text-text-primary">
                 Check your email
               </h1>
               <p className="mt-2 text-sm text-text-secondary">

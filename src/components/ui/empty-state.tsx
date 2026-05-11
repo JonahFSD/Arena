@@ -29,7 +29,7 @@ export function EmptyState({
       <div className="p-4 rounded-2xl bg-surface-elevated text-text-tertiary mb-4">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
+      <h3 className="text-lg font-medium text-text-primary">{title}</h3>
       <p className="mt-1 text-sm text-text-secondary max-w-sm">{description}</p>
       {action && (
         <Button variant="brand" className="mt-6" onClick={action.onClick}>

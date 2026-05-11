@@ -182,12 +182,12 @@ export default function AdminBountiesPage() {
                 <div className="flex flex-col gap-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-sm font-semibold text-text-primary">
+                      <h3 className="text-sm font-medium text-text-primary">
                         {bounty.title}
                       </h3>
                       <p className="text-xs text-text-muted mt-0.5">
                         {bounty.founderName} · {bounty.founderCompany} ·{" "}
-                        <span className="font-bold text-brand-500">
+                        <span className="font-medium text-brand-500">
                           ${bounty.bountyAmount.toLocaleString()}
                         </span>{" "}
                         · Due {formatDate(bounty.dueDate)}
@@ -315,7 +315,7 @@ export default function AdminBountiesPage() {
                         </p>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm font-bold tabular-nums text-brand-500">
+                        <span className="text-sm font-medium tabular-nums text-brand-500">
                           ${bounty.bountyAmount.toLocaleString()}
                         </span>
                       </td>

@@ -101,7 +101,7 @@ export default function PayoutsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
               <div className="p-4 rounded-xl bg-surface-elevated border border-border-default text-center">
                 <p className="text-xs text-text-muted">Total Collected</p>
-                <p className="text-2xl font-bold text-text-primary mt-1">
+                <p className="text-2xl font-medium text-text-primary mt-1">
                   ${currentPool.totalCollected.toLocaleString()}
                 </p>
               </div>
@@ -109,13 +109,13 @@ export default function PayoutsPage() {
                 <p className="text-xs text-text-muted">
                   Operational Fee ({currentPool.operationalFeePct}%)
                 </p>
-                <p className="text-2xl font-bold text-error mt-1">
+                <p className="text-2xl font-medium text-error mt-1">
                   -${fee.toLocaleString()}
                 </p>
               </div>
               <div className="p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 text-center col-span-2 sm:col-span-2">
                 <p className="text-xs text-brand-400">Prize Pool</p>
-                <p className="text-2xl font-bold text-brand-500 mt-1">
+                <p className="text-2xl font-medium text-brand-500 mt-1">
                   ${currentPool.netPrize.toLocaleString()}
                 </p>
               </div>
@@ -131,11 +131,11 @@ export default function PayoutsPage() {
                 <div key={p.place} className={`p-3 rounded-xl ${p.bg} border ${p.border} text-center`}>
                   <div className="flex items-center justify-center gap-1.5 mb-1">
                     {placeIcon(p.place)}
-                    <span className={`text-xs font-bold ${p.color}`}>
+                    <span className={`text-xs font-medium ${p.color}`}>
                       {placeLabel(p.place)} Place
                     </span>
                   </div>
-                  <p className="text-lg font-bold text-text-primary">${p.amount.toLocaleString()}</p>
+                  <p className="text-lg font-medium text-text-primary">${p.amount.toLocaleString()}</p>
                   <p className="text-[10px] text-text-muted">{p.pct}% of pool</p>
                 </div>
               ))}
@@ -183,12 +183,12 @@ export default function PayoutsPage() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-text-muted" />
-                      <span className="text-sm font-semibold text-text-primary">
+                      <span className="text-sm font-medium text-text-primary">
                         {pool.monthYear}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-brand-500">
+                      <span className="text-sm font-medium text-brand-500">
                         ${pool.netPrize.toLocaleString()} pool
                       </span>
                       <Badge
@@ -228,7 +228,7 @@ export default function PayoutsPage() {
                             <p className="text-xs text-text-muted italic">TBD</p>
                           )}
                         </div>
-                        <span className="text-sm font-bold text-text-primary">
+                        <span className="text-sm font-medium text-text-primary">
                           ${p.amount.toLocaleString()}
                         </span>
                       </div>

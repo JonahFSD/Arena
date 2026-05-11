@@ -81,7 +81,7 @@ export default function ExplorePage() {
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-sm font-semibold text-text-primary truncate">
+                    <h3 className="text-sm font-medium text-text-primary truncate">
                       {sub.title}
                     </h3>
                     <Badge variant="default" className="text-[10px]">

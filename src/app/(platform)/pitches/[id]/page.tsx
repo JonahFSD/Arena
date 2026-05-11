@@ -134,7 +134,7 @@ export default function SubmissionDetailPage() {
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="space-y-2">
         <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-2xl font-bold text-text-primary">{submission.title}</h1>
+          <h1 className="text-2xl font-medium text-text-primary">{submission.title}</h1>
           <Badge variant={statusVariant(submission.status)}>{submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}</Badge>
         </div>
         <div className="flex items-center gap-4 text-sm text-text-secondary flex-wrap">
@@ -147,7 +147,7 @@ export default function SubmissionDetailPage() {
         <Card className="border-brand-500/30 bg-brand-500/5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-semibold text-text-primary">Team invitation</p>
+              <p className="text-sm font-medium text-text-primary">Team invitation</p>
               <p className="text-xs text-text-secondary mt-1">
                 Accept to join this pitch with the proposed revenue share below, or decline to pass.
               </p>
@@ -223,7 +223,7 @@ export default function SubmissionDetailPage() {
                   <div><CardTitle>AI Scoring Results</CardTitle><p className="text-xs text-text-muted mt-0.5">Rubric v2.1</p></div>
                 </div>
                 <div className="text-right">
-                  <p className="text-3xl font-bold text-brand-500">{overallScore}</p>
+                  <p className="text-3xl font-medium text-brand-500">{overallScore}</p>
                   <p className="text-xs text-text-muted">/ {maxScore}</p>
                 </div>
               </div>
@@ -236,7 +236,7 @@ export default function SubmissionDetailPage() {
                       <div className="flex-1 text-left"><p className="text-sm font-medium text-text-primary">{cat.name}</p></div>
                       <div className="flex items-center gap-3">
                         <Progress value={cat.score} max={cat.max} size="sm" className="w-20" />
-                        <span className="text-sm font-mono font-bold text-text-primary w-12 text-right">{cat.score}/{cat.max}</span>
+                        <span className="text-sm font-mono font-medium text-text-primary w-12 text-right">{cat.score}/{cat.max}</span>
                         {expandedCategory === i ? <ChevronUp className="h-4 w-4 text-text-tertiary" /> : <ChevronDown className="h-4 w-4 text-text-tertiary" />}
                       </div>
                     </button>
@@ -251,7 +251,7 @@ export default function SubmissionDetailPage() {
 
               {submission.aiScore.qualitativeFeedback && (
                 <InfoCallout padding="sm" className="mt-6">
-                  <h4 className="text-sm font-semibold text-brand-500 mb-2">Overall Assessment</h4>
+                  <h4 className="text-sm font-medium text-brand-500 mb-2">Overall Assessment</h4>
                   <p className="text-sm text-text-secondary leading-relaxed">{submission.aiScore.qualitativeFeedback}</p>
                 </InfoCallout>
               )}
@@ -278,7 +278,7 @@ export default function SubmissionDetailPage() {
             <Card>
               <div className="flex items-center gap-2 mb-4">
                 <Handshake className="h-4 w-4 text-brand-500" />
-                <h3 className="text-sm font-semibold text-text-primary">Revenue split</h3>
+                <h3 className="text-sm font-medium text-text-primary">Revenue split</h3>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3 p-2.5 rounded-lg bg-surface-elevated">
@@ -289,7 +289,7 @@ export default function SubmissionDetailPage() {
                       <Badge variant="brand" className="mt-0.5">Lead</Badge>
                     </div>
                   </div>
-                  <span className="text-lg font-bold text-brand-500 tabular-nums shrink-0">{submission.revenueSplitBreakdown.lead.pct}%</span>
+                  <span className="text-lg font-medium text-brand-500 tabular-nums shrink-0">{submission.revenueSplitBreakdown.lead.pct}%</span>
                 </div>
                 {submission.revenueSplitBreakdown.collaborators.map((c) => (
                   <div
@@ -320,7 +320,7 @@ export default function SubmissionDetailPage() {
                         </div>
                       </div>
                     </div>
-                    <span className="text-lg font-bold text-text-primary tabular-nums shrink-0">{c.pct}%</span>
+                    <span className="text-lg font-medium text-text-primary tabular-nums shrink-0">{c.pct}%</span>
                   </div>
                 ))}
               </div>
@@ -339,7 +339,7 @@ export default function SubmissionDetailPage() {
             <Card>
               <div className="flex items-center gap-2 mb-4">
                 <Users className="h-4 w-4 text-brand-500" />
-                <h3 className="text-sm font-semibold text-text-primary">Team ({teamMembers.length} member{teamMembers.length !== 1 ? "s" : ""})</h3>
+                <h3 className="text-sm font-medium text-text-primary">Team ({teamMembers.length} member{teamMembers.length !== 1 ? "s" : ""})</h3>
               </div>
               <div className="space-y-2">
                 {teamMembers.map((member, i) => (

@@ -78,7 +78,7 @@ export function StatCard({
               </p>
             )}
           </div>
-          <p className="mt-2 text-3xl font-bold text-brand-500 tracking-tight">
+          <p className="mt-2 text-3xl font-medium text-brand-500 tracking-tight">
             {value}
           </p>
           {change !== undefined && (

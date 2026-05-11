@@ -52,7 +52,7 @@ export function MissionDropBanner({
             </span>
           </div>
 
-          <h2 className="mt-4 text-2xl font-bold tracking-tight text-text-primary md:text-3xl">
+          <h2 className="mt-4 text-2xl font-medium tracking-tight text-text-primary md:text-3xl">
             {title}
           </h2>
 
@@ -63,7 +63,7 @@ export function MissionDropBanner({
           <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-text-tertiary">
             <span>{countdown}</span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="font-semibold text-text-primary">{prize}</span>
+              <span className="font-medium text-text-primary">{prize}</span>
               <span>prize pool</span>
             </span>
           </div>
@@ -72,7 +72,7 @@ export function MissionDropBanner({
         <div className="flex md:justify-end">
           <Link
             href={ctaHref}
-            className="inline-flex items-center gap-2 bg-brand-500 px-6 py-3 text-sm font-semibold text-black shadow-glow transition-all hover:bg-brand-400 hover:shadow-glow-strong active:scale-[0.97]"
+            className="inline-flex items-center gap-2 bg-brand-500 px-6 py-3 text-sm font-medium text-black shadow-glow transition-all hover:bg-brand-400 hover:shadow-glow-strong active:scale-[0.97]"
           >
             Accept Mission
             <ArrowRight className="h-4 w-4" />

@@ -19,7 +19,7 @@ interface SidebarProps {
 }
 
 const tronLogoClass =
-  "font-tron font-bold uppercase text-brand-500 tracking-[0.18em]";
+  "font-tron font-medium uppercase text-brand-500 tracking-[0.18em]";
 
 /** Same horizontal inset as nav rows (`px-3` shell + `px-3` control) so collapse chevron lines up with nav icons. */
 const shellPadX = "px-3";
@@ -51,7 +51,7 @@ function SidebarNavBadge({
   return (
     <span
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full bg-brand-500 font-semibold leading-none text-black tabular-nums",
+        "flex shrink-0 items-center justify-center rounded-full bg-brand-500 font-medium leading-none text-black tabular-nums",
         collapsed
           ? "absolute -right-1 -top-1 h-4 min-w-4 px-0.5 text-[9px]"
           : "h-5 min-w-5 px-1 text-[10px]"
@@ -152,7 +152,9 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
                     "text-text-secondary hover:text-text-primary hover:bg-surface-elevated"
                   )}
                 >
-                  <item.icon className={cn("h-5 w-5 flex-shrink-0")} />
+                  {collapsed && (
+                    <item.icon className={cn("h-5 w-5 flex-shrink-0")} />
+                  )}
                   {!collapsed && (
                     <span className={sidebarLabelClass}>{item.label}</span>
                   )}
@@ -172,12 +174,12 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
                     : "text-text-secondary hover:text-text-primary hover:bg-surface-elevated"
                 )}
               >
-                <div className="relative shrink-0">
-                  <item.icon className={cn("h-5 w-5 flex-shrink-0")} />
-                  {collapsed && (
+                {collapsed && (
+                  <div className="relative shrink-0">
+                    <item.icon className={cn("h-5 w-5 flex-shrink-0")} />
                     <SidebarNavBadge count={badge} collapsed />
-                  )}
-                </div>
+                  </div>
+                )}
                 {!collapsed && (
                   <>
                     <span className={sidebarLabelClass}>{item.label}</span>
@@ -226,7 +228,9 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
                     : "text-text-secondary hover:text-text-primary hover:bg-surface-elevated"
                 )}
               >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
+                {collapsed && (
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                )}
                 {!collapsed && (
                   <span className={sidebarLabelClass}>{item.label}</span>
                 )}
@@ -249,12 +253,12 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
                   : "text-text-secondary hover:text-text-primary hover:bg-surface-elevated"
               )}
             >
-              <div className="relative shrink-0">
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {collapsed && (
+              {collapsed && (
+                <div className="relative shrink-0">
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
                   <SidebarNavBadge count={badge} collapsed />
-                )}
-              </div>
+                </div>
+              )}
               {!collapsed && (
                 <>
                   <span className={sidebarLabelClass}>{item.label}</span>

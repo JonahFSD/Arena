@@ -6,12 +6,6 @@ import { api } from "../../../../../convex/_generated/api";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/ui/stat-card";
 import { Progress } from "@/components/ui/progress";
-import {
-  Users,
-  DollarSign,
-  Video,
-  Vote,
-} from "lucide-react";
 
 const AdminPlatformTrendsChart = dynamic(
   () =>
@@ -42,17 +36,14 @@ export default function AnalyticsPage() {
           value={stats ? String(stats.totalMembers) : "—"}
           change={stats?.currentMonthSubmissions ?? 0}
           changeLabel="submissions this month"
-          icon={<Users className="h-5 w-5" />}
         />
         <StatCard
           label="Submissions This Month"
           value={stats ? String(stats.currentMonthSubmissions) : "—"}
-          icon={<Video className="h-5 w-5" />}
         />
         <StatCard
           label="Votes Cast"
           value={stats ? String(stats.totalVotes) : "—"}
-          icon={<Vote className="h-5 w-5" />}
         />
         <StatCard
           label="Total Revenue"
@@ -61,7 +52,6 @@ export default function AnalyticsPage() {
               ? `$${stats.totalRevenue >= 1000 ? `${(stats.totalRevenue / 1000).toFixed(1)}k` : stats.totalRevenue}`
               : "—"
           }
-          icon={<DollarSign className="h-5 w-5" />}
         />
       </div>
 
@@ -112,7 +102,7 @@ export default function AnalyticsPage() {
               <span className="text-sm text-text-secondary">
                 Avg submissions per member
               </span>
-              <span className="text-sm font-bold text-text-primary">
+              <span className="text-sm font-medium text-text-primary">
                 {stats && stats.totalMembers > 0
                   ? (stats.totalSubmissions / stats.totalMembers).toFixed(2)
                   : "—"}
@@ -122,7 +112,7 @@ export default function AnalyticsPage() {
               <span className="text-sm text-text-secondary">
                 Avg AI score
               </span>
-              <span className="text-sm font-bold text-brand-500">
+              <span className="text-sm font-medium text-brand-500">
                 {stats ? stats.avgAiScore || "—" : "—"}
               </span>
             </div>
@@ -130,7 +120,7 @@ export default function AnalyticsPage() {
               <span className="text-sm text-text-secondary">
                 Total submissions
               </span>
-              <span className="text-sm font-bold text-text-primary">
+              <span className="text-sm font-medium text-text-primary">
                 {stats ? stats.totalSubmissions : "—"}
               </span>
             </div>
@@ -138,7 +128,7 @@ export default function AnalyticsPage() {
               <span className="text-sm text-text-secondary">
                 Total votes
               </span>
-              <span className="text-sm font-bold text-text-primary">
+              <span className="text-sm font-medium text-text-primary">
                 {stats ? stats.totalVotes : "—"}
               </span>
             </div>
@@ -146,7 +136,7 @@ export default function AnalyticsPage() {
               <span className="text-sm text-text-secondary">
                 Pending applications
               </span>
-              <span className="text-sm font-bold text-text-primary">
+              <span className="text-sm font-medium text-text-primary">
                 {stats ? stats.pendingApplications : "—"}
               </span>
             </div>

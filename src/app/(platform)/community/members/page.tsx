@@ -486,7 +486,7 @@ export default function MembersPage() {
                       {member.school || "-"}
                     </td>
                     <td className="px-3 py-4 text-right">
-                      <span className="text-sm font-mono font-bold text-brand-500 tabular-nums">
+                      <span className="text-sm font-mono font-medium text-brand-500 tabular-nums">
                         {member.points.toLocaleString()}
                       </span>
                     </td>

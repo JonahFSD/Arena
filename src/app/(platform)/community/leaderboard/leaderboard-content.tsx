@@ -83,7 +83,7 @@ const RANK_STAR_CLASS: Record<1 | 2 | 3, string> = {
 
 const rankIcon = (rank: number) => {
   const number = (
-    <span className="text-sm font-mono font-bold text-text-muted tabular-nums inline-block w-5 text-right">
+    <span className="text-sm font-mono font-medium text-text-muted tabular-nums inline-block w-5 text-right">
       {rank}
     </span>
   );
@@ -249,7 +249,7 @@ export function LeaderboardContent({ range }: { range: LeaderboardRangeMode }) {
                       LEADERBOARD_EDGE_PR
                     )}
                   >
-                    <span className="text-sm font-mono font-bold text-brand-500">
+                    <span className="text-sm font-mono font-medium text-brand-500">
                       {leader.points.toLocaleString()}
                     </span>
                   </td>
@@ -281,7 +281,7 @@ export function LeaderboardContent({ range }: { range: LeaderboardRangeMode }) {
               <span className="min-w-0 flex-1 text-sm leading-tight text-text-secondary">
                 {item.action}
               </span>
-              <span className="max-w-[min(100%,12rem)] shrink-0 text-right text-sm font-mono font-bold leading-tight text-brand-500 sm:max-w-none">
+              <span className="max-w-[min(100%,12rem)] shrink-0 text-right text-sm font-mono font-medium leading-tight text-brand-500 sm:max-w-none">
                 {item.formula ?? `+${item.points!.toLocaleString()}`}
               </span>
             </div>

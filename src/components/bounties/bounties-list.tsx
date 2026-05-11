@@ -18,7 +18,7 @@ const DEMO_BOUNTIES = [
 ];
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CircleDollarSign, Clock, Send } from "lucide-react";
+import { CircleDollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   platformPaneBleedClass,
@@ -162,7 +162,7 @@ function BountiesListInner({ mode }: { mode: "active" | "past" }) {
                       >
                         <div className="flex flex-col gap-4">
                           <div className="flex items-start justify-between gap-3">
-                            <span className="min-w-0 text-3xl font-bold tabular-nums text-brand-500 tracking-tight">
+                            <span className="min-w-0 text-4xl font-light tabular-nums text-brand-500 tracking-tight">
                               ${bounty.bountyAmount.toLocaleString()}
                             </span>
                             {bounty.status === "completed" && (
@@ -176,27 +176,25 @@ function BountiesListInner({ mode }: { mode: "active" | "past" }) {
                           </div>
 
                           <div className="flex flex-col gap-2">
-                            <h3 className="text-base font-semibold text-text-primary leading-snug line-clamp-4">
+                            <h3 className="text-base font-medium text-text-primary leading-snug line-clamp-4">
                               {bounty.title}
                             </h3>
 
                             <div className="flex flex-col gap-1.5 text-[11px] text-text-muted">
                               {showDaysLeft && (
                                 <span
-                                  className={`flex items-center gap-1.5 ${
-                                    days <= 7
-                                      ? "text-warning"
-                                      : days <= 0
-                                        ? "text-error"
+                                  className={
+                                    days <= 0
+                                      ? "text-error"
+                                      : days <= 7
+                                        ? "text-warning"
                                         : ""
-                                  }`}
+                                  }
                                 >
-                                  <Clock className="h-3 w-3 flex-shrink-0 text-brand-500" />
                                   {days > 0 ? `${days} days left` : "Overdue"}
                                 </span>
                               )}
-                              <span className="flex items-center gap-1.5">
-                                <Send className="h-3 w-3 flex-shrink-0 text-brand-500" />
+                              <span>
                                 {bounty.submissionsCount} submission
                                 {bounty.submissionsCount !== 1 ? "s" : ""}
                               </span>

@@ -1,24 +1,29 @@
 @import "tailwindcss";
 
 /* ============================================
-   ACU Youth Venture Community Platform
-   Design System - Factory.ai Typography + Gold Brand
-   Brand Color: Gold (#C49A22)
-   Font: Geist Sans / Geist Mono
+   021 / Venture Studio Platform
+   Design System — aligned to landing (HF0 cream + gold)
+   Brand Color: Gold (#C9A961)
+   Font: Inter
    ============================================ */
 
+/* 14px base — scales every Tailwind size class ~12% smaller across the platform. */
+html {
+  font-size: 14px;
+}
+
 @theme inline {
-  /* Brand Colors - Gold */
-  --color-brand-50: #fdf8e8;
-  --color-brand-100: #f9edc0;
-  --color-brand-200: #f3db85;
-  --color-brand-300: #e8c44d;
-  --color-brand-400: #d4ab2a;
-  --color-brand-500: #C49A22;
-  --color-brand-600: #9d7b1b;
-  --color-brand-700: #765c14;
-  --color-brand-800: #4f3d0e;
-  --color-brand-900: #271f07;
+  /* Brand Colors — landing gold */
+  --color-brand-50: #f5ecd0;
+  --color-brand-100: #ead9ab;
+  --color-brand-200: #dfc585;
+  --color-brand-300: #d4b16e;
+  --color-brand-400: #ceaa66;
+  --color-brand-500: #C9A961;
+  --color-brand-600: #9c834d;
+  --color-brand-700: #6f5d36;
+  --color-brand-800: #4a3e25;
+  --color-brand-900: #251f12;
 
   /* Neutral Scale - Factory-style pure neutrals */
   --color-gray-50: #fafafa;
@@ -34,52 +39,52 @@
   --color-gray-900: #171717;
   --color-gray-950: #0a0a0a;
 
-  /* Semantic Surface Colors */
-  --color-surface-primary: #050505;
-  --color-surface-secondary: #050505;
+  /* Semantic Surface Colors — landing dark warm */
+  --color-surface-primary: #0a0807;
+  --color-surface-secondary: #0a0807;
   /* Sidebar, top bar, mobile nav — hair brighter than page bg */
-  --color-surface-chrome: #0c0c0c;
-  --color-surface-tertiary: #111111;
-  --color-surface-elevated: #171717;
+  --color-surface-chrome: #0e0b09;
+  --color-surface-tertiary: #14100c;
+  --color-surface-elevated: #1a1410;
   --color-surface-overlay: #1c1c1c;
-  /* Card panels — stay just above page bg (#050505) so tiles don’t read as grey slabs */
-  --color-surface-card: #080808;
-  --color-surface-card-hover: #0d0d0d;
+  /* Card panels — stay just above page bg so tiles don't read as grey slabs */
+  --color-surface-card: #100c09;
+  --color-surface-card-hover: #14100c;
 
-  /* Semantic Text Colors */
-  --color-text-primary: #fafafa;
-  --color-text-secondary: #a3a3a3;
-  --color-text-tertiary: #737373;
-  --color-text-muted: #525252;
-  --color-text-brand: #C49A22;
+  /* Semantic Text Colors — cream scale from landing */
+  --color-text-primary: #F0E6CE;
+  --color-text-secondary: #C8BFA8;
+  --color-text-tertiary: #8a7e64;
+  --color-text-muted: #5a5142;
+  --color-text-brand: #C9A961;
 
-  /* Semantic Border Colors — one line color site-wide (subtle/strong match default) */
-  --color-border-default: #262626;
-  --color-border-subtle: #262626;
-  --color-border-strong: #262626;
-  --color-border-brand: #9d7b1b;
+  /* Semantic Border Colors — warm hairlines matching landing */
+  --color-border-default: #221d18;
+  --color-border-subtle: #181410;
+  --color-border-strong: #2c2620;
+  --color-border-brand: #9c834d;
 
   /* Status Colors */
   --color-success: #22c55e;
   --color-warning: #eab308;
   --color-error: #ef4444;
-  --color-info: #C49A22;
+  --color-info: #C9A961;
 
   /* Glow Effects */
-  --color-glow-brand: rgba(196, 154, 34, 0.1);
-  --color-glow-brand-strong: rgba(196, 154, 34, 0.2);
+  --color-glow-brand: rgba(201, 169, 97, 0.08);
+  --color-glow-brand-strong: rgba(201, 169, 97, 0.16);
 
-  /* Fonts - Geist (matching Factory.ai) */
-  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono), "Fira Code", monospace;
-  /* Tron-style display (Orbitron) — THE ARENA, etc. */
+  /* Fonts — Inter (matches landing). Mono collapses onto sans so numerals read editorial, not engineering. */
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-inter), system-ui, -apple-system, sans-serif;
+  /* Tron-style display (Orbitron) — THE ARENA, dashboard numerals, leaderboard rank */
   --font-tron: var(--font-orbitron), ui-sans-serif, sans-serif;
 
   /* Shadows */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-elevated: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(196, 154, 34, 0.08);
-  --shadow-glow-strong: 0 0 40px rgba(196, 154, 34, 0.15);
+  --shadow-glow: 0 0 20px rgba(201, 169, 97, 0.08);
+  --shadow-glow-strong: 0 0 40px rgba(201, 169, 97, 0.15);
 
   /*
    * Border radius: zero site-wide — rounded-sm through rounded-4xl are square.
@@ -136,8 +141,8 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 15px rgba(196, 154, 34, 0.06); }
-  50% { box-shadow: 0 0 25px rgba(196, 154, 34, 0.12); }
+  0%, 100% { box-shadow: 0 0 15px rgba(201, 169, 97, 0.06); }
+  50% { box-shadow: 0 0 25px rgba(201, 169, 97, 0.12); }
 }
 
 /* ============================================
@@ -146,7 +151,7 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #262626 transparent;
+  scrollbar-color: #221d18 transparent;
 }
 
 html {
@@ -154,21 +159,20 @@ html {
 }
 
 body {
-  background: #050505;
-  color: #a3a3a3;
-  font-family: var(--font-mono);
-  font-size: 14px;
+  background: #0a0807;
+  color: #C8BFA8;
+  font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Factory-style headings: sans-serif, lighter weight, tight tracking */
+/* Editorial headings: sans-serif, lighter weight, tight tracking */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans);
   font-weight: 500;
   letter-spacing: -0.02em;
-  color: #fafafa;
+  color: #F0E6CE;
   text-wrap: pretty;
 }
 
@@ -177,8 +181,8 @@ h2 { font-weight: 400; letter-spacing: -0.025em; }
 
 /* Selection */
 ::selection {
-  background: rgba(196, 154, 34, 0.25);
-  color: #fafafa;
+  background: rgba(201, 169, 97, 0.25);
+  color: #F0E6CE;
 }
 
 /* Focus — single white ring; native fields use border in Input/Textarea/Select */

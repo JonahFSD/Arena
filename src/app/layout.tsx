@@ -1,19 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Orbitron } from "next/font/google";
+import { Inter, Orbitron } from "next/font/google";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-/** Tron-style display (grid / sci-fi UI) — used for THE ARENA branding */
+/** Tron-style display (grid / sci-fi UI) — used for THE ARENA branding + dashboard numerals */
 const orbitron = Orbitron({
   variable: "--font-orbitron",
   subsets: ["latin"],
@@ -48,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} dark`}
+      className={`${inter.variable} ${orbitron.variable} dark`}
     >
       <body className="min-h-dvh bg-surface-primary text-text-primary antialiased">
         <ConvexClientProvider>{children}</ConvexClientProvider>

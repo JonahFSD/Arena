@@ -126,7 +126,7 @@ export function BountiesHeaderActions() {
         >
           Filter
           {filterLabel && (
-            <span className="ml-1.5 rounded-full bg-brand-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-brand-500">
+            <span className="ml-1.5 rounded-full bg-brand-500/15 px-1.5 py-0.5 text-[10px] font-medium text-brand-500">
               {filterLabel}
             </span>
           )}

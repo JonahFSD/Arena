@@ -123,7 +123,7 @@ export default function BountyDetailPage() {
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="space-y-2">
         <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-2xl font-bold text-text-primary">{bounty.title}</h1>
+          <h1 className="text-2xl font-medium text-text-primary">{bounty.title}</h1>
           {bounty.status === "completed" && (
             <Badge variant="success">
               <Trophy className="h-3 w-3 mr-1" />
@@ -180,7 +180,7 @@ export default function BountyDetailPage() {
 
         <div className="space-y-6">
           <Card className="flex flex-col gap-4">
-            <p className="text-3xl font-bold tabular-nums text-brand-500">
+            <p className="text-3xl font-medium tabular-nums text-brand-500">
               ${bounty.bountyAmount.toLocaleString()}
             </p>
             <ul className="flex flex-col gap-1.5 text-sm text-text-secondary border-t border-border-default pt-4">
@@ -265,7 +265,7 @@ export default function BountyDetailPage() {
                   <Avatar name={sub.user?.fullName ?? "Unknown"} size="md" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-text-primary">
+                      <p className="text-sm font-medium text-text-primary">
                         {sub.user?.fullName ?? "Unknown"}
                       </p>
                       {sub.isWinner && (

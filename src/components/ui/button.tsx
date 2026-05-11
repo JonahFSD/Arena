@@ -27,7 +27,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   danger:
     "bg-error/10 text-error border border-error/20 hover:bg-error/20 active:bg-error/30",
   brand:
-    "bg-brand-500 text-black font-semibold hover:bg-brand-400 active:bg-brand-600 shadow-glow hover:shadow-glow-strong",
+    "bg-brand-500 text-black font-medium hover:bg-brand-400 active:bg-brand-600 shadow-glow hover:shadow-glow-strong",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

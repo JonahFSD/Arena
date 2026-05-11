@@ -469,7 +469,7 @@ export default function SettingsPage() {
                         $10/month &bull; 90% goes to the monthly prize pool
                       </CardDescription>
                     </div>
-                    <p className="text-3xl font-bold text-text-primary">
+                    <p className="text-3xl font-medium text-text-primary">
                       $10
                       <span className="text-sm font-normal text-text-muted">
                         /mo

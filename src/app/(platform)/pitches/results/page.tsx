@@ -93,7 +93,7 @@ function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
               <div className="min-w-0 flex-1">
                 <div className="flex gap-4 items-start justify-between">
                   <Link href={submissionHref} className="min-w-0 flex-1 block">
-                    <p className="text-sm font-semibold text-text-primary truncate">{p.title}</p>
+                    <p className="text-sm font-medium text-text-primary truncate">{p.title}</p>
                     <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                       <span className="text-xs text-text-muted">Score: {p.score}</span>
                       <span className="text-xs text-text-muted flex items-center gap-1">
@@ -104,7 +104,7 @@ function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
                   </Link>
 
                   <Link href={submissionHref} className="text-right shrink-0 min-w-[5.5rem]">
-                    <p className={`text-lg sm:text-xl font-bold tabular-nums leading-tight ${colors.prize}`}>
+                    <p className={`text-lg sm:text-xl font-medium tabular-nums leading-tight ${colors.prize}`}>
                       ${prize.toLocaleString()}
                     </p>
                     <p className="mt-0.5 text-sm font-mono text-text-secondary tabular-nums">
@@ -141,7 +141,7 @@ function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
           <div className="min-w-0 flex-1">
             <div className="flex gap-4 items-start justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-text-primary">Most Points Earned</p>
+                <p className="text-sm font-medium text-text-primary">Most Points Earned</p>
                 <p className="text-xs text-text-muted mt-1 tabular-nums">{mostPoints.monthlyPoints.toLocaleString()} points</p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <Link
@@ -155,7 +155,7 @@ function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
               </div>
 
               <Link href={`/community/${mostPoints.userId}`} className="text-right shrink-0 min-w-[5.5rem]">
-                <p className="text-lg sm:text-xl font-bold tabular-nums leading-tight text-text-primary">
+                <p className="text-lg sm:text-xl font-medium tabular-nums leading-tight text-text-primary">
                   ${split.mostPoints.toLocaleString()}
                 </p>
                 <p className="mt-0.5 text-sm font-mono text-text-secondary tabular-nums">
@@ -309,7 +309,7 @@ export default function ResultsPage() {
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2 min-w-0">
                         <Calendar className="h-4 w-4 text-text-muted flex-shrink-0" />
-                        <span className="text-sm font-semibold text-text-primary truncate">{round.month}</span>
+                        <span className="text-sm font-medium text-text-primary truncate">{round.month}</span>
                       </div>
                     </td>
                     <td className="px-4 py-4 text-right whitespace-nowrap">

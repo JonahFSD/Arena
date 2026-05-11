@@ -78,7 +78,7 @@ export function LeaderboardWidget({
             <div className="flex min-w-0 items-center gap-4">
               <span
                 className={cn(
-                  "font-tron w-6 text-sm font-bold tabular-nums",
+                  "font-tron w-6 text-sm font-medium tabular-nums",
                   row.isMe ? "text-text-primary" : "text-text-tertiary"
                 )}
               >
@@ -103,7 +103,7 @@ export function LeaderboardWidget({
 
             <div className="flex shrink-0 items-center gap-4">
               <DeltaIndicator delta={row.delta} />
-              <span className="font-tron text-sm font-semibold tabular-nums text-text-primary">
+              <span className="font-tron text-sm font-medium tabular-nums text-text-primary">
                 {row.score.toLocaleString()}
               </span>
             </div>

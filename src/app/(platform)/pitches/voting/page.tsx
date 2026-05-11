@@ -285,7 +285,7 @@ export default function VotingPage() {
       {/* Voting Round Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-brand-500/5 to-transparent border border-solid border-border-default">
         <div>
-          <h2 className="text-lg font-bold text-text-primary">
+          <h2 className="text-lg font-medium text-text-primary">
             {roundLabel} Voting Round
           </h2>
           <div className="flex items-center gap-3 mt-1 flex-wrap">
@@ -386,7 +386,7 @@ export default function VotingPage() {
                 {/* Rank Number */}
                 <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-surface-elevated border border-border-default flex items-center justify-center">
                   <span
-                    className={`text-lg font-bold ${
+                    className={`text-lg font-medium ${
                       index === 0
                         ? "text-yellow-400"
                         : index === 1
@@ -441,11 +441,11 @@ export default function VotingPage() {
                   <div className="flex-1 p-5 min-w-0 overflow-hidden">
                     <Badge
                       variant="brand"
-                      className="text-xs bg-brand-500/80 text-black font-bold mb-2"
+                      className="text-xs bg-brand-500/80 text-black font-medium mb-2"
                     >
                       AI Score: {sub.score}
                     </Badge>
-                    <h3 className="text-base font-semibold text-text-primary truncate">
+                    <h3 className="text-base font-medium text-text-primary truncate">
                       {sub.title}
                     </h3>
                     <p className="text-sm text-text-secondary line-clamp-2 mt-1">

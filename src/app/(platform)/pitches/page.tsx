@@ -291,7 +291,7 @@ function MyPitchesPageContent() {
                       {sub.is_team_invitation && (
                         <Badge
                           variant="brand"
-                          className="text-xs gap-1 bg-brand-500 text-black font-bold"
+                          className="text-xs gap-1 bg-brand-500 text-black font-medium"
                         >
                           <Mail className="h-3 w-3" />
                           Team invitation
@@ -300,7 +300,7 @@ function MyPitchesPageContent() {
                       {sub.status === "scored" && sub.score != null && (
                         <Badge
                           variant="brand"
-                          className="text-xs bg-brand-500/80 text-black font-bold"
+                          className="text-xs bg-brand-500/80 text-black font-medium"
                         >
                           AI Score: {sub.score}
                         </Badge>
@@ -315,7 +315,7 @@ function MyPitchesPageContent() {
                         </Badge>
                       )}
                     </div>
-                    <h3 className="text-base font-semibold text-text-primary truncate">
+                    <h3 className="text-base font-medium text-text-primary truncate">
                       {sub.title}
                     </h3>
                     <p className="text-sm text-text-secondary line-clamp-2 mt-1">

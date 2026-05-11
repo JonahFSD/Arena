@@ -34,7 +34,7 @@ export function PaywallGate({ feature, children }: PaywallGateProps) {
               <Lock className="h-6 w-6 text-brand-500" />
             </div>
             <div className="space-y-1.5">
-              <h3 className="text-lg font-semibold text-text-primary">
+              <h3 className="text-lg font-medium text-text-primary">
                 Membership Required
               </h3>
               <p className="text-sm text-text-secondary">

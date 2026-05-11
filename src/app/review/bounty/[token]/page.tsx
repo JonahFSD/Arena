@@ -87,7 +87,7 @@ export default function BountyReviewPage() {
           <p className="text-xs font-medium text-brand-500 tracking-wider uppercase">
             ACU Youth Venture
           </p>
-          <h1 className="text-xl font-bold text-text-primary mt-1">
+          <h1 className="text-xl font-medium text-text-primary mt-1">
             Bounty Review
           </h1>
         </div>
@@ -98,14 +98,14 @@ export default function BountyReviewPage() {
         <div className="space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-text-primary">
+              <h2 className="text-2xl font-medium text-text-primary">
                 {bounty.title}
               </h2>
               <p className="text-sm text-text-secondary mt-1">
                 {bounty.founderName} · {bounty.founderCompany}
               </p>
             </div>
-            <span className="text-2xl font-bold tabular-nums text-brand-500 shrink-0">
+            <span className="text-2xl font-medium tabular-nums text-brand-500 shrink-0">
               ${bounty.bountyAmount.toLocaleString()}
             </span>
           </div>
@@ -124,7 +124,7 @@ export default function BountyReviewPage() {
 
           {bounty.requirements.length > 0 && (
             <div className="p-4 rounded-xl bg-surface-elevated border border-border-default">
-              <p className="text-xs font-semibold text-text-primary mb-2">
+              <p className="text-xs font-medium text-text-primary mb-2">
                 Requirements
               </p>
               <ul className="space-y-1.5">
@@ -162,7 +162,7 @@ export default function BountyReviewPage() {
 
         {/* Submissions */}
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-text-primary">
+          <h3 className="text-sm font-medium text-text-primary">
             Submissions ({bounty.submissions.length})
           </h3>
 
@@ -192,17 +192,17 @@ export default function BountyReviewPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-semibold text-text-primary">
+                          <p className="text-sm font-medium text-text-primary">
                             {sub.user?.fullName ?? "Unknown"}
                           </p>
                           {isWinner && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-success/20 text-success">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-success/20 text-success">
                               <Trophy className="h-3 w-3" />
                               Winner
                             </span>
                           )}
                           {isPicked && !isWinner && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-brand-500/20 text-brand-500">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-brand-500/20 text-brand-500">
                               <Star className="h-3 w-3" />
                               Your Pick
                             </span>

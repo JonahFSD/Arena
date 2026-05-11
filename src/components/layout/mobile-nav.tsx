@@ -34,14 +34,13 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-colors",
+                "flex items-center justify-center px-3 py-1.5 rounded-xl transition-colors",
                 isActive
                   ? "text-brand-500"
                   : "text-text-tertiary active:text-text-secondary"
               )}
             >
-              <item.icon className="h-5 w-5" />
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-xs font-medium">{item.label}</span>
             </Link>
           );
         })}

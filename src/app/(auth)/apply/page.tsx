@@ -280,7 +280,7 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
               <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-text-primary">
+          <h1 className="text-2xl font-medium text-text-primary">
             Application Submitted!
           </h1>
           <p className="mt-3 text-text-secondary max-w-md mx-auto">
@@ -296,7 +296,7 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
           <div className="mt-6 rounded-xl border border-brand-500/20 bg-brand-500/5 p-5 text-left max-w-md mx-auto">
             <div className="flex items-center gap-2 mb-2">
               <ClipboardList className="h-5 w-5 text-brand-500" />
-              <h3 className="font-semibold text-text-primary">
+              <h3 className="font-medium text-text-primary">
                 Builder&apos;s Quotient Assessment
               </h3>
             </div>
@@ -346,7 +346,7 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
         <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
           <Zap className="h-6 w-6 text-black" />
         </div>
-        <span className="text-xl font-bold text-text-primary">Apply to Join</span>
+        <span className="text-xl font-medium text-text-primary">Apply to Join</span>
       </div>
 
       <Suspense fallback={null}>
@@ -653,7 +653,7 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
           <div className="space-y-5 animate-fade-in">
             {/* About */}
             <div className="rounded-xl border border-border-default bg-surface-elevated p-4 space-y-2">
-              <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+              <h3 className="text-sm font-medium text-text-primary flex items-center gap-2">
                 <User className="h-4 w-4 text-brand-500" />
                 About
               </h3>
@@ -667,7 +667,7 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
 
             {/* Profile */}
             <div className="rounded-xl border border-border-default bg-surface-elevated p-4 space-y-2">
-              <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+              <h3 className="text-sm font-medium text-text-primary flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-brand-500" />
                 Profile
               </h3>
@@ -713,7 +713,7 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
 
             {/* Faith */}
             <div className="rounded-xl border border-border-default bg-surface-elevated p-4 space-y-2">
-              <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+              <h3 className="text-sm font-medium text-text-primary flex items-center gap-2">
                 <Heart className="h-4 w-4 text-brand-500" />
                 Faith
               </h3>
@@ -724,7 +724,7 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
 
             {/* Guardian */}
             <div className="rounded-xl border border-border-default bg-surface-elevated p-4 space-y-2">
-              <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+              <h3 className="text-sm font-medium text-text-primary flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-brand-500" />
                 Guardian
               </h3>
@@ -740,7 +740,7 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
             <div className="rounded-xl border border-brand-500/20 bg-brand-500/5 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <ClipboardList className="h-5 w-5 text-brand-500" />
-                <h3 className="font-semibold text-text-primary">
+                <h3 className="font-medium text-text-primary">
                   Builder&apos;s Quotient Assessment
                 </h3>
               </div>

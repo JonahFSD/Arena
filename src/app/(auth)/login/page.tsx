@@ -65,14 +65,14 @@ export default function LoginPage() {
         <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
           <Swords className="h-6 w-6 text-black" />
         </div>
-        <span className="text-xl font-bold text-text-primary">
+        <span className="text-xl font-medium text-text-primary">
           021
         </span>
       </div>
 
       <Card padding="lg" className="border-border-default">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-text-primary">Welcome back</h1>
+          <h1 className="text-2xl font-medium text-text-primary">Welcome back</h1>
           <p className="mt-2 text-sm text-text-secondary">
             Sign in to your account to continue
           </p>

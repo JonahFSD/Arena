@@ -122,7 +122,7 @@ export function SubTabNav({ tabs }: { tabs: SubTab[] }) {
             {tab.label}
             {tab.badge !== undefined && tab.badge > 0 && (
               <span
-                className="ml-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-sm bg-brand-500 px-1 text-[10px] font-bold leading-none text-black"
+                className="ml-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-sm bg-brand-500 px-1 text-[10px] font-medium leading-none text-black"
                 aria-hidden
               >
                 {tab.badge > 99 ? "99+" : tab.badge}

@@ -36,7 +36,7 @@ export default function MemberProfilePage() {
     return (
       <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
         <Card className="text-center py-16">
-          <p className="text-lg font-semibold text-text-primary mb-2">Member not found</p>
+          <p className="text-lg font-medium text-text-primary mb-2">Member not found</p>
           <p className="text-sm text-text-secondary">This profile doesn&apos;t exist or has been removed.</p>
         </Card>
       </div>
@@ -58,7 +58,7 @@ export default function MemberProfilePage() {
             <Avatar src={member.avatarUrl} name={member.fullName} size="xl" className="ring-4 ring-surface-card" />
             <div className="flex-1">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold text-text-primary">{member.fullName}</h1>
+                <h1 className="text-2xl font-medium text-text-primary">{member.fullName}</h1>
                 {member.lookingForCofounders && (
                   <Badge variant="brand"><Handshake className="h-3 w-3 mr-1" />Looking for co-founders</Badge>
                 )}
@@ -89,12 +89,12 @@ export default function MemberProfilePage() {
           )}
 
           <div className="grid grid-cols-5 gap-4 mt-6 pt-6 border-t border-border-default">
-            <div className="text-center"><p className="text-2xl font-bold text-text-primary">&mdash;</p><p className="text-xs text-text-muted">Pitches</p></div>
-            <div className="text-center"><p className="text-2xl font-bold text-brand-500">&mdash;</p><p className="text-xs text-text-muted">Avg Score</p></div>
-            <div className="text-center"><p className="text-2xl font-bold text-yellow-500">&mdash;</p><p className="text-xs text-text-muted">Wins</p></div>
-            <div className="text-center"><p className="text-2xl font-bold text-success">{formatCurrency(member.totalEarnings ?? 0)}</p><p className="text-xs text-text-muted">Earned</p></div>
+            <div className="text-center"><p className="text-2xl font-medium text-text-primary">&mdash;</p><p className="text-xs text-text-muted">Pitches</p></div>
+            <div className="text-center"><p className="text-2xl font-medium text-brand-500">&mdash;</p><p className="text-xs text-text-muted">Avg Score</p></div>
+            <div className="text-center"><p className="text-2xl font-medium text-yellow-500">&mdash;</p><p className="text-xs text-text-muted">Wins</p></div>
+            <div className="text-center"><p className="text-2xl font-medium text-success">{formatCurrency(member.totalEarnings ?? 0)}</p><p className="text-xs text-text-muted">Earned</p></div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-brand-500">{member.networkCount ?? 0}</p>
+              <p className="text-2xl font-medium text-brand-500">{member.networkCount ?? 0}</p>
               <p className="text-xs text-text-muted flex items-center justify-center gap-1"><Network className="h-3 w-3" />Network</p>
             </div>
           </div>

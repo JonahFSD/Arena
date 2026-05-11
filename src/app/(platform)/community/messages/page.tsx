@@ -296,7 +296,7 @@ function MessagesPageInner() {
                           </p>
                         </div>
                         {thread.unreadCount > 0 && (
-                          <span className="flex-shrink-0 w-5 h-5 rounded-full bg-brand-500 text-black text-[10px] font-bold flex items-center justify-center">
+                          <span className="flex-shrink-0 w-5 h-5 rounded-full bg-brand-500 text-black text-[10px] font-medium flex items-center justify-center">
                             {thread.unreadCount}
                           </span>
                         )}
@@ -377,7 +377,7 @@ function MessagesPageInner() {
                     size="sm"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-text-primary">
+                    <p className="text-sm font-medium text-text-primary">
                       {paneUser.fullName ?? "Unknown"}
                     </p>
                     <p className="text-xs text-text-muted">

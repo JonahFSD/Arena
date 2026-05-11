@@ -154,7 +154,7 @@ export function MessagesHeaderActions() {
         >
           Filter
           {filterLabel && (
-            <span className="ml-1.5 max-w-[7rem] truncate rounded-full bg-brand-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-brand-500">
+            <span className="ml-1.5 max-w-[7rem] truncate rounded-full bg-brand-500/15 px-1.5 py-0.5 text-[10px] font-medium text-brand-500">
               {filterLabel}
             </span>
           )}
@@ -165,7 +165,7 @@ export function MessagesHeaderActions() {
             role="dialog"
             aria-label="Message filters"
           >
-            <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+            <p className="px-3 pb-1 text-[10px] font-medium uppercase tracking-wide text-text-muted">
               Sort by
             </p>
             <ul className="max-h-[40vh] overflow-y-auto py-0.5" role="listbox">
@@ -195,7 +195,7 @@ export function MessagesHeaderActions() {
               ))}
             </ul>
             <div className="my-2 h-px bg-border-default" />
-            <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+            <p className="px-3 pb-1 text-[10px] font-medium uppercase tracking-wide text-text-muted">
               Show only
             </p>
             <div className="flex flex-col gap-0.5 px-2 pb-1">
