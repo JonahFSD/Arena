@@ -102,7 +102,7 @@ function ageFromBirthdate(birthdate: string): number {
   return age;
 }
 
-export default function ApplyPage() {
+function ApplyForm({ nominationToken }: { nominationToken: string }) {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -243,6 +243,7 @@ export default function ApplyPage() {
         parentEmail: parentEmail.trim(),
         parentPhone: parentPhone.trim(),
         referralCode,
+        nominationToken,
         phone: phone || undefined,
         city: city || undefined,
         state: state || undefined,
@@ -820,6 +821,66 @@ export default function ApplyPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+// ---------- Nomination gate ----------
+// /apply is invite-only. A nominator (e.g. an Adam-Richardson-type school
+// partner) sends the kid a link like /apply?n=TOKEN. The token is opaque in
+// v1 — just stored on the application for audit. No /apply?n=… means no form.
+function ApplyGate() {
+  const params = useSearchParams();
+  const token = params.get("n")?.trim();
+  if (token) return <ApplyForm nominationToken={token} />;
+  return <NominationLocked />;
+}
+
+function NominationLocked() {
+  return (
+    <div className="w-full max-w-md mx-auto">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-brand-500/10 border border-brand-500/30 mb-4">
+          <Lock className="w-6 h-6 text-brand-500" />
+        </div>
+        <h1 className="text-2xl font-semibold text-text-primary">
+          By nomination only
+        </h1>
+        <p className="mt-3 text-text-secondary">
+          The Arena is invite-only. Members are nominated by trusted partners
+          at participating schools. If you&rsquo;ve been nominated, use the
+          private link your nominator sent you.
+        </p>
+      </div>
+      <Card className="p-6 text-center">
+        <p className="text-sm text-text-secondary">
+          Think you should be a nominator? Request access on the landing page.
+        </p>
+        <Link
+          href="/landing-page#home"
+          className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg border border-border-default text-text-primary hover:bg-surface-card-hover transition-colors text-sm font-medium"
+        >
+          Back to landing
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      </Card>
+      <p className="mt-6 text-center text-sm text-text-secondary">
+        Already a member?{" "}
+        <Link
+          href="/login"
+          className="text-brand-500 hover:text-brand-400 font-medium transition-colors"
+        >
+          Sign in
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+export default function ApplyPage() {
+  return (
+    <Suspense fallback={null}>
+      <ApplyGate />
+    </Suspense>
   );
 }
 

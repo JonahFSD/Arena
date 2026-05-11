@@ -330,6 +330,150 @@
 }
 .whisper a:hover { color: var(--cream-muted); }
 
+/* ========== NOMINATOR REQUEST MODAL ========== */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(5, 4, 3, 0.78);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: modalFade .25s var(--ease-out);
+}
+@keyframes modalFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modalCard {
+  background: #0e0b09;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  animation: modalRise .35s var(--ease-out);
+}
+@keyframes modalRise {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modalTitle {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--cream);
+  letter-spacing: -0.015em;
+  margin: 0 0 6px;
+}
+.modalSubtitle {
+  font-size: 13px;
+  color: var(--cream-muted);
+  line-height: 1.55;
+  margin: 0 0 22px;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.modalField > span {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--cream-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.modalField input,
+.modalField textarea {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 11px;
+  transition: border-color .15s var(--ease-out), background .15s var(--ease-out);
+  resize: vertical;
+}
+.modalField input::placeholder,
+.modalField textarea::placeholder {
+  color: var(--cream-faint);
+}
+.modalField input:focus,
+.modalField textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.modalError {
+  font-size: 12px;
+  color: var(--red);
+  margin: -4px 0 0;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modalPrimary,
+.modalSecondary {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .15s var(--ease-out);
+  letter-spacing: -0.005em;
+}
+.modalPrimary {
+  background: var(--gold);
+  color: #1a1410;
+  border: 1px solid var(--gold);
+}
+.modalPrimary:hover:not(:disabled) {
+  background: #d6b66f;
+  border-color: #d6b66f;
+}
+.modalPrimary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.modalSecondary {
+  background: transparent;
+  color: var(--cream-soft);
+  border: 1px solid var(--border);
+}
+.modalSecondary:hover:not(:disabled) {
+  color: var(--cream);
+  border-color: var(--cream-faint);
+}
+.modalSecondary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.modalSuccess {
+  text-align: center;
+  padding: 12px 0 4px;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 720px) {
   .teamGrid { gap: 36px; }

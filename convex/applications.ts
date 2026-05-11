@@ -20,6 +20,8 @@ export const submitApplication = mutation({
     parentEmail: v.string(),
     parentPhone: v.string(),
     referralCode: v.optional(v.string()),
+    /** v1: an opaque string passed via /apply?n=TOKEN. Stored for audit only. */
+    nominationToken: v.optional(v.string()),
     // Profile fields
     phone: v.optional(v.string()),
     city: v.optional(v.string()),

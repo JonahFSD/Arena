@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Inter, Newsreader } from "next/font/google";
 import styles from "./landing-page.module.css";
 import { initOrb } from "./orb";
+import { NominatorRequestModal } from "./nominator-request-modal";
 
 /* Fonts scoped to this route only — the rest of the app uses Geist/Orbitron.
    `variable` exposes them as CSS variables, consumed by landing-page.module.css. */
@@ -28,6 +29,7 @@ function isPageId(id: string): id is PageId {
 
 export default function ArenaLandingPage() {
   const [activePage, setActivePage] = useState<PageId>("home");
+  const [nominatorModalOpen, setNominatorModalOpen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
@@ -154,13 +156,17 @@ export default function ArenaLandingPage() {
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            // TODO: route to nominator request flow
-            console.log("nominator request flow → TBD");
+            setNominatorModalOpen(true);
           }}
         >
           request to nominate
         </a>
       </div>
+
+      <NominatorRequestModal
+        isOpen={nominatorModalOpen}
+        onClose={() => setNominatorModalOpen(false)}
+      />
     </div>
   );
 }
