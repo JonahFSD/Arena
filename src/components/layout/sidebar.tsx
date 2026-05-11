@@ -118,7 +118,7 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
                 tronLogoClass
               )}
             >
-              THE ARENA
+              021
             </span>
           )}
         </Link>
