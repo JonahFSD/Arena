@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
@@ -36,6 +36,14 @@ const MOCK_PAYMENT_HISTORY = [
 ];
 
 export default function SettingsSubscriptionPage() {
+  return (
+    <Suspense fallback={null}>
+      <SettingsSubscriptionPageInner />
+    </Suspense>
+  );
+}
+
+function SettingsSubscriptionPageInner() {
   const membership = useQuery(api.memberships.getMyMembership);
   const searchParams = useSearchParams();
   const [coupon, setCoupon] = useState("");
