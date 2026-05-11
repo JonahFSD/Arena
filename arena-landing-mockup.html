@@ -645,24 +645,29 @@
 
   async function initOrb(canvas) {
     /* ---------- tuning ----------
-       Dialed for Anduril-style readability: very high dot density so continents
-       are solid shapes, ocean dots visible enough to read as a sphere, land
-       dots near full-bright, and a strong fresnel halo on the silhouette. */
-    const N_CANDIDATES = 60000;   // density up from 32k → tight, solid coastlines
+       Anduril-style approach: soft glow dots + additive blending. Each dot
+       is a tiny gaussian-ish point of light; overlapping dots accumulate
+       brightness in the framebuffer, which (a) fills the inter-dot space on
+       land so continents read as solid luminous shapes, and (b) makes the
+       silhouette accumulate to a bright halo "for free" because of how many
+       surface dots project to the edge pixels under spherical projection.
+       Per-dot brightness is intentionally MODEST — accumulation does the
+       heavy lifting. */
+    const N_CANDIDATES = 60000;
     const RADIUS       = 1.45;
-    const POINT_SIZE   = 0.018;   // smaller base; higher density compensates
+    const POINT_SIZE   = 0.026;   // soft dots need more pixels to glow through
     const ROT_SPEED_Y  = 0.0010;
     const DRAG_SENSITIVITY = 0.006;
     const STAR_COUNT   = 320;
     const MARKER_SIZE  = 0.045;
 
-    /* Brightness tiers. Ocean reads as a soft gray sphere; land near full
-       intensity; silhouette boosted hard so the orb has a luminous halo. */
-    const OCEAN_BRIGHTNESS = 0.20;
-    const LAND_BRIGHTNESS  = 1.00;
-    const LAND_SIZE_BOOST  = 0.55;  // land dots are (1 + this) × base size
-    const RIM_POWER        = 1.8;   // lower = broader silhouette band
-    const RIM_BOOST        = 0.95;  // strong silhouette halo
+    /* With additive blending, framebuffer values clip at 1.0 — so set per-dot
+       brightness lower than you'd expect and let overlap saturate to white. */
+    const OCEAN_BRIGHTNESS = 0.16;
+    const LAND_BRIGHTNESS  = 0.70;
+    const LAND_SIZE_BOOST  = 0.55;
+    const RIM_POWER        = 1.6;
+    const RIM_BOOST        = 0.55;
 
     /* Marker locations: [lat, lon, label]. Tooltip shows label on hover. */
     const MARKER_LOCATIONS = [
@@ -724,7 +729,7 @@
        The fresnel boost is what creates Anduril's signature silhouette halo.  */
     const dotsMat = new THREE.ShaderMaterial({
       uniforms: {
-        uMap:             { value: makeCircleTexture() },
+        uMap:             { value: makeSoftDotTexture() },
         uPointSize:       { value: POINT_SIZE },
         uPixelRatio:      { value: Math.min(window.devicePixelRatio, 2) },
         uOceanBrightness: { value: OCEAN_BRIGHTNESS },
@@ -781,13 +786,16 @@
           /* Skip back-facing particles entirely (vertex shader sets vBrightness≈0) */
           if (vBrightness < 0.01) discard;
           vec4 tex = texture2D(uMap, gl_PointCoord);
-          if (tex.a < 0.05) discard;
-          gl_FragColor = vec4(uColor * vBrightness, tex.a);
+          if (tex.a < 0.01) discard;
+          /* Additive blending: emit RGB scaled by alpha, alpha=1. Overlapping
+             dots accumulate brightness, soft edges feather into background. */
+          vec3 col = uColor * vBrightness * tex.a;
+          gl_FragColor = vec4(col, 1.0);
         }
       `,
       transparent: true,
       depthWrite: false,
-      blending: THREE.NormalBlending,
+      blending: THREE.AdditiveBlending,
     });
 
     const dots = new THREE.Points(dotsGeom, dotsMat);
@@ -994,9 +1002,31 @@
     };
   }
 
-  /* Crisp circular dot texture — solid center, sharp edge, slight feather to
-     antialias. Sharper than a soft glow because Anduril's dots read as crisp,
-     not bloomy. The fresnel rim does the glow work in the shader instead. */
+  /* Soft gaussian-ish dot texture for the main orb particles. No solid core
+     — alpha falls off smoothly from center to edge. Paired with additive
+     blending, neighbouring dot halos overlap and fill in the inter-dot space
+     so continents read as continuous luminous shapes rather than dot patterns. */
+  function makeSoftDotTexture() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0.00, 'rgba(255,255,255,1.00)');
+    g.addColorStop(0.18, 'rgba(255,255,255,0.78)');
+    g.addColorStop(0.40, 'rgba(255,255,255,0.36)');
+    g.addColorStop(0.70, 'rgba(255,255,255,0.08)');
+    g.addColorStop(1.00, 'rgba(255,255,255,0.00)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    const tex = new THREE.CanvasTexture(c);
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+    return tex;
+  }
+
+  /* Crisp circular dot texture — solid center, sharp edge. Used for the gold
+     location markers so they read as distinct pins, not glow blobs. */
   function makeCircleTexture() {
     const c = document.createElement('canvas');
     c.width = c.height = 64;
