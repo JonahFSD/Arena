@@ -12,7 +12,7 @@ import {
   bottomNavItems,
   mainNavItems,
 } from "@/lib/platform-nav";
-import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 interface SidebarProps {
@@ -90,25 +90,43 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
         sidebarRailClass(collapsed)
       )}
     >
-      {/* Logo — same row pattern as nav: icon + label; collapsed shows icon only */}
+      {/* Header — wordmark + hamburger toggle. When collapsed, only the
+          hamburger renders (centered) so the narrow rail stays uncluttered. */}
       <div
         className={cn(
           "h-16 flex items-center border-b border-border-subtle",
-          shellPadX
+          shellPadX,
+          collapsed ? "justify-center" : "justify-between gap-2"
         )}
       >
-        <Link
-          href="/dashboard"
-          aria-label="021 — home"
+        {!collapsed && (
+          <Link
+            href="/dashboard"
+            aria-label="021 — home"
+            className={cn(
+              "flex items-center px-3 py-2.5 rounded-xl min-w-0",
+              "transition-opacity duration-200",
+              "text-text-primary hover:opacity-75",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-primary/25 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-chrome"
+            )}
+          >
+            <Logo variant="wordmark" size="md" />
+          </Link>
+        )}
+        <button
+          type="button"
+          onClick={() => setCollapsed(!collapsed)}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-xl min-w-0 w-full",
-            "transition-opacity duration-200",
-            "text-text-primary hover:opacity-75",
+            "flex items-center justify-center rounded-lg p-2 text-text-tertiary",
+            "transition-colors duration-200",
+            "hover:bg-surface-elevated hover:text-text-secondary",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-primary/25 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-chrome"
           )}
         >
-          <Logo variant={collapsed ? "mark" : "wordmark"} size="md" />
-        </Link>
+          <Menu className="h-5 w-5" />
+        </button>
       </div>
 
       {/* Main nav + collapse under tabs; spacer keeps bottom section at viewport bottom */}
@@ -177,22 +195,6 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
             );
           })}
         </nav>
-
-        <div className={cn("shrink-0 pb-1 pt-1", shellPadX)}>
-          <button
-            type="button"
-            onClick={() => setCollapsed(!collapsed)}
-            aria-expanded={!collapsed}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-text-tertiary transition-all duration-200 hover:bg-surface-elevated hover:text-text-secondary"
-          >
-            {collapsed ? (
-              <ChevronRight className="h-5 w-5 flex-shrink-0" />
-            ) : (
-              <ChevronLeft className="h-5 w-5 flex-shrink-0" />
-            )}
-          </button>
-        </div>
 
         <div className="min-h-0 flex-1" aria-hidden />
       </div>
