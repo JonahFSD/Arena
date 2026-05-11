@@ -163,9 +163,9 @@ export default function ApplicationsPage() {
                     </div>
 
                     {/* Preview sections */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                      <div className="p-3 rounded-lg bg-surface-elevated">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-text-muted mb-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3 mt-4">
+                      <div>
+                        <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-text-muted mb-1">
                           <Heart className="h-3 w-3" />
                           Faith
                         </div>
@@ -173,8 +173,8 @@ export default function ApplicationsPage() {
                           {app.faithStatement}
                         </p>
                       </div>
-                      <div className="p-3 rounded-lg bg-surface-elevated">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-text-muted mb-1">
+                      <div>
+                        <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-text-muted mb-1">
                           <Lightbulb className="h-3 w-3" />
                           Venture
                         </div>
@@ -182,8 +182,8 @@ export default function ApplicationsPage() {
                           {app.entrepreneurshipInterest}
                         </p>
                       </div>
-                      <div className="p-3 rounded-lg bg-surface-elevated">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-text-muted mb-1">
+                      <div>
+                        <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-text-muted mb-1">
                           <Lightbulb className="h-3 w-3" />
                           AI Interest
                         </div>

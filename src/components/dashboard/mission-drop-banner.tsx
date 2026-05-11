@@ -38,10 +38,10 @@ export function MissionDropBanner({
         className
       )}
     >
-      {/* Subtle gold blur radial — kept very faint as the one ambient brand cue */}
+      {/* Faint cream wash — ambient warmth without gold accent */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-circle bg-brand-500/[0.03] blur-[100px]"
+        className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-circle bg-text-primary/[0.02] blur-[100px]"
       />
 
       <div className="relative grid grid-cols-1 gap-6 p-6 md:grid-cols-[1fr_auto] md:items-center md:gap-8 md:p-8">
@@ -72,7 +72,7 @@ export function MissionDropBanner({
         <div className="flex md:justify-end">
           <Link
             href={ctaHref}
-            className="inline-flex items-center gap-2 bg-brand-500 px-6 py-3 text-sm font-medium text-black shadow-glow transition-all hover:bg-brand-400 hover:shadow-glow-strong active:scale-[0.97]"
+            className="inline-flex items-center gap-2 border border-text-secondary bg-transparent px-6 py-3 text-sm font-medium text-text-primary transition-all hover:bg-surface-elevated hover:border-text-primary active:scale-[0.97]"
           >
             Accept Mission
             <ArrowRight className="h-4 w-4" />

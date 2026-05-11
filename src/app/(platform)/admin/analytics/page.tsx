@@ -5,7 +5,6 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/ui/stat-card";
-import { Progress } from "@/components/ui/progress";
 
 const AdminPlatformTrendsChart = dynamic(
   () =>
@@ -32,20 +31,24 @@ export default function AnalyticsPage() {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
+          className="bg-transparent"
           label="Total Members"
           value={stats ? String(stats.totalMembers) : "—"}
           change={stats?.currentMonthSubmissions ?? 0}
           changeLabel="submissions this month"
         />
         <StatCard
+          className="bg-transparent"
           label="Submissions This Month"
           value={stats ? String(stats.currentMonthSubmissions) : "—"}
         />
         <StatCard
+          className="bg-transparent"
           label="Votes Cast"
           value={stats ? String(stats.totalVotes) : "—"}
         />
         <StatCard
+          className="bg-transparent"
           label="Total Revenue"
           value={
             stats
@@ -67,22 +70,41 @@ export default function AnalyticsPage() {
             <CardTitle>Member Growth</CardTitle>
           </CardHeader>
           <div className="space-y-4 mt-2">
-            {monthlyData.map((data) => (
-              <div key={data.monthKey} className="flex items-center gap-4">
-                <span className="text-xs text-text-muted w-8">
-                  {data.label}
-                </span>
-                <Progress
-                  value={data.members}
-                  max={Math.max(250, ...monthlyData.map((d) => d.members))}
-                  size="sm"
-                  className="flex-1"
-                />
-                <span className="text-xs font-mono text-text-secondary w-8 text-right">
-                  {data.members}
-                </span>
-              </div>
-            ))}
+            {(() => {
+              const scaleMax = Math.max(
+                250,
+                ...monthlyData.map((d) => d.members)
+              );
+              const latestKey = monthlyData[monthlyData.length - 1]?.monthKey;
+              return monthlyData.map((data) => {
+                const pct = Math.min(
+                  100,
+                  Math.max(0, (data.members / scaleMax) * 100)
+                );
+                const isCurrent = data.monthKey === latestKey;
+                return (
+                  <div
+                    key={data.monthKey}
+                    className="flex items-center gap-4"
+                  >
+                    <span className="text-xs text-text-muted w-8">
+                      {data.label}
+                    </span>
+                    <div className="flex-1 h-1.5 bg-surface-elevated overflow-hidden">
+                      <div
+                        className={
+                          isCurrent ? "h-full bg-text-primary" : "h-full bg-text-secondary"
+                        }
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-mono text-text-secondary w-8 text-right">
+                      {data.members}
+                    </span>
+                  </div>
+                );
+              });
+            })()}
           </div>
           <div className="mt-4 p-3 rounded-lg bg-surface-elevated border border-border-default">
             <p className="text-xs text-text-secondary">

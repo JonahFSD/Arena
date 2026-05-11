@@ -16,10 +16,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  // Primary: restrained outlined-cream — matches the landing's CTA aesthetic
-  // (transparent bg, cream-faint border, cream text). Hover fills slightly.
+  // Outlined-cream — matches the landing's CTA aesthetic (transparent bg,
+  // cream border, cream text). Hover fills slightly + brightens border.
   primary:
-    "bg-transparent text-text-primary border border-text-muted hover:bg-surface-elevated hover:text-white hover:border-text-tertiary active:bg-surface-overlay",
+    "bg-transparent text-text-primary border border-text-secondary hover:bg-surface-elevated hover:border-text-primary active:bg-surface-overlay",
   secondary:
     "bg-surface-elevated text-text-primary border border-border-default hover:bg-surface-overlay active:bg-gray-700",
   ghost:
@@ -28,8 +28,10 @@ const variantStyles: Record<ButtonVariant, string> = {
     "border border-border-default text-text-primary hover:bg-surface-elevated active:bg-surface-overlay",
   danger:
     "bg-error/10 text-error border border-error/20 hover:bg-error/20 active:bg-error/30",
+  // `brand` is a legacy alias — renders identically to `primary` so the dozens
+  // of variant="brand" callsites retreat without touching each one.
   brand:
-    "bg-brand-500 text-black font-medium hover:bg-brand-400 active:bg-brand-600 shadow-glow hover:shadow-glow-strong",
+    "bg-transparent text-text-primary border border-text-secondary hover:bg-surface-elevated hover:border-text-primary active:bg-surface-overlay",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

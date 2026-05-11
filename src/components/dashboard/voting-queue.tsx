@@ -41,7 +41,7 @@ export function VotingQueue({
         </div>
         <Link
           href={href}
-          className="inline-flex items-center gap-1.5 bg-brand-500 px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-black transition-colors hover:bg-brand-400"
+          className="inline-flex items-center gap-1.5 border border-text-secondary bg-transparent px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-text-primary transition-colors hover:bg-surface-elevated hover:border-text-primary"
         >
           Vote now
         </Link>

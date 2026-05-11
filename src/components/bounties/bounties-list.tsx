@@ -16,22 +16,9 @@ const DEMO_BOUNTIES = [
   { _id: "b5", title: "Ship a Chrome extension that captures highlights", bountyAmount: 400, dueDate: Date.now() + 1000 * 60 * 60 * 24 * 14, status: "active", submissionsCount: 0 },
   { _id: "b6", title: "Old: Build the original waitlist site", bountyAmount: 300, dueDate: Date.now() - 1000 * 60 * 60 * 24 * 18, status: "completed", submissionsCount: 6 },
 ];
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CircleDollarSign } from "lucide-react";
+import { CircleDollarSign, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  platformPaneBleedClass,
-  platformPaneCellPaddingClass,
-  platformPaneGridCellFillClass,
-  platformPaneGridHangingCellBottomClass,
-  platformPaneGridPartialHairlineClass,
-  platformPaneGridPartialRowTailFillClass,
-  platformPaneGridRowFullClass,
-  platformPaneGridRowPartialClass,
-  platformPaneGridRowsStackClass,
-  platformPaneTileClass,
-} from "@/lib/platform-pane-grid";
 import {
   parseBountiesSearchFromSearch,
   parseBountiesFilterFromSearch,
@@ -41,13 +28,14 @@ import {
   type BountiesActiveFilter,
   type BountiesPastFilter,
 } from "@/lib/bounties-list-filters";
-import {
-  BOUNTIES_GRID_BREAKPOINTS,
-  chunkIntoRows,
-  isLastRowCell,
-  paneGridCellFractionStyle,
-  useResponsiveGridColumnCount,
-} from "@/lib/responsive-grid-columns";
+
+function formatDate(epochMs: number) {
+  return new Date(epochMs).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 function daysUntilDue(epochMs: number) {
   const now = Date.now();
@@ -90,12 +78,6 @@ function BountiesListInner({ mode }: { mode: "active" | "past" }) {
     [afterModeAndFilter, searchQuery]
   );
 
-  const gridCols = useResponsiveGridColumnCount(BOUNTIES_GRID_BREAKPOINTS);
-  const rows = useMemo(
-    () => chunkIntoRows(filtered, gridCols),
-    [filtered, gridCols]
-  );
-
   if (rawBounties === undefined) {
     return (
       <div className="space-y-6 animate-fade-in">
@@ -106,150 +88,105 @@ function BountiesListInner({ mode }: { mode: "active" | "past" }) {
     );
   }
 
+  if (filtered.length === 0) {
+    return (
+      <div className="animate-fade-in py-12 text-center">
+        <CircleDollarSign className="h-10 w-10 text-text-muted mx-auto mb-3" />
+        <p className="text-sm text-text-secondary">
+          {afterModeAndFilter.length > 0 && searchQuery.trim()
+            ? "No bounties match your search. Try a different keyword."
+            : mode === "active"
+              ? "No open bounties right now. Check back soon!"
+              : "No closed bounties yet."}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in w-full">
-      <div
-        className={cn("overflow-hidden rounded-none", platformPaneBleedClass)}
-      >
-        {filtered.length === 0 ? (
-          <div
-            className={cn(
-              platformPaneCellPaddingClass,
-              platformPaneGridCellFillClass,
-              "py-12 text-center"
-            )}
-          >
-            <CircleDollarSign className="h-10 w-10 text-text-muted mx-auto mb-3" />
-            <p className="text-sm text-text-secondary">
-              {afterModeAndFilter.length > 0 && searchQuery.trim()
-                ? "No bounties match your search. Try a different keyword."
-                : mode === "active"
-                  ? "No open bounties right now. Check back soon!"
-                  : "No closed bounties yet."}
-            </p>
-          </div>
-        ) : (
-          <div className={platformPaneGridRowsStackClass}>
-            {rows.map((row, rowIndex) => {
-              const isPartial = row.length < gridCols;
-              const rowKey = `${rowIndex}-${row[0]!._id}`;
+      <table className="w-full text-left">
+        <thead>
+          <tr className="border-b border-border-default">
+            <th className="px-4 py-3 text-[11px] font-medium text-text-muted uppercase tracking-wider">
+              Bounty
+            </th>
+            <th className="px-4 py-3 text-[11px] font-medium text-text-muted uppercase tracking-wider text-right">
+              Amount
+            </th>
+            <th className="px-4 py-3 text-[11px] font-medium text-text-muted uppercase tracking-wider hidden sm:table-cell">
+              {mode === "active" ? "Due" : "Closed"}
+            </th>
+            <th className="px-4 py-3 text-[11px] font-medium text-text-muted uppercase tracking-wider text-right">
+              Subs
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border-default">
+          {filtered.map((bounty) => {
+            const days = daysUntilDue(bounty.dueDate);
+            const showDaysLeft =
+              mode === "active" && bounty.status === "active";
+            const isCompleted = bounty.status === "completed";
 
-              const cells = row.map((bounty, i) => {
-                const index = rowIndex * gridCols + i;
-                const days = daysUntilDue(bounty.dueDate);
-                const showDaysLeft =
-                  mode === "active" && bounty.status === "active";
-
-                return (
-                  <div
-                    key={bounty._id}
-                    className={cn(
-                      "min-w-0 flex flex-col",
-                      platformPaneGridCellFillClass,
-                      isLastRowCell(index, filtered.length, gridCols) &&
-                        platformPaneGridHangingCellBottomClass
-                    )}
-                    style={isPartial ? paneGridCellFractionStyle(gridCols) : undefined}
+            return (
+              <tr
+                key={bounty._id}
+                className="group transition-colors hover:bg-surface-card-hover"
+              >
+                <td className="px-4 py-4 align-middle">
+                  <Link
+                    href={`/bounties/${bounty._id}`}
+                    className="block min-w-0"
                   >
-                    <Link href={`/bounties/${bounty._id}`} className="block h-full">
-                      <Card
-                        hover
-                        padding="none"
-                        className={cn(
-                          platformPaneTileClass,
-                          "flex h-full min-h-0 flex-1 flex-col overflow-hidden p-[30px]"
-                        )}
+                    <p className="text-sm font-medium text-text-primary line-clamp-1 group-hover:text-text-primary">
+                      {bounty.title}
+                    </p>
+                    {isCompleted && (
+                      <Badge
+                        variant="success"
+                        className="mt-1 text-[10px]"
                       >
-                        <div className="flex flex-col gap-4">
-                          <div className="flex items-start justify-between gap-3">
-                            <span className="min-w-0 text-5xl font-light tabular-nums text-text-primary tracking-tight">
-                              ${bounty.bountyAmount.toLocaleString()}
-                            </span>
-                            {bounty.status === "completed" && (
-                              <Badge
-                                variant="success"
-                                className="shrink-0 text-[10px]"
-                              >
-                                Completed
-                              </Badge>
-                            )}
-                          </div>
-
-                          <div className="flex flex-col gap-2">
-                            <h3 className="text-base font-medium text-text-primary leading-snug line-clamp-4">
-                              {bounty.title}
-                            </h3>
-
-                            <div className="flex flex-col gap-1.5 text-[11px] text-text-muted">
-                              {showDaysLeft && (
-                                <span
-                                  className={
-                                    days <= 0
-                                      ? "text-error"
-                                      : days <= 7
-                                        ? "text-warning"
-                                        : ""
-                                  }
-                                >
-                                  {days > 0 ? `${days} days left` : "Overdue"}
-                                </span>
-                              )}
-                              <span>
-                                {bounty.submissionsCount} submission
-                                {bounty.submissionsCount !== 1 ? "s" : ""}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    </Link>
-                  </div>
-                );
-              });
-
-              if (isPartial) {
-                return (
-                  <div key={rowKey} className={platformPaneGridRowPartialClass}>
-                    {cells.flatMap((node, i) =>
-                      i === 0
-                        ? [node]
-                        : [
-                            <div
-                              key={`${rowKey}-v-${i}`}
-                              className={platformPaneGridPartialHairlineClass}
-                              aria-hidden
-                            />,
-                            node,
-                          ]
+                        Completed
+                      </Badge>
                     )}
-                    <div
-                      key={`${rowKey}-v-end`}
-                      className={platformPaneGridPartialHairlineClass}
-                      aria-hidden
-                    />
-                    <div
-                      className={platformPaneGridPartialRowTailFillClass}
-                      aria-hidden
-                    />
-                  </div>
-                );
-              }
-
-              return (
-                <div
-                  key={rowKey}
-                  className={platformPaneGridRowFullClass}
-                  style={{
-                    gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
-                  }}
-                >
-                  {cells}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                  </Link>
+                </td>
+                <td className="px-4 py-4 align-middle text-right">
+                  <span className="text-sm tabular-nums text-text-primary">
+                    ${bounty.bountyAmount.toLocaleString()}
+                  </span>
+                </td>
+                <td className="px-4 py-4 align-middle hidden sm:table-cell">
+                  <p className="text-xs text-text-secondary">
+                    {formatDate(bounty.dueDate)}
+                  </p>
+                  {showDaysLeft && (
+                    <p
+                      className={cn(
+                        "text-[11px] mt-0.5",
+                        days <= 0
+                          ? "text-error"
+                          : days <= 7
+                            ? "text-warning"
+                            : "text-text-muted"
+                      )}
+                    >
+                      {days > 0 ? `${days} days left` : "Overdue"}
+                    </p>
+                  )}
+                </td>
+                <td className="px-4 py-4 align-middle text-right">
+                  <span className="inline-flex items-center justify-end gap-1.5 text-xs text-text-secondary">
+                    <Send className="h-3 w-3 text-text-muted" aria-hidden />
+                    {bounty.submissionsCount}
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

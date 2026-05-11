@@ -342,9 +342,9 @@ function MyPitchesPageContent() {
                     </div>
 
                     {sub.status === "draft" && (
-                      <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-warning/5 border border-warning/10">
-                        <Clock className="h-4 w-4 text-warning shrink-0" />
-                        <span className="text-xs text-warning">
+                      <div className="flex items-center gap-2 mt-4 p-3 bg-surface-elevated">
+                        <Clock className="h-4 w-4 text-text-tertiary shrink-0" />
+                        <span className="text-xs text-text-secondary">
                           Draft &mdash; finish and submit before Mar 20
                         </span>
                       </div>

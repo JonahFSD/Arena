@@ -404,12 +404,10 @@ function MessagesPageInner() {
                         className={`flex ${msg.isMe ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${msg.isMe ? "bg-brand-500 text-black rounded-br-md" : "bg-surface-elevated text-text-primary border border-border-default rounded-bl-md"}`}
+                          className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-text-primary ${msg.isMe ? "bg-surface-overlay rounded-br-md" : "bg-surface-elevated border border-border-default rounded-bl-md"}`}
                         >
                           <p className="text-sm">{msg.body}</p>
-                          <p
-                            className={`text-[10px] mt-1 ${msg.isMe ? "text-black/60" : "text-text-muted"}`}
-                          >
+                          <p className="text-[10px] mt-1 text-text-muted">
                             {formatMessageTime(msg._creationTime)}
                           </p>
                         </div>

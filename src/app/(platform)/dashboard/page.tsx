@@ -234,35 +234,36 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* 3. Stat tiles — grid with internal hairlines */}
-      <div className="grid grid-cols-2 border border-border-default divide-x divide-border-default lg:grid-cols-4 [&>*:nth-child(n+3)]:border-t [&>*:nth-child(n+3)]:border-border-default lg:[&>*:nth-child(n+3)]:border-t-0">
-        {statTiles.map((tile) => (
-          <div key={tile.label} className="bg-surface-primary p-6 md:p-8">
-            <div className="flex items-baseline justify-between gap-2">
-              <p className="text-xs uppercase tracking-wider text-text-tertiary">
-                {tile.label}
-              </p>
-              {tile.delta.text && (
-                <p
-                  className={cn(
-                    "text-xs tabular-nums",
-                    tile.delta.tone === "positive"
-                      ? "text-success"
-                      : tile.delta.tone === "negative"
-                        ? "text-error"
-                        : "text-text-muted"
-                  )}
-                >
-                  {tile.delta.text}
-                </p>
-              )}
-            </div>
-            <p className="mt-3 font-tron text-4xl font-light tracking-tight text-text-primary">
-              {tile.value}
-            </p>
-          </div>
+      {/* 3. Stat strip — inline prose, no bordered tiles */}
+      <p className="text-text-secondary text-sm tracking-tight">
+        {statTiles.map((tile, i) => (
+          <span key={tile.label}>
+            {i > 0 && (
+              <span className="mx-2 text-text-muted" aria-hidden>
+                ·
+              </span>
+            )}
+            <span className="text-text-primary tabular-nums">{tile.value}</span>
+            <span className="ml-1.5 text-text-secondary">
+              {tile.label.toLowerCase()}
+            </span>
+            {tile.delta.text && (
+              <span
+                className={cn(
+                  "ml-1.5 text-xs tabular-nums",
+                  tile.delta.tone === "positive"
+                    ? "text-success"
+                    : tile.delta.tone === "negative"
+                      ? "text-error"
+                      : "text-text-muted"
+                )}
+              >
+                ({tile.delta.text})
+              </span>
+            )}
+          </span>
         ))}
-      </div>
+      </p>
 
       {/* 4. Leaderboard + Voting Queue — split row with internal hairline */}
       <div className="grid grid-cols-1 border border-border-default lg:grid-cols-2 lg:divide-x lg:divide-border-default">
