@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
   <rect width="32" height="32" rx="6" fill="#0a0807"/>
-  <circle cx="16" cy="16" r="8" fill="none" stroke="#F0E6CE" stroke-width="2.4"/>
+  <text x="16" y="22" text-anchor="middle"
+        font-family="Inter, system-ui, -apple-system, sans-serif"
+        font-weight="400"
+        fill="#F0E6CE"
+        letter-spacing="0.4">
+    <tspan font-size="16">0</tspan><tspan font-size="13">21</tspan>
+  </text>
 </svg>
