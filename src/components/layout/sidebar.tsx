@@ -63,12 +63,20 @@ function SidebarNavBadge({
   );
 }
 
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
 export function Sidebar({ isAdmin = false }: SidebarProps) {
   const { collapsed, setCollapsed } = useSidebar();
   const pathname = usePathname();
   const router = useRouter();
   const { signOut } = useAuthActions();
-  const badgeCounts = useQuery(api.sidebarBadges.getCounts);
+  const liveBadgeCounts = useQuery(
+    api.sidebarBadges.getCounts,
+    DEMO_MODE ? "skip" : {}
+  );
+  const badgeCounts = DEMO_MODE
+    ? { community: 2, bounties: 3, settingsBilling: 0 }
+    : liveBadgeCounts;
 
   const handleSignOut = async () => {
     await signOut();

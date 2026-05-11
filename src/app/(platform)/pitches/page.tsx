@@ -5,6 +5,70 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+// Demo seed shapes match api.submissions.listMine + api.collaborators.listMyInvitations.
+// Cast through unknown because we don't have real Convex Ids.
+const DEMO_MINE = [
+  {
+    _id: "sub_1",
+    _creationTime: Date.now() - 1000 * 60 * 60 * 6,
+    title: "Onion: Privacy-First Messaging for Students",
+    description:
+      "End-to-end encrypted messaging built for students. No accounts, no metadata. Layered like an onion.",
+    status: "submitted",
+    monthYear: "Mar 2026",
+    videoUrl: "https://example.com/video",
+    githubUrl: "https://github.com/example/onion",
+    isTeamSubmission: true,
+    teamMemberCount: 3,
+  },
+  {
+    _id: "sub_2",
+    _creationTime: Date.now() - 1000 * 60 * 60 * 24 * 35,
+    title: "Sola: Christian Apologetics for Gen Z",
+    description:
+      "Daily theology drops, AMA-style. Built for distribution through YouVersion + Gloo.",
+    status: "scored",
+    monthYear: "Feb 2026",
+    aiScore: { overallScore: 87 },
+    videoUrl: "https://example.com/video",
+    websiteUrl: "https://sola.example.com",
+    isTeamSubmission: false,
+    teamMemberCount: 1,
+  },
+  {
+    _id: "sub_3",
+    _creationTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    title: "Workload Viewer for Canvas",
+    description:
+      "Visualizes student assignment load across the semester. Burndown chart per class.",
+    status: "draft",
+    monthYear: "Mar 2026",
+    isTeamSubmission: false,
+    teamMemberCount: 1,
+  },
+];
+
+const DEMO_INVITES = [
+  {
+    _id: "inv_1",
+    _creationTime: Date.now() - 1000 * 60 * 60 * 18,
+    teamMemberCount: 2,
+    submission: {
+      _id: "sub_invite_1",
+      _creationTime: Date.now() - 1000 * 60 * 60 * 20,
+      title: "Dermi: At-Home Skin Diagnostics",
+      description:
+        "Computer vision skin assessment using your phone camera. Alex needs a technical co-founder.",
+      status: "draft",
+      monthYear: "Mar 2026",
+      isTeamSubmission: true,
+      teamMemberCount: 2,
+    },
+  },
+];
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -57,8 +121,20 @@ function MyPitchesPageContent() {
   const stageFilter = parsePitchesStageFromSearch(searchParams);
   const searchQuery = parsePitchesSearchFromSearch(searchParams);
 
-  const mine = useQuery(api.submissions.listMine);
-  const invites = useQuery(api.collaborators.listMyInvitations);
+  const liveMine = useQuery(
+    api.submissions.listMine,
+    DEMO_MODE ? "skip" : {}
+  );
+  const liveInvites = useQuery(
+    api.collaborators.listMyInvitations,
+    DEMO_MODE ? "skip" : {}
+  );
+  const mine = DEMO_MODE
+    ? (DEMO_MINE as unknown as NonNullable<typeof liveMine>)
+    : liveMine;
+  const invites = DEMO_MODE
+    ? (DEMO_INVITES as unknown as NonNullable<typeof liveInvites>)
+    : liveInvites;
 
   const feed = useMemo(() => {
     if (mine === undefined || invites === undefined) return undefined;

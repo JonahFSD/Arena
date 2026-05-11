@@ -4,6 +4,49 @@ import { useState, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+const DEMO_ROUND = {
+  _id: "round_demo",
+  monthYear: "2026-03",
+  closesAt: Date.now() + 1000 * 60 * 60 * 24 * 3 + 1000 * 60 * 60 * 14,
+  prizePool: { totalCollected: 1250 },
+  submissions: [
+    {
+      _id: "p1",
+      title: "Dermi: At-Home Skin Diagnostics",
+      description:
+        "Computer vision skin assessment using your phone camera. AI flags concerns and routes to a derm.",
+      user: { fullName: "Alex Mi", schoolName: "Valley Christian" },
+      aiScore: { overallScore: 91 },
+    },
+    {
+      _id: "p2",
+      title: "Safelock: Locker Security for Schools",
+      description:
+        "Bluetooth-locked school lockers controlled from the student phone. Drops physical key chaos.",
+      user: { fullName: "Yichi Zhang", schoolName: "Valley Christian" },
+      aiScore: { overallScore: 84 },
+    },
+    {
+      _id: "p3",
+      title: "Milestone: Teen Driver Coach",
+      description:
+        "Real-time driving feedback for first-year drivers. Routes scores to parents weekly.",
+      user: { fullName: "Seowoong Park", schoolName: "Cedar Park" },
+      aiScore: { overallScore: 79 },
+    },
+    {
+      _id: "p4",
+      title: "Sola: Christian Apologetics for Gen Z",
+      description:
+        "Daily theology drops with AMA-style discussion. Built for YouVersion + Gloo distribution.",
+      user: { fullName: "Jonah Elliot", schoolName: "ACU" },
+      aiScore: { overallScore: 87 },
+    },
+  ],
+};
 import { InfoCallout } from "@/components/ui/info-callout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,7 +74,13 @@ type SubmissionItem = {
 };
 
 export default function VotingPage() {
-  const roundData = useQuery(api.voting.getCurrentRound);
+  const liveRound = useQuery(
+    api.voting.getCurrentRound,
+    DEMO_MODE ? "skip" : {}
+  );
+  const roundData = DEMO_MODE
+    ? (DEMO_ROUND as unknown as NonNullable<typeof liveRound>)
+    : liveRound;
   const castVotes = useMutation(api.voting.castVotes);
 
   const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);

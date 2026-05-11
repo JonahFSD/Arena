@@ -5,31 +5,42 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatCard } from "@/components/ui/stat-card";
-import { Badge } from "@/components/ui/badge";
 import {
   type LucideIcon,
-  Trophy,
   ArrowRight,
-  Clock,
-  Calendar,
-  Sparkles,
-  Target,
   Handshake,
   CircleDollarSign,
   Network,
+  Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MissionDropBanner } from "@/components/dashboard/mission-drop-banner";
+import { SubmissionHero } from "@/components/dashboard/submission-hero";
+import { AIFeedbackCard } from "@/components/dashboard/ai-feedback-card";
 import {
-  platformPaneBleedClass,
-  platformPaneCellPaddingClass,
-  platformPaneGridCellFillClass,
-  platformPaneGridGapClass,
-  platformPaneStackGapClass,
-  platformPaneTileClass,
-} from "@/lib/platform-pane-grid";
+  LeaderboardWidget,
+  type LeaderboardRow,
+} from "@/components/dashboard/leaderboard-widget";
+import {
+  VotingQueue,
+  type VotingQueueItem,
+} from "@/components/dashboard/voting-queue";
 import { getDashboardStatMomPercent } from "@/lib/dashboard-trends-data";
+
+/** Demo mode bypass — see (platform)/layout.tsx + .env.local. */
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+const DEMO_STATS = {
+  points: 3780,
+  rank: 4,
+  networkCount: 87,
+  totalEarnings: 1250,
+};
+
+const DEMO_PENDING_INVITES: { _id: string }[] = [
+  { _id: "i1" },
+  { _id: "i2" },
+];
 
 const DashboardTrendsChart = dynamic(
   () =>
@@ -39,18 +50,75 @@ const DashboardTrendsChart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-72 rounded-none border-0 bg-transparent ring-1 ring-inset ring-border-default/20 animate-pulse" />
+      <div className="h-72 animate-pulse bg-surface-card" />
     ),
   }
 );
 
-/** Row layout inside hairline stacks (gap-px); faces use bg-surface-primary on each row. */
-const dashboardRowLayoutClass =
-  "flex min-h-0 items-center gap-3 p-3 rounded-none lg:flex-1";
+/* ------------------------------------------------------------------ */
+/* Demo seed data — mid-cycle (AI Scoring active).                    */
+/* Replace with Convex queries in next pass.                          */
+/* ------------------------------------------------------------------ */
+
+const DEMO_MISSION_DROP = {
+  title: "Build Something That Sells in 7 Days",
+  teaser:
+    "This week's challenge: ship a working MVP and acquire your first paying customer. Best execution wins.",
+  prize: "$500",
+  countdown: "Closes in 3d 14h",
+  ctaHref: "/pitches/new",
+};
+
+const DEMO_SUBMISSION = {
+  phase: "ai_scoring" as const,
+  pitchTitle: "Onion — Privacy-First Messaging for Students",
+  teamName: "Layered",
+  pitchHref: "/pitches",
+};
+
+const DEMO_AI_FEEDBACK = {
+  dimensions: [
+    { label: "Clarity", score: 8.4 },
+    { label: "Feasibility", score: 7.2 },
+    { label: "Impact", score: 9.1 },
+  ],
+  snippet:
+    "Strong problem framing and a sharp wedge into a real audience. The execution plan needs concrete week-one milestones.",
+};
+
+const DEMO_LEADERBOARD: LeaderboardRow[] = [
+  { rank: 1, name: "Alex Mi", score: 4280, delta: 1 },
+  { rank: 2, name: "Yichi Zhang", score: 4110, delta: 2 },
+  { rank: 3, name: "Jonah Elliot", score: 3905, delta: -1 },
+  { rank: 4, name: "You", score: 3780, delta: 3, isMe: true },
+  { rank: 5, name: "Seowoong Park", score: 3540, delta: 0 },
+];
+
+const DEMO_VOTING_QUEUE: VotingQueueItem[] = [
+  { id: "p1", title: "Dermi — At-Home Skin Diagnostics", team: "Alex Mi" },
+  { id: "p2", title: "Safelock — Locker Security for Schools", team: "Yichi" },
+  { id: "p3", title: "Milestone — Teen Driver Coach", team: "Seowoong" },
+];
+
+/* ------------------------------------------------------------------ */
+
+/** Compact row layout inside hairline stacks. */
+const rowLayoutClass =
+  "group flex items-center gap-3 bg-surface-primary px-6 py-3 transition-colors hover:bg-surface-card-hover md:px-8";
 
 export default function DashboardPage() {
-  const stats = useQuery(api.users.getMyStats);
-  const pendingInvites = useQuery(api.collaborators.listMyInvitations);
+  const liveStats = useQuery(
+    api.users.getMyStats,
+    DEMO_MODE ? "skip" : {}
+  );
+  const livePendingInvites = useQuery(
+    api.collaborators.listMyInvitations,
+    DEMO_MODE ? "skip" : {}
+  );
+  const stats = DEMO_MODE ? DEMO_STATS : liveStats;
+  const pendingInvites = DEMO_MODE
+    ? DEMO_PENDING_INVITES
+    : livePendingInvites;
 
   const todoItems: {
     href: string;
@@ -91,271 +159,144 @@ export default function DashboardPage() {
     ],
     [pendingInvites]
   );
+
   const momPoints = getDashboardStatMomPercent("points");
   const momRank = getDashboardStatMomPercent("rank");
   const momNetwork = getDashboardStatMomPercent("network");
   const momEarnings = getDashboardStatMomPercent("earnings");
 
+  const statTiles: {
+    label: string;
+    value: string;
+    delta: ReturnType<typeof getDashboardStatMomPercent>;
+  }[] = [
+    {
+      label: "Points",
+      value:
+        stats === undefined
+          ? "—"
+          : `+${stats.points.toLocaleString()}`,
+      delta: momPoints,
+    },
+    {
+      label: "Rank",
+      value: stats?.rank ? `#${stats.rank}` : "—",
+      delta: momRank,
+    },
+    {
+      label: "Network",
+      value:
+        stats === undefined
+          ? "—"
+          : `+${stats.networkCount.toLocaleString()}`,
+      delta: momNetwork,
+    },
+    {
+      label: "Earnings",
+      value:
+        stats === undefined
+          ? "—"
+          : `$${stats.totalEarnings.toLocaleString()}`,
+      delta: momEarnings,
+    },
+  ];
+
+  // Wrapper for each section: transparent parent + border on the section block
+  // so the backdrop bleeds into the space between sections instead of being
+  // hidden by a solid bg-border-default slab.
   return (
-    <div className="animate-fade-in w-full">
-      <div className={cn("rounded-none overflow-hidden", platformPaneBleedClass)}>
-        {/* To Do + cycle — gap-px only draws lines between columns/rows, not pane edges */}
-        <div
-          className={cn(
-            "grid grid-cols-1 lg:grid-cols-3 lg:items-stretch",
-            platformPaneGridGapClass
-          )}
-        >
-          <div
-            className={cn(
-              "min-w-0 flex min-h-0 h-full flex-col",
-              platformPaneGridCellFillClass,
-              platformPaneCellPaddingClass
-            )}
-          >
-            <Card
-              className={cn(
-                platformPaneTileClass,
-                "flex flex-1 min-h-0 flex-col"
-              )}
-            >
-              <CardHeader>
-                <CardTitle>To Do</CardTitle>
-              </CardHeader>
-
-              <div className={cn("min-h-0 flex-1", platformPaneStackGapClass)}>
-                {todoItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      dashboardRowLayoutClass,
-                      platformPaneGridCellFillClass,
-                      "hover:bg-surface-elevated/90 transition-colors group"
-                    )}
-                  >
-                    <div className="p-2 rounded-none text-brand-500 shrink-0 flex items-center justify-center">
-                      <item.icon className="h-5 w-5 shrink-0" />
-                    </div>
-                    <div className="flex-1 min-w-0 flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium text-text-primary group-hover:text-brand-500 transition-colors">
-                        {item.label}
-                      </p>
-                      <div className="flex items-center gap-2 shrink-0">
-                        {item.meta && (
-                          <span className="text-xs text-text-muted">{item.meta}</span>
-                        )}
-                        <ArrowRight className="h-4 w-4 text-text-tertiary group-hover:text-brand-500 transition-colors" />
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </Card>
-          </div>
-
-          <div
-            className={cn(
-              "min-w-0 flex min-h-0 h-full flex-col lg:col-span-2",
-              platformPaneGridCellFillClass,
-              platformPaneCellPaddingClass
-            )}
-          >
-            <Card
-              className={cn(
-                platformPaneTileClass,
-                "flex flex-1 min-h-0 flex-col"
-              )}
-            >
-              <CardHeader>
-                <CardTitle>March 2026 Cycle</CardTitle>
-              </CardHeader>
-
-              <div className={cn("min-h-0 flex-1", platformPaneStackGapClass)}>
-                {[
-                  {
-                    icon: Calendar,
-                    label: "Submission Window",
-                    dates: "Mar 1 - Mar 20",
-                    active: true,
-                    done: false,
-                  },
-                  {
-                    icon: Sparkles,
-                    label: "AI Scoring",
-                    dates: "Mar 21 - Mar 23",
-                    active: false,
-                    done: false,
-                  },
-                  {
-                    icon: Target,
-                    label: "Community Voting",
-                    dates: "Mar 24 - Mar 28",
-                    active: false,
-                    done: false,
-                  },
-                  {
-                    icon: Trophy,
-                    label: "Winner Announced",
-                    dates: "Mar 29 - Mar 30",
-                    active: false,
-                    done: false,
-                  },
-                ].map((phase, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      dashboardRowLayoutClass,
-                      platformPaneGridCellFillClass,
-                      "transition-all duration-200",
-                      phase.active
-                        ? "rounded-xl text-brand-500 shadow-sm bg-[color-mix(in_oklab,var(--color-brand-500)_10%,var(--color-surface-chrome))]"
-                        : "hover:bg-surface-elevated/90"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "p-2 rounded-none shrink-0 flex items-center justify-center",
-                        phase.active
-                          ? "text-brand-500"
-                          : phase.done
-                            ? "text-success"
-                            : "text-text-tertiary"
-                      )}
-                    >
-                      <phase.icon className="h-5 w-5 shrink-0" />
-                    </div>
-                    <div className="flex-1">
-                      <p
-                        className={cn(
-                          "text-sm font-medium",
-                          phase.active ? "text-brand-500" : "text-text-primary"
-                        )}
-                      >
-                        {phase.label}
-                      </p>
-                      <p
-                        className={cn(
-                          "text-xs",
-                          phase.active
-                            ? "text-brand-500/70"
-                            : "text-text-secondary"
-                        )}
-                      >
-                        {phase.dates}
-                      </p>
-                    </div>
-                    {phase.active && (
-                      <Badge
-                        variant="brand"
-                        className="normal-case tracking-normal shadow-sm"
-                      >
-                        <Clock className="h-3 w-3 mr-1" />
-                        In Progress
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        </div>
-
-        {/* Stat tiles — gap-px only between cells */}
-        <div
-          className={cn(
-            "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-solid border-border-default",
-            platformPaneGridGapClass
-          )}
-        >
-          <div
-            className={cn(
-              "min-w-0",
-              platformPaneGridCellFillClass,
-              platformPaneCellPaddingClass
-            )}
-          >
-            <StatCard
-              plain
-              className={platformPaneTileClass}
-              label="Points"
-              labelTrailing={momPoints.text}
-              labelTrailingTone={momPoints.tone}
-              value={
-                stats === undefined
-                  ? "—"
-                  : `+${stats.points.toLocaleString()}`
-              }
-            />
-          </div>
-          <div
-            className={cn(
-              "min-w-0",
-              platformPaneGridCellFillClass,
-              platformPaneCellPaddingClass
-            )}
-          >
-            <StatCard
-              plain
-              className={platformPaneTileClass}
-              label="Rank"
-              labelTrailing={momRank.text}
-              labelTrailingTone={momRank.tone}
-              value={stats?.rank ? `#${stats.rank}` : "—"}
-            />
-          </div>
-          <div
-            className={cn(
-              "min-w-0",
-              platformPaneGridCellFillClass,
-              platformPaneCellPaddingClass
-            )}
-          >
-            <StatCard
-              plain
-              className={platformPaneTileClass}
-              label="Network"
-              labelTrailing={momNetwork.text}
-              labelTrailingTone={momNetwork.tone}
-              value={
-                stats === undefined
-                  ? "—"
-                  : `+${stats.networkCount.toLocaleString()}`
-              }
-            />
-          </div>
-          <div
-            className={cn(
-              "min-w-0",
-              platformPaneGridCellFillClass,
-              platformPaneCellPaddingClass
-            )}
-          >
-            <StatCard
-              plain
-              className={platformPaneTileClass}
-              label="Earnings"
-              labelTrailing={momEarnings.text}
-              labelTrailingTone={momEarnings.tone}
-              value={
-                stats === undefined
-                  ? "—"
-                  : `$${stats.totalEarnings.toLocaleString()}`
-              }
-            />
-          </div>
-        </div>
-
-        <div
-          className={cn(
-            "border-t border-solid border-border-default",
-            platformPaneGridCellFillClass,
-            platformPaneCellPaddingClass
-          )}
-        >
-          <DashboardTrendsChart className={platformPaneTileClass} />
-        </div>
+    <div className="animate-fade-in flex w-full flex-col gap-6">
+      {/* 1. Mission Drop banner — bordered block */}
+      <div className="border border-border-default">
+        <MissionDropBanner
+          title={DEMO_MISSION_DROP.title}
+          teaser={DEMO_MISSION_DROP.teaser}
+          prize={DEMO_MISSION_DROP.prize}
+          countdown={DEMO_MISSION_DROP.countdown}
+          ctaHref={DEMO_MISSION_DROP.ctaHref}
+        />
       </div>
+
+      {/* 2. Submission Hero (2/3) + AI Feedback (1/3) — internal hairline split */}
+      <div className="grid grid-cols-1 border border-border-default lg:grid-cols-3 lg:divide-x lg:divide-border-default">
+        <SubmissionHero
+          className="lg:col-span-2"
+          phase={DEMO_SUBMISSION.phase}
+          pitchTitle={DEMO_SUBMISSION.pitchTitle}
+          teamName={DEMO_SUBMISSION.teamName}
+          pitchHref={DEMO_SUBMISSION.pitchHref}
+        />
+        <AIFeedbackCard
+          pending
+          dimensions={DEMO_AI_FEEDBACK.dimensions}
+          snippet={DEMO_AI_FEEDBACK.snippet}
+          href={DEMO_SUBMISSION.pitchHref}
+        />
+      </div>
+
+      {/* 3. Stat tiles — grid with internal hairlines */}
+      <div className="grid grid-cols-2 border border-border-default divide-x divide-border-default lg:grid-cols-4 [&>*:nth-child(n+3)]:border-t [&>*:nth-child(n+3)]:border-border-default lg:[&>*:nth-child(n+3)]:border-t-0">
+        {statTiles.map((tile) => (
+          <div key={tile.label} className="bg-surface-primary p-6 md:p-8">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="text-xs uppercase tracking-wider text-text-tertiary">
+                {tile.label}
+              </p>
+              {tile.delta.text && (
+                <p
+                  className={cn(
+                    "text-xs tabular-nums",
+                    tile.delta.tone === "positive"
+                      ? "text-success"
+                      : tile.delta.tone === "negative"
+                        ? "text-error"
+                        : "text-text-muted"
+                  )}
+                >
+                  {tile.delta.text}
+                </p>
+              )}
+            </div>
+            <p className="mt-3 font-tron text-3xl font-bold tracking-tight text-text-primary">
+              {tile.value}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* 4. Leaderboard + Voting Queue — split row with internal hairline */}
+      <div className="grid grid-cols-1 border border-border-default lg:grid-cols-2 lg:divide-x lg:divide-border-default">
+        <LeaderboardWidget rows={DEMO_LEADERBOARD} href="/leaderboard" />
+        <VotingQueue items={DEMO_VOTING_QUEUE} href="/pitches/voting" />
+      </div>
+
+      {/* 5. Trends chart — bordered block */}
+      <div className="border border-border-default bg-surface-primary p-6 md:p-8">
+        <DashboardTrendsChart />
+      </div>
+
+      {/* 6. To Do — bordered block, internal row hairlines */}
+      <section className="border border-border-default bg-surface-primary">
+        <header className="px-6 pt-6 md:px-8 md:pt-8">
+          <h3 className="text-lg font-medium text-text-primary">To Do</h3>
+        </header>
+        <div className="mt-4 flex flex-col divide-y divide-border-default">
+          {todoItems.map((item) => (
+            <Link key={item.href} href={item.href} className={rowLayoutClass}>
+              <item.icon className="h-4 w-4 shrink-0 text-text-tertiary transition-colors group-hover:text-text-primary" />
+              <p className="flex-1 truncate text-sm font-medium text-text-primary">
+                {item.label}
+              </p>
+              {item.meta && (
+                <span className="shrink-0 text-xs text-text-muted">
+                  {item.meta}
+                </span>
+              )}
+              <ArrowRight className="h-4 w-4 shrink-0 text-text-tertiary transition-colors group-hover:text-text-primary" />
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

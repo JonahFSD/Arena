@@ -170,8 +170,46 @@ function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
   );
 }
 
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+const DEMO_ROUNDS = [
+  {
+    _id: "r1",
+    monthYear: "2026-02",
+    totalCollected: 1250,
+    winningSubmissions: [
+      { place: 1, submissionId: "sub_w1", title: "Sola: Christian Apologetics for Gen Z", score: 92 },
+      { place: 2, submissionId: "sub_w2", title: "Dermi: At-Home Skin Diagnostics", score: 89 },
+      { place: 3, submissionId: "sub_w3", title: "Safelock: Locker Security", score: 84 },
+    ],
+    firstPlaceUser: { _id: "u3", fullName: "Jonah Elliot" },
+    secondPlaceUser: { _id: "u1", fullName: "Alex Mi" },
+    thirdPlaceUser: { _id: "u2", fullName: "Yichi Zhang" },
+    mostPointsUser: { _id: "u4", fullName: "Connor", monthlyPoints: 1840 },
+  },
+  {
+    _id: "r2",
+    monthYear: "2026-01",
+    totalCollected: 980,
+    winningSubmissions: [
+      { place: 1, submissionId: "sub_w4", title: "Milestone: Teen Driver Coach", score: 88 },
+      { place: 2, submissionId: "sub_w5", title: "Lexx AI", score: 81 },
+    ],
+    firstPlaceUser: { _id: "u5", fullName: "Seowoong Park" },
+    secondPlaceUser: { _id: "u10", fullName: "Lars Ostervold" },
+    thirdPlaceUser: null,
+    mostPointsUser: { _id: "u1", fullName: "Alex Mi", monthlyPoints: 1620 },
+  },
+];
+
 export default function ResultsPage() {
-  const rawRounds = useQuery(api.prizes.getPastRounds);
+  const liveRounds = useQuery(
+    api.prizes.getPastRounds,
+    DEMO_MODE ? "skip" : {}
+  );
+  const rawRounds = DEMO_MODE
+    ? (DEMO_ROUNDS as unknown as NonNullable<typeof liveRounds>)
+    : liveRounds;
 
   const pastRounds: MonthRound[] = (rawRounds ?? []).map((pool) => {
     const placements: PitchPlacement[] = [];
