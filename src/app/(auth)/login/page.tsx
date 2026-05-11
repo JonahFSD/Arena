@@ -7,7 +7,8 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Swords, Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -61,13 +62,10 @@ export default function LoginPage() {
   return (
     <div className="w-full max-w-md mx-auto animate-fade-in">
       {/* Logo */}
-      <div className="flex items-center justify-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
-          <Swords className="h-6 w-6 text-black" />
-        </div>
-        <span className="text-xl font-medium text-text-primary">
-          021
-        </span>
+      <div className="flex items-center justify-center mb-8">
+        <Link href="/" aria-label="021 home" className="text-text-primary transition-opacity hover:opacity-75">
+          <Logo size="lg" />
+        </Link>
       </div>
 
       <Card padding="lg" className="border-border-default">

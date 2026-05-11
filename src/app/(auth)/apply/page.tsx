@@ -27,7 +27,6 @@ import {
 import { SchoolPicker } from "@/components/school-picker";
 import { cn } from "@/lib/utils";
 import {
-  Zap,
   ArrowRight,
   ArrowLeft,
   CheckCircle,
@@ -43,6 +42,7 @@ import {
   Lock,
   ExternalLink,
 } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 const STEPS = [
   { id: "personal", label: "About", icon: User },
@@ -341,12 +341,12 @@ function ApplyForm({ nominationToken }: { nominationToken: string }) {
   // ---------- Main form ----------
   return (
     <div className="w-full animate-fade-in">
-      {/* Logo */}
-      <div className="flex items-center justify-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
-          <Zap className="h-6 w-6 text-black" />
-        </div>
-        <span className="text-xl font-medium text-text-primary">Apply to Join</span>
+      {/* Brand + page title */}
+      <div className="flex flex-col items-center gap-3 mb-8">
+        <Link href="/" aria-label="021 home" className="text-text-primary transition-opacity hover:opacity-75">
+          <Logo size="lg" />
+        </Link>
+        <p className="text-sm text-text-secondary">Apply to Join</p>
       </div>
 
       <Suspense fallback={null}>
