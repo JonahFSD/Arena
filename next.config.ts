@@ -1,11 +1,11 @@
 import type { NextConfig } from "next";
-import path from "node:path";
 
 const nextConfig: NextConfig = {
-  // Pin the workspace root so Turbopack doesn't drift up to $HOME when there's
-  // a stray package-lock.json sitting there.
+  // Pin the workspace root so Turbopack doesn't drift up to $HOME when a
+  // stray package-lock.json is sitting there. Using a hardcoded relative path
+  // because __dirname is unreliable when Next loads this file under Turbopack.
   turbopack: {
-    root: path.resolve(__dirname),
+    root: process.cwd(),
   },
 };
 
