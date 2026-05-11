@@ -90,29 +90,14 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
         sidebarRailClass(collapsed)
       )}
     >
-      {/* Header — wordmark + hamburger toggle. When collapsed, only the
-          hamburger renders (centered) so the narrow rail stays uncluttered. */}
+      {/* Header — hamburger pinned top-left; wordmark sits to the right when
+          expanded. When collapsed, only the hamburger renders, still left. */}
       <div
         className={cn(
-          "h-16 flex items-center border-b border-border-subtle",
-          shellPadX,
-          collapsed ? "justify-center" : "justify-between gap-2"
+          "h-16 flex items-center justify-between gap-2 border-b border-border-subtle",
+          shellPadX
         )}
       >
-        {!collapsed && (
-          <Link
-            href="/dashboard"
-            aria-label="021 — home"
-            className={cn(
-              "flex items-center px-3 py-2.5 rounded-xl min-w-0",
-              "transition-opacity duration-200",
-              "text-text-primary hover:opacity-75",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-primary/25 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-chrome"
-            )}
-          >
-            <Logo variant="wordmark" size="md" />
-          </Link>
-        )}
         <button
           type="button"
           onClick={() => setCollapsed(!collapsed)}
@@ -127,6 +112,20 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
         >
           <Menu className="h-5 w-5" />
         </button>
+        {!collapsed && (
+          <Link
+            href="/dashboard"
+            aria-label="021 — home"
+            className={cn(
+              "flex items-center px-3 py-2.5 rounded-xl min-w-0",
+              "transition-opacity duration-200",
+              "text-text-primary hover:opacity-75",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-primary/25 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-chrome"
+            )}
+          >
+            <Logo variant="wordmark" size="md" />
+          </Link>
+        )}
       </div>
 
       {/* Main nav + collapse under tabs; spacer keeps bottom section at viewport bottom */}
