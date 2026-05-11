@@ -737,6 +737,7 @@
         uLandSizeBoost:   { value: LAND_SIZE_BOOST },
         uRimPower:        { value: RIM_POWER },
         uRimBoost:        { value: RIM_BOOST },
+        uBreath:          { value: 1.0 },
         uColor:           { value: new THREE.Color(0xF5EFE0) },
       },
       vertexShader: /* glsl */ `
@@ -750,6 +751,7 @@
         uniform float uLandSizeBoost;
         uniform float uRimPower;
         uniform float uRimBoost;
+        uniform float uBreath;
 
         void main() {
           vec4 worldPos4 = modelMatrix * vec4(position, 1.0);
@@ -768,7 +770,7 @@
           float rim = pow(1.0 - clamp(ndotv, 0.0, 1.0), uRimPower);
 
           float baseBrightness = mix(uOceanBrightness, uLandBrightness, aLand);
-          vBrightness = (baseBrightness + rim * uRimBoost) * front;
+          vBrightness = (baseBrightness + rim * uRimBoost) * front * uBreath;
 
           vec4 mvPosition = viewMatrix * worldPos4;
           gl_Position = projectionMatrix * mvPosition;
@@ -910,11 +912,17 @@
     });
 
     /* ---------- animation loop ---------- */
+    const BREATH_PERIOD = 7.0;     // seconds per cycle
+    const BREATH_AMPLITUDE = 0.05; // ±5% brightness
+    const breathOmega = (2 * Math.PI) / BREATH_PERIOD;
+
     function tick() {
       requestAnimationFrame(tick);
       if (!isDragging) {
         orbGroup.rotation.y += ROT_SPEED_Y;
       }
+      const t = performance.now() / 1000;
+      dotsMat.uniforms.uBreath.value = 1.0 + Math.sin(t * breathOmega) * BREATH_AMPLITUDE;
       renderer.render(scene, camera);
     }
 
