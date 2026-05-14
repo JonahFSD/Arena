@@ -143,7 +143,7 @@ export default function ArenaLandingPage() {
       <div className={styles.stage}>
         {/* HOME */}
         <section className={pageClass("home")}>
-          <p className={styles.heroLine}>The Teenage Venture Studio.</p>
+          <p className={styles.heroLine}>Venture Studio</p>
 
           <div className={styles.orb}>
             <canvas
@@ -166,8 +166,8 @@ export default function ArenaLandingPage() {
         <section className={pageClass("thesis")}>
           <div className={styles.thesisFirstView}>
             <div className={styles.thesisLines}>
-              <h1 className={styles.thesisWord}>The future belongs to the young.</h1>
-              <h1 className={styles.thesisWord}>Underestimate them at your peril.</h1>
+              <h1 className={styles.thesisWord}>18 and under. Already building.</h1>
+              <h1 className={styles.thesisWord}>That&rsquo;s the only filter.</h1>
             </div>
             <div
               className={`${styles.thesisScrollHint} ${scrollHintHidden ? styles.isHidden : ""}`}
@@ -185,19 +185,19 @@ export default function ArenaLandingPage() {
           >
             <div className={styles.thesisElaborationInner}>
               <span className={styles.thesisLine}>
-                Most rooms full of teenagers are organized around what adults
-                think they should learn.
+                Most programs with an age cap like this one are organized
+                around what adults think you should be learning.
               </span>
               <span className={styles.thesisLine}>
-                This one is organized around what they are already capable of
+                This one is organized around the work you&rsquo;re already
                 doing.
               </span>
               <span className={`${styles.thesisLine} ${styles.thesisLineParaBreak}`}>
-                We don&rsquo;t run a class. We don&rsquo;t hand out trophies.
+                No curriculum. No certificates. No participation prizes.
               </span>
               <span className={styles.thesisLine}>
-                We put the kids who are already building in the same room,
-                give them real work, and get out of the way.
+                You bring the work. We hand you peers and real stakes and
+                get out of the way.
               </span>
             </div>
           </div>
