@@ -184,7 +184,7 @@ export default function ArenaLandingPage() {
           >
             <div className={styles.thesisElaborationInner}>
               <span className={styles.thesisLine}>
-                Most people under 18 who can ship are doing it alone in their
+                Most people who can ship are doing it alone in their
                 bedroom right now. And they&rsquo;re doing it faster than
                 anyone could imagine, because nobody ever told them to be
                 reasonable.
