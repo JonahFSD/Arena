@@ -166,8 +166,8 @@ export default function ArenaLandingPage() {
         <section className={pageClass("thesis")}>
           <div className={styles.thesisFirstView}>
             <div className={styles.thesisLines}>
-              <h1 className={styles.thesisWord}>18 and under. Already building.</h1>
-              <h1 className={styles.thesisWord}>That&rsquo;s the only filter.</h1>
+              <h1 className={styles.thesisWord}>A venture studio for AI-native humans under 18.</h1>
+              <h1 className={styles.thesisWord}>Ship a venture every month. Get scored. Get paid.</h1>
             </div>
             <div
               className={`${styles.thesisScrollHint} ${scrollHintHidden ? styles.isHidden : ""}`}
@@ -185,19 +185,22 @@ export default function ArenaLandingPage() {
           >
             <div className={styles.thesisElaborationInner}>
               <span className={styles.thesisLine}>
-                Most programs with an age cap like this one are organized
-                around what adults think you should be learning.
+                AI scores every submission against a real rubric. Your peers
+                vote. The top three split a cash pool.
               </span>
               <span className={styles.thesisLine}>
-                This one is organized around the work you&rsquo;re already
-                doing.
+                Outside founders also post bounties &mdash; actual problems
+                with real money attached. Take one, ship it, get paid.
               </span>
               <span className={`${styles.thesisLine} ${styles.thesisLineParaBreak}`}>
-                No curriculum. No certificates. No participation prizes.
+                Admission is by nomination. We filter for people under 18 who
+                already build, treat AI as a default tool, and want peers
+                more than teachers.
               </span>
               <span className={styles.thesisLine}>
-                You bring the work. We hand you peers and real stakes and
-                get out of the way.
+                If you&rsquo;re looking for a class, a curriculum, or someone
+                to walk you through your first project, this is the wrong
+                room. There are good versions of those elsewhere.
               </span>
             </div>
           </div>
