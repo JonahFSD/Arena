@@ -185,20 +185,27 @@ export default function ArenaLandingPage() {
           >
             <div className={styles.thesisElaborationInner}>
               <span className={styles.thesisLine}>
-                Most institutions wait until you graduate to take you
-                seriously. We don&rsquo;t.
+                Most people under 18 who can already ship something are doing
+                it alone in their bedroom right now. We thought that was
+                weird, so we built this.
               </span>
               <span className={styles.thesisLine}>
-                You don&rsquo;t need someone to teach you AI. You need peers,
-                capital, and stakes.
+                Every month you submit a venture, AI scores it on a rubric,
+                peers vote, and the best work splits a cash pool. Then it
+                starts over.
               </span>
               <span className={`${styles.thesisLine} ${styles.thesisLineParaBreak}`}>
-                Monthly venture cycle. Real rubric. Cash on the line.
-                Nomination only.
+                You have to be under 18, and you have to already be shipping.
+                We don&rsquo;t take nominations to be selective. We take them
+                because we&rsquo;re looking for people who started without
+                being asked.
               </span>
               <span className={styles.thesisLine}>
-                If you want a class, a curriculum, or someone to walk you
-                through your first project, this is the wrong door.
+                There&rsquo;s no curriculum, and nobody will be assigned to
+                mentor you. If that&rsquo;s what you came for, we&rsquo;ll
+                point you to people who do it better than we ever will.
+                Membership ends when you graduate. If you still need the room
+                after that, we probably failed you.
               </span>
             </div>
           </div>
@@ -217,7 +224,7 @@ export default function ArenaLandingPage() {
             </div>
             <div className={styles.teamMember}>
               <p className={styles.teamName}>Braden Peays</p>
-              <p className={styles.teamRole}>VP, Operations</p>
+              <p className={styles.teamRole}>Ops</p>
             </div>
             <div className={styles.teamMember}>
               <p className={styles.teamName}>Jake Oswald</p>
