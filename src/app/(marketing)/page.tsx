@@ -166,8 +166,8 @@ export default function ArenaLandingPage() {
         <section className={pageClass("thesis")}>
           <div className={styles.thesisFirstView}>
             <div className={styles.thesisLines}>
-              <h1 className={styles.thesisWord}>A venture studio for AI-native humans under 18.</h1>
-              <h1 className={styles.thesisWord}>Ship a venture every month. Get scored. Get paid.</h1>
+              <h1 className={styles.thesisWord}>for AI-Native humans under 18.</h1>
+              <h1 className={styles.thesisWord}>Ship every month. Eat the world.</h1>
             </div>
             <div
               className={`${styles.thesisScrollHint} ${scrollHintHidden ? styles.isHidden : ""}`}
