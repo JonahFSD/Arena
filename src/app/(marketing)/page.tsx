@@ -186,8 +186,8 @@ export default function ArenaLandingPage() {
               <span className={styles.thesisLine}>
                 Most people who can ship are doing it alone in their
                 bedroom right now. And they&rsquo;re doing it faster than
-                anyone could imagine, because nobody ever told them what
-                was possible.
+                anyone could imagine, because they don&rsquo;t know what&rsquo;s
+                supposed to be hard.
               </span>
               <span className={styles.thesisLine}>
                 We thought that was cool, so we built this for them. Every
