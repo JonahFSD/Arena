@@ -143,7 +143,7 @@ export default function ArenaLandingPage() {
       <div className={styles.stage}>
         {/* HOME */}
         <section className={pageClass("home")}>
-          <p className={styles.heroLine}>Venture Studio</p>
+          <p className={styles.heroLine}>A venture studio for AI-Native humans under 18.</p>
 
           <div className={styles.orb}>
             <canvas
