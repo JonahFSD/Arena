@@ -143,7 +143,7 @@ export default function ArenaLandingPage() {
       <div className={styles.stage}>
         {/* HOME */}
         <section className={pageClass("home")}>
-          <p className={styles.heroLine}>A venture studio for AI-Native humans under 18.</p>
+          <p className={styles.heroLine}>We back AI-Native humans under 18.</p>
 
           <div className={styles.orb}>
             <canvas
@@ -185,22 +185,20 @@ export default function ArenaLandingPage() {
           >
             <div className={styles.thesisElaborationInner}>
               <span className={styles.thesisLine}>
-                AI scores every submission against a real rubric. Your peers
-                vote. The top three split a cash pool.
+                Most institutions wait until you graduate to take you
+                seriously. We don&rsquo;t.
               </span>
               <span className={styles.thesisLine}>
-                Outside founders also post bounties &mdash; actual problems
-                with real money attached. Take one, ship it, get paid.
+                You don&rsquo;t need someone to teach you AI. You need peers,
+                capital, and stakes.
               </span>
               <span className={`${styles.thesisLine} ${styles.thesisLineParaBreak}`}>
-                Admission is by nomination. We filter for people under 18 who
-                already build, treat AI as a default tool, and want peers
-                more than teachers.
+                Monthly venture cycle. Real rubric. Cash on the line.
+                Nomination only.
               </span>
               <span className={styles.thesisLine}>
-                If you&rsquo;re looking for a class, a curriculum, or someone
-                to walk you through your first project, this is the wrong
-                room. There are good versions of those elsewhere.
+                If you want a class, a curriculum, or someone to walk you
+                through your first project, this is the wrong door.
               </span>
             </div>
           </div>
