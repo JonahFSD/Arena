@@ -166,7 +166,6 @@ export default function ArenaLandingPage() {
         <section className={pageClass("thesis")}>
           <div className={styles.thesisFirstView}>
             <div className={styles.thesisLines}>
-              <h1 className={styles.thesisWord}>for AI-Native humans under 18.</h1>
               <h1 className={styles.thesisWord}>Ship every month. Eat the world.</h1>
             </div>
             <div
@@ -186,8 +185,9 @@ export default function ArenaLandingPage() {
             <div className={styles.thesisElaborationInner}>
               <span className={styles.thesisLine}>
                 Most people under 18 who can already ship something are doing
-                it alone in their bedroom right now. We thought that was
-                weird, so we built this.
+                it alone in their bedroom right now, working faster than
+                founders worked five years ago. Nobody around them quite gets
+                how fast. We thought that was weird, so we built this.
               </span>
               <span className={styles.thesisLine}>
                 Every month you submit a venture, AI scores it on a rubric,
