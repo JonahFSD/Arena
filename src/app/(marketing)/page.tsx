@@ -143,7 +143,7 @@ export default function ArenaLandingPage() {
       <div className={styles.stage}>
         {/* HOME */}
         <section className={pageClass("home")}>
-          <p className={styles.heroLine}>We back AI-Native humans under 18.</p>
+          <p className={styles.heroLine}>We back AI-Native Humans under 18.</p>
 
           <div className={styles.orb}>
             <canvas
@@ -184,26 +184,23 @@ export default function ArenaLandingPage() {
           >
             <div className={styles.thesisElaborationInner}>
               <span className={styles.thesisLine}>
-                Most people under 18 who can already ship something are doing
-                it alone in their bedroom right now, working faster than
-                founders worked five years ago. Nobody around them quite gets
-                how fast. We thought that was weird, so we built this.
+                Most people under 18 who can ship are doing it alone in their
+                bedroom right now. And they&rsquo;re doing it faster than
+                anyone could imagine, because nobody ever told them to be
+                reasonable.
               </span>
               <span className={styles.thesisLine}>
-                Every month you submit a venture, AI scores it on a rubric,
-                peers vote, and the best work splits a cash pool. Then it
-                starts over.
+                We thought that was cool, so we built this for them. Every
+                month a new cohort ships. The best work splits a cash pool.
               </span>
               <span className={`${styles.thesisLine} ${styles.thesisLineParaBreak}`}>
-                You have to be under 18, and you have to already be shipping.
-                We don&rsquo;t take nominations to be selective. We take them
-                because we&rsquo;re looking for people who started without
-                being asked.
+                We take nominations because we&rsquo;re looking for people
+                who started without being asked. There is no curriculum or
+                hand holding. We believe the best builders need us to get out
+                of their way. If that&rsquo;s your thing, we&rsquo;ll point
+                you to people who do it better than we ever will.
               </span>
               <span className={styles.thesisLine}>
-                There&rsquo;s no curriculum, and nobody will be assigned to
-                mentor you. If that&rsquo;s what you came for, we&rsquo;ll
-                point you to people who do it better than we ever will.
                 Membership ends when you graduate. If you still need the room
                 after that, we probably failed you.
               </span>
