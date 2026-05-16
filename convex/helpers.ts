@@ -113,3 +113,54 @@ export function toPublicBounty(bounty: Doc<"bounties">): PublicBounty {
   } = bounty;
   return publicFields;
 }
+
+/**
+ * Fixed-window rate limit for public mutations. Throws a generic
+ * "too many requests" error when the per-identifier count exceeds `max`
+ * within `windowMs`.
+ *
+ * Convex mutations have no client IP, so public endpoints can only limit
+ * by what the caller provides (typically the submitted email). That's
+ * still useful: it caps same-identifier spam, and crucially makes the
+ * cost of enumerating *one* email's status bounded.
+ *
+ * Concurrency: two simultaneous calls for the same key conflict on the
+ * `rateLimits.by_key` range, so Convex OCC serializes them and the
+ * counter stays correct.
+ *
+ * TODO: rows for expired windows accumulate forever — add a periodic
+ * cleanup cron when the table gets large.
+ */
+export async function enforceRateLimit(
+  ctx: MutationCtx,
+  args: { action: string; identifier: string; max: number; windowMs: number }
+) {
+  const key = `${args.action}:${args.identifier}`;
+  const now = Date.now();
+  const existing = await ctx.db
+    .query("rateLimits")
+    .withIndex("by_key", (q) => q.eq("key", key))
+    .unique();
+
+  if (!existing) {
+    await ctx.db.insert("rateLimits", {
+      key,
+      windowStart: now,
+      count: 1,
+    });
+    return;
+  }
+
+  if (now - existing.windowStart >= args.windowMs) {
+    await ctx.db.patch(existing._id, { windowStart: now, count: 1 });
+    return;
+  }
+
+  if (existing.count >= args.max) {
+    throw new Error(
+      "Too many requests from this address. Please try again later."
+    );
+  }
+
+  await ctx.db.patch(existing._id, { count: existing.count + 1 });
+}

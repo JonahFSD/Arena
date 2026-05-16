@@ -1,10 +1,14 @@
 import { query, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-import { requireAdmin } from "./helpers";
+import { enforceRateLimit, requireAdmin } from "./helpers";
 
 /**
  * Submit a new application. No auth required (public form).
+ *
+ * Rate-limited per applicant email and returns a single generic error for
+ * all "already in our system" cases so the response doesn't distinguish
+ * existing-user / pending-application / approved-application states.
  */
 export const submitApplication = mutation({
   args: {
@@ -32,25 +36,39 @@ export const submitApplication = mutation({
     portfolioUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Check if a user account already exists with this email
+    const normalizedEmail = args.userEmail.trim().toLowerCase();
+
+    // Rate-limit BEFORE any existence check so the existence check itself
+    // can't be used as a free oracle for enumeration.
+    await enforceRateLimit(ctx, {
+      action: "submitApplication",
+      identifier: normalizedEmail,
+      max: 5,
+      windowMs: 24 * 60 * 60 * 1000,
+    });
+
     const existingUser = await ctx.db
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", args.userEmail))
       .first();
-    if (existingUser) {
-      throw new Error("An account with this email already exists. Please sign in instead.");
-    }
 
-    // Check if this email already has a pending or approved application
     const existingApp = await ctx.db
       .query("applications")
       .withIndex("by_email", (q) => q.eq("userEmail", args.userEmail))
       .first();
-    if (existingApp && (existingApp.status === "pending" || existingApp.status === "approved")) {
+
+    // Single uniform error for all in-system cases — drops the three-way
+    // distinction (user account / pending / approved) that previously
+    // leaked email status to the form submitter.
+    if (
+      existingUser ||
+      (existingApp &&
+        (existingApp.status === "pending" ||
+          existingApp.status === "approved"))
+    ) {
       throw new Error(
-        existingApp.status === "pending"
-          ? "An application for this email is already pending review."
-          : "An application for this email has already been approved. Please sign in."
+        "This email is already associated with an application or account. " +
+          "If it's yours, please sign in or check your inbox for status updates."
       );
     }
 

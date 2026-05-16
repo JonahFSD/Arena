@@ -1,14 +1,14 @@
 import { query, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-import { requireAdmin } from "./helpers";
+import { enforceRateLimit, requireAdmin } from "./helpers";
 
 /**
  * Submit a "request to become a nominator" from the public landing page.
  * No auth required. Stores the request in Convex and fires off an email to
  * every admin/superadmin so triage can happen.
  *
- * v1 = no rate limiting, no dedup beyond admin manual review.
+ * Rate-limited per email to prevent flooding admin inboxes.
  */
 export const requestToBecomeNominator = mutation({
   args: {
@@ -23,6 +23,13 @@ export const requestToBecomeNominator = mutation({
     const email = args.email.trim().toLowerCase();
     if (!fullName) throw new Error("Name is required");
     if (!email || !email.includes("@")) throw new Error("A valid email is required");
+
+    await enforceRateLimit(ctx, {
+      action: "requestToBecomeNominator",
+      identifier: email,
+      max: 3,
+      windowMs: 24 * 60 * 60 * 1000,
+    });
 
     const requestId = await ctx.db.insert("nominatorRequests", {
       fullName,
@@ -125,6 +132,12 @@ export const reviewRequest = mutation({
  * Public: a nominator (identified by their email) nominates a student.
  * Throws NOMINATOR_NOT_FOUND if the email is not in the approved nominators
  * list — the frontend matches that string to show a "request access" CTA.
+ *
+ * Rate-limited two ways:
+ *   - Per nominator email: bounds even a real nominator's outbound rate.
+ *   - Per nominee email: prevents the same student receiving many
+ *     nomination emails per day (the real spam concern, since the
+ *     mutation fires an email to the nominee on every successful call).
  */
 export const nominateStudent = mutation({
   args: {
@@ -141,6 +154,16 @@ export const nominateStudent = mutation({
     if (!nominatorEmail.includes("@")) throw new Error("A valid nominator email is required");
     if (!nomineeEmail.includes("@")) throw new Error("A valid nominee email is required");
 
+    // Rate-limit by nominator email first so unapproved attempts also
+    // count against the caller's budget (caps cost of probing the
+    // approved-nominator list).
+    await enforceRateLimit(ctx, {
+      action: "nominateStudent:nominator",
+      identifier: nominatorEmail,
+      max: 20,
+      windowMs: 24 * 60 * 60 * 1000,
+    });
+
     const nominator = await ctx.db
       .query("nominators")
       .withIndex("by_email", (q) => q.eq("email", nominatorEmail))
@@ -148,6 +171,15 @@ export const nominateStudent = mutation({
     if (!nominator || nominator.status !== "approved") {
       throw new Error("NOMINATOR_NOT_FOUND");
     }
+
+    // Per-nominee cap only runs after the nominator is validated, so an
+    // unapproved caller can't burn a target student's daily budget.
+    await enforceRateLimit(ctx, {
+      action: "nominateStudent:nominee",
+      identifier: nomineeEmail,
+      max: 3,
+      windowMs: 24 * 60 * 60 * 1000,
+    });
 
     const token = generateToken();
 

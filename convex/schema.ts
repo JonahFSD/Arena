@@ -402,6 +402,19 @@ export default defineSchema({
   }).index("by_eventId", ["eventId"]),
 
   // ============================================
+  // RATE LIMITS — fixed-window counters for public mutations
+  // ============================================
+  // One row per `${action}:${identifier}`. Public endpoints (apply form,
+  // nominator request, student nomination) consult this via
+  // `enforceRateLimit` in helpers.ts to cap per-identifier spam without
+  // client-IP access (mutations don't expose request headers).
+  rateLimits: defineTable({
+    key: v.string(),
+    windowStart: v.number(),
+    count: v.number(),
+  }).index("by_key", ["key"]),
+
+  // ============================================
   // BOUNTIES — marketplace funding opportunities
   // ============================================
   bounties: defineTable({
