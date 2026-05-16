@@ -427,10 +427,8 @@ export const getReviewToken = query({
 // ---- Helpers ----
 
 function generateToken(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-  let token = "";
-  for (let i = 0; i < 24; i++) {
-    token += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return token;
+  // crypto.randomUUID is cryptographically secure and available in the
+  // Convex V8 runtime. Math.random is predictable and unsafe for tokens
+  // that gate a public route (/review/bounty/[token]).
+  return crypto.randomUUID();
 }
