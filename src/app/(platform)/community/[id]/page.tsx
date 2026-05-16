@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id } from "../../../../../convex/_generated/dataModel";
+import { bqDisplayName } from "../../../../../convex/bqType";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,7 +66,7 @@ export default function MemberProfilePage() {
                 {member.bqType && (
                   <a href={member.bqResultsUrl ?? "https://bq.austinchristianu.org/"} target="_blank" rel="noopener noreferrer">
                     <Badge variant="outline" className="hover:text-text-primary transition-colors">
-                      <Brain className="h-3 w-3 mr-1" />BQ: {member.bqType}<ExternalLink className="h-2.5 w-2.5 ml-1 text-text-muted" />
+                      <Brain className="h-3 w-3 mr-1" />{bqDisplayName(member.bqType)}<ExternalLink className="h-2.5 w-2.5 ml-1 text-text-muted" />
                     </Badge>
                   </a>
                 )}

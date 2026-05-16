@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { bqDisplayName } from "../../../../../convex/bqType";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
@@ -496,7 +497,7 @@ export default function MembersPage() {
                         : "-"}
                     </td>
                     <td className="hidden px-3 py-4 text-sm text-text-secondary lg:table-cell">
-                      {member.bqType || "-"}
+                      {bqDisplayName(member.bqType) || "-"}
                     </td>
                     <td className="hidden px-3 py-4 text-center text-sm text-text-secondary lg:table-cell">
                       {member.networkCount}

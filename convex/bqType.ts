@@ -39,6 +39,15 @@ export const BQ_TYPES = [
 
 export type BqType = (typeof BQ_TYPES)[number];
 
+/**
+ * Render a BQ archetype as its branded display name — e.g.
+ * "Pathfinder" → "The Pathfinder". Returns empty string for missing
+ * input so callers can chain a `|| "-"` fallback.
+ */
+export function bqDisplayName(type: string | null | undefined): string {
+  return type ? `The ${type}` : "";
+}
+
 export const bqTypeValidator = v.union(
   v.literal("Pathfinder"),
   v.literal("Theorist"),
