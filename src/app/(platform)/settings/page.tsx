@@ -197,8 +197,12 @@ export default function SettingsPage() {
 
       // Register the upload (records ownership + validates size/MIME).
       // Must happen before updateAvatar — that mutation checks the
-      // uploader matches the caller.
-      await registerUpload({ storageId, purpose: "avatar" });
+      // uploader matches the caller. A validation failure here means
+      // the storage object has already been deleted server-side.
+      const registration = await registerUpload({ storageId, purpose: "avatar" });
+      if (!registration.ok) {
+        throw new Error(registration.error);
+      }
 
       // Save to user profile
       await updateAvatar({ storageId });

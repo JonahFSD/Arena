@@ -156,11 +156,16 @@ export default function NewSubmissionPage() {
 
         // Register ownership + validate size/MIME. Must happen
         // before createSubmission — it requires the storage ID
-        // to be registered by the same caller.
-        await registerUpload({
+        // to be registered by the same caller. A validation
+        // failure means the storage object has been deleted
+        // server-side already.
+        const registration = await registerUpload({
           storageId: videoStorageId,
           purpose: "submission_video",
         });
+        if (!registration.ok) {
+          throw new Error(registration.error);
+        }
       }
 
       const submissionId = await createSubmission({

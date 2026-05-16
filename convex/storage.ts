@@ -55,18 +55,31 @@ export const generateUploadUrl = mutation({
  * ID is attached to any user / submission row, so that downstream
  * mutations can verify the caller owns the upload they're attaching.
  *
- * Validates content-type and size against UPLOAD_RULES for the given
- * purpose. On failure the storage object is deleted so a rejected
- * upload doesn't linger as orphan storage.
+ * On size/MIME validation failure the storage object is deleted and
+ * the mutation returns `{ ok: false, error }` rather than throwing.
+ * That distinction is load-bearing: Convex mutations roll back their
+ * writes on throw, and storage operations are documented ambiguously
+ * w.r.t. transactional rollback. Returning normally guarantees the
+ * ctx.storage.delete commits regardless of which interpretation is
+ * correct — orphan blobs can't linger because the validation rejected
+ * them. Throws are reserved for genuinely unrecoverable cases (auth,
+ * conflicting prior registration).
  *
- * Idempotent: re-calling with the same (storageId, caller) is a no-op.
+ * Idempotent: re-calling with the same (storageId, caller, purpose)
+ * short-circuits with `alreadyRegistered: true`.
  */
 export const registerUpload = mutation({
   args: {
     storageId: v.id("_storage"),
     purpose: uploadPurposeValidator,
   },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx,
+    args
+  ): Promise<
+    | { ok: true; alreadyRegistered: boolean }
+    | { ok: false; error: string }
+  > => {
     const user = await getAuthUser(ctx);
 
     const existing = await ctx.db
@@ -82,11 +95,14 @@ export const registerUpload = mutation({
           `Storage ID is already registered as ${existing.purpose}, not ${args.purpose}`
         );
       }
-      return { storageId: args.storageId, alreadyRegistered: true };
+      return { ok: true, alreadyRegistered: true };
     }
 
     const metadata = await ctx.db.system.get(args.storageId);
     if (!metadata) {
+      // Storage object doesn't exist — nothing to clean up, and the
+      // client almost certainly has a bug (race or wrong ID). Throw
+      // so the caller fixes it.
       throw new Error("Storage object not found — was the upload completed?");
     }
 
@@ -95,15 +111,17 @@ export const registerUpload = mutation({
 
     if (metadata.size > rule.maxBytes) {
       await ctx.storage.delete(args.storageId);
-      throw new Error(
-        `File too large: ${metadata.size} bytes exceeds ${rule.maxBytes} for ${args.purpose}`
-      );
+      return {
+        ok: false,
+        error: `File too large: ${metadata.size} bytes exceeds ${rule.maxBytes} for ${args.purpose}`,
+      };
     }
     if (!(rule.mimeTypes as readonly string[]).includes(contentType)) {
       await ctx.storage.delete(args.storageId);
-      throw new Error(
-        `Content type ${contentType || "(missing)"} not allowed for ${args.purpose}`
-      );
+      return {
+        ok: false,
+        error: `Content type ${contentType || "(missing)"} not allowed for ${args.purpose}`,
+      };
     }
 
     await ctx.db.insert("fileUploads", {
@@ -114,7 +132,7 @@ export const registerUpload = mutation({
       size: metadata.size,
     });
 
-    return { storageId: args.storageId, alreadyRegistered: false };
+    return { ok: true, alreadyRegistered: false };
   },
 });
 
