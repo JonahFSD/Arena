@@ -3,7 +3,14 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
+import { insertNotification } from "./helpers";
 import { PRIZE_SPLIT, PLACE_LEADERBOARD_POINTS } from "./prizeSplit";
+
+// Each notify batch caps per-user work at ~4 doc ops (insert + counter +
+// scheduler entry + user read), so 100/batch stays comfortably under
+// Convex's 16k-write / 32k-read per-transaction limits even with
+// growth. Matches the VOTER_BATCH_SIZE pattern below for finalization.
+const NOTIFY_BATCH_SIZE = 100;
 
 /**
  * Open a new voting round on the 1st of each month.
@@ -61,52 +68,95 @@ export const openNewRound = internalMutation({
       });
     }
 
-    // Notify all members that voting is open
-    const members = await ctx.db
-      .query("users")
-      .withIndex("by_role", (q) => q.eq("role", "member"))
-      .collect();
+    // Collect notify-eligible user IDs (bounded per role). The orchestrator
+    // only writes scheduler entries here — the actual notification inserts +
+    // email sends happen in batched mutations below so we stay under the
+    // 16k-write per-transaction limit no matter how many members exist.
+    //
+    // 10000-per-role cap is way more than realistic for a high-school
+    // venture studio; if we ever cross it we'd need to paginate the
+    // collect itself via a self-rescheduling fan-out.
+    const [members, admins, superadmins] = await Promise.all([
+      ctx.db
+        .query("users")
+        .withIndex("by_role", (q) => q.eq("role", "member"))
+        .take(10000),
+      ctx.db
+        .query("users")
+        .withIndex("by_role", (q) => q.eq("role", "admin"))
+        .take(200),
+      ctx.db
+        .query("users")
+        .withIndex("by_role", (q) => q.eq("role", "superadmin"))
+        .take(50),
+    ]);
 
-    // Also notify admins and superadmins
-    const admins = await ctx.db
-      .query("users")
-      .withIndex("by_role", (q) => q.eq("role", "admin"))
-      .collect();
-    const superadmins = await ctx.db
-      .query("users")
-      .withIndex("by_role", (q) => q.eq("role", "superadmin"))
-      .collect();
+    if (members.length === 10000) {
+      console.warn(
+        `openNewRound: hit member cap (10000) for ${monthYear} — extra users won't be notified until the cap is raised or pagination is added.`
+      );
+    }
 
-    const allUsers = [...members, ...admins, ...superadmins];
+    const userIds = [...members, ...admins, ...superadmins].map((u) => u._id);
 
-    for (const user of allUsers) {
-      await ctx.db.insert("notifications", {
-        userId: user._id,
+    for (let i = 0; i < userIds.length; i += NOTIFY_BATCH_SIZE) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.votingActions.notifyVotingOpenBatch,
+        {
+          monthYear,
+          userIds: userIds.slice(i, i + NOTIFY_BATCH_SIZE),
+        }
+      );
+    }
+
+    console.log(
+      `Opened voting round for ${monthYear}. Queued ${userIds.length} users ` +
+        `across ${Math.ceil(userIds.length / NOTIFY_BATCH_SIZE)} batch(es).`
+    );
+  },
+});
+
+/**
+ * Notify one batch of users that voting is open: insert the in-app
+ * notification (via the counter-maintaining helper) and schedule the
+ * email if the user hasn't opted out. Idempotency note: a re-run of
+ * openNewRound is blocked by the existing-round check, so this batch
+ * isn't expected to fire twice for the same month under normal
+ * operation.
+ */
+export const notifyVotingOpenBatch = internalMutation({
+  args: {
+    monthYear: v.string(),
+    userIds: v.array(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const body = `The ${args.monthYear} voting round is now open. Cast your votes before the 8th!`;
+    for (const userId of args.userIds) {
+      const user = await ctx.db.get(userId);
+      if (!user) continue;
+
+      await insertNotification(ctx, {
+        userId,
         type: "voting_open",
         title: "Voting is Open!",
-        body: `The ${monthYear} voting round is now open. Cast your votes before the 8th!`,
-        read: false,
+        body,
         actionUrl: "/pitches/voting",
       });
 
-      // Send email notification (checks user preference)
       const prefs = user.notificationPreferences;
       if (!prefs || prefs.votingRoundEmail !== false) {
         await ctx.scheduler.runAfter(0, internal.email.sendNotification, {
           to: user.email,
           recipientName: user.fullName.split(" ")[0],
-          subject: `Voting is Open — ${monthYear}`,
+          subject: `Voting is Open — ${args.monthYear}`,
           heading: "Voting is Open!",
-          body: `The ${monthYear} voting round is now open. Cast your votes before the 8th!`,
+          body,
           ctaLabel: "Vote Now",
           ctaUrl: "/pitches/voting",
         });
       }
     }
-
-    console.log(
-      `Opened voting round for ${monthYear}. Notified ${allUsers.length} users.`
-    );
   },
 });
 
@@ -338,12 +388,11 @@ export const awardWinnersBatch = internalMutation({
       const title = `Congratulations! You placed ${placeLabels[winner.place - 1]}!`;
       const body = `Your submission "${winner.submissionTitle}" won ${placeLabels[winner.place - 1]} place in the ${args.monthYear} voting round! You earned +${winner.points} points.`;
 
-      await ctx.db.insert("notifications", {
+      await insertNotification(ctx, {
         userId: winner.userId,
         type: "voting_winner",
         title,
         body,
-        read: false,
         actionUrl: "/pitches/results",
       });
 

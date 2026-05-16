@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import {
   adjustUserCounter,
   getAuthUser,
+  insertNotification,
   readUserCounters,
   setUserCounter,
 } from "./helpers";
@@ -94,14 +95,6 @@ export const create = internalMutation({
     actionUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("notifications", {
-      userId: args.userId,
-      type: args.type,
-      title: args.title,
-      body: args.body,
-      read: false,
-      actionUrl: args.actionUrl,
-    });
-    await adjustUserCounter(ctx, args.userId, "unreadNotifications", 1);
+    await insertNotification(ctx, args);
   },
 });

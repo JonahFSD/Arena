@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUser, toPublicUser } from "./helpers";
+import { getAuthUser, insertNotification, toPublicUser } from "./helpers";
 
 /**
  * Invite a user to collaborate on a submission.
@@ -50,12 +50,11 @@ export const invite = mutation({
     // Create notification for the invited user
     const invitedUser = await ctx.db.get(args.userId);
     if (invitedUser) {
-      await ctx.db.insert("notifications", {
+      await insertNotification(ctx, {
         userId: args.userId,
         type: "team_invite",
         title: "Team Invitation",
         body: `${user.fullName} invited you to collaborate on "${submission.title}"`,
-        read: false,
         actionUrl: `/pitches/${submission._id}`,
       });
     }
@@ -93,12 +92,11 @@ export const respond = mutation({
     // Notify the team lead about the response
     const submission = await ctx.db.get(collaborator.submissionId);
     if (submission) {
-      await ctx.db.insert("notifications", {
+      await insertNotification(ctx, {
         userId: submission.userId,
         type: "team_response",
         title: args.accept ? "Invitation Accepted" : "Invitation Declined",
         body: `${user.fullName} ${args.accept ? "accepted" : "declined"} your invitation to collaborate on "${submission.title}"`,
-        read: false,
         actionUrl: `/pitches/${submission._id}`,
       });
     }

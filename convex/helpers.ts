@@ -286,6 +286,33 @@ export async function bumpPlatformStat(
 }
 
 /**
+ * Insert a notification AND bump the recipient's unreadNotifications
+ * counter in one shot. Always go through this helper — direct
+ * `ctx.db.insert("notifications", ...)` writes bypass the counter and
+ * drift the badge low until counters.recomputeAll runs.
+ */
+export async function insertNotification(
+  ctx: MutationCtx,
+  args: {
+    userId: Id<"users">;
+    type: string;
+    title: string;
+    body: string;
+    actionUrl?: string;
+  }
+): Promise<void> {
+  await ctx.db.insert("notifications", {
+    userId: args.userId,
+    type: args.type,
+    title: args.title,
+    body: args.body,
+    read: false,
+    actionUrl: args.actionUrl,
+  });
+  await adjustUserCounter(ctx, args.userId, "unreadNotifications", 1);
+}
+
+/**
  * Set a counter to an exact value. Used by "mark all read" flows where we
  * know the post-state without summing deltas.
  */
