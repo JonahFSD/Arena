@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import type { Id } from "../../../../../convex/_generated/dataModel";
 import { useCurrentUser } from "@/contexts/user-context";
 import { Card, CardTitle } from "@/components/ui/card";
 import { InfoCallout } from "@/components/ui/info-callout";
@@ -49,6 +50,7 @@ export default function NewSubmissionPage() {
   const router = useRouter();
   const currentUser = useCurrentUser();
   const createSubmission = useMutation(api.submissions.create);
+  const registerUpload = useMutation(api.storage.registerUpload);
   const submitSubmission = useMutation(api.submissions.submit);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
   const inviteCollaborator = useMutation(api.collaborators.invite);
@@ -140,7 +142,7 @@ export default function NewSubmissionPage() {
     setSubmitError(null);
     try {
       // Upload video file to Convex storage if present
-      let videoStorageId: string | undefined;
+      let videoStorageId: Id<"_storage"> | undefined;
       if (videoFile) {
         const uploadUrl = await generateUploadUrl();
         const result = await fetch(uploadUrl, {
@@ -149,14 +151,22 @@ export default function NewSubmissionPage() {
           body: videoFile,
         });
         if (!result.ok) throw new Error("Video upload failed");
-        const json = await result.json();
+        const json = (await result.json()) as { storageId: Id<"_storage"> };
         videoStorageId = json.storageId;
+
+        // Register ownership + validate size/MIME. Must happen
+        // before createSubmission — it requires the storage ID
+        // to be registered by the same caller.
+        await registerUpload({
+          storageId: videoStorageId,
+          purpose: "submission_video",
+        });
       }
 
       const submissionId = await createSubmission({
         title,
         description,
-        videoStorageId: videoStorageId as any,
+        videoStorageId,
         githubUrl: githubUrl || undefined,
         websiteUrl: websiteUrl || undefined,
         slideDeckUrl: slideDeckUrl || undefined,
