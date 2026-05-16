@@ -2,6 +2,7 @@ import { action, internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import Stripe from "stripe";
 import { internal } from "./_generated/api";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 function getStripe() {
   const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -27,9 +28,10 @@ export const createBountyCheckoutSession = action({
     bountyAmount: v.number(),
     dueDate: v.number(),
     requirements: v.array(v.string()),
-    creatorUserId: v.id("users"),
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     if (args.bountyAmount < 100) {
       throw new Error("Minimum bounty amount is $100");
     }
@@ -61,7 +63,7 @@ export const createBountyCheckoutSession = action({
         bountyAmount: String(args.bountyAmount),
         dueDate: String(args.dueDate),
         requirements: JSON.stringify(args.requirements),
-        creatorUserId: args.creatorUserId,
+        creatorUserId: userId,
       },
       success_url: `${siteUrl}/bounties?created=true`,
       cancel_url: `${siteUrl}/bounties`,

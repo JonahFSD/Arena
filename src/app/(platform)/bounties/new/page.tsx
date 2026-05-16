@@ -56,7 +56,6 @@ export default function NewBountyPage() {
         requirements: requirements
           .map((r) => r.trim())
           .filter((r) => r.length > 0),
-        creatorUserId: me._id,
       });
       if (result?.url) {
         window.location.href = result.url;
