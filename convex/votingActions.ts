@@ -3,6 +3,7 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
+import { PRIZE_SPLIT, PLACE_LEADERBOARD_POINTS } from "./prizeSplit";
 
 /**
  * Open a new voting round on the 1st of each month.
@@ -51,11 +52,11 @@ export const openNewRound = internalMutation({
       await ctx.db.insert("prizePools", {
         monthYear,
         totalCollected: 0,
-        operationalFeePct: 20,
+        operationalFeePct: PRIZE_SPLIT.operationalFeePct,
         netPrize: 0,
-        firstPlacePct: 50,
-        secondPlacePct: 30,
-        thirdPlacePct: 20,
+        firstPlacePct: PRIZE_SPLIT.firstPlacePct,
+        secondPlacePct: PRIZE_SPLIT.secondPlacePct,
+        thirdPlacePct: PRIZE_SPLIT.thirdPlacePct,
         payoutStatus: "pending",
       });
     }
@@ -115,7 +116,6 @@ export const openNewRound = internalMutation({
 const VOTER_BATCH_SIZE = 100;
 const TOP10_POINTS = 400;
 const VOTER_POINTS = 100;
-const PLACE_POINTS = [1000, 750, 500] as const;
 
 type AwardKind = "place_1" | "place_2" | "place_3" | "top10" | "voter";
 
@@ -224,12 +224,13 @@ export const closeAndFinalize = internalMutation({
     for (let i = 0; i < Math.min(3, rankedSubmissionIds.length); i++) {
       const submission = await ctx.db.get(rankedSubmissionIds[i]);
       if (!submission) continue;
+      const place = (i + 1) as 1 | 2 | 3;
       winners.push({
-        place: (i + 1) as 1 | 2 | 3,
+        place,
         submissionId: rankedSubmissionIds[i],
         submissionTitle: submission.title,
         userId: submission.userId,
-        points: PLACE_POINTS[i],
+        points: PLACE_LEADERBOARD_POINTS[place],
       });
     }
 

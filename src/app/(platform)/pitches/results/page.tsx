@@ -8,7 +8,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import {
-  PLACEMENT_LEADERBOARD_POINTS,
+  PLACE_LEADERBOARD_POINTS,
+  PRIZE_SPLIT,
   splitCompetitorPrizePool,
   type CompetitorPrizeSplit,
 } from "@/lib/hall-of-fame-prize-pool";
@@ -28,17 +29,10 @@ type PitchPlacement = {
   team: { id: string; name: string }[];
 };
 
-type MostPointsWinner = {
-  userId: string;
-  name: string;
-  monthlyPoints: number;
-};
-
 type MonthRound = {
   month: string;
   grossPool: number;
   placements: PitchPlacement[];
-  mostPoints: MostPointsWinner;
 };
 
 function formatMonthYear(monthYear: string): string {
@@ -54,17 +48,19 @@ const placeColors = {
 } as const;
 
 const placeOrdinalUnderTrophy: Record<1 | 2 | 3, string> = { 1: "1st", 2: "2nd", 3: "3rd" };
-const poolSharePercent: Record<1 | 2 | 3, string> = { 1: "50%", 2: "30%", 3: "10%" };
+const poolSharePercent: Record<1 | 2 | 3, string> = {
+  1: `${PRIZE_SPLIT.firstPlacePct}%`,
+  2: `${PRIZE_SPLIT.secondPlacePct}%`,
+  3: `${PRIZE_SPLIT.thirdPlacePct}%`,
+};
 const placeLabelColor: Record<1 | 2 | 3, string> = { 1: "text-yellow-400", 2: "text-gray-300", 3: "text-amber-600" };
-const MOST_POINTS_BONUS_PTS = 500;
 
 type WinnerRowsProps = {
   split: CompetitorPrizeSplit;
   placements: PitchPlacement[];
-  mostPoints: MostPointsWinner;
 };
 
-function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
+function WinnerRows({ split, placements }: WinnerRowsProps) {
   const prizeForPlace = (place: 1 | 2 | 3) =>
     place === 1 ? split.first : place === 2 ? split.second : split.third;
 
@@ -74,7 +70,7 @@ function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
         const colors = placeColors[p.place];
         const submissionHref = `/pitches/${p.projectId}`;
         const prize = prizeForPlace(p.place);
-        const bonusPts = PLACEMENT_LEADERBOARD_POINTS[p.place];
+        const bonusPts = PLACE_LEADERBOARD_POINTS[p.place];
         return (
           <div
             key={p.place}
@@ -130,42 +126,6 @@ function WinnerRows({ split, placements, mostPoints }: WinnerRowsProps) {
           </div>
         );
       })}
-
-      <div className="px-3 py-3 sm:px-4 hover:bg-white/[0.03] transition-colors">
-        <div className="flex gap-4 items-start">
-          <div className="flex flex-col items-center gap-1 shrink-0 w-14">
-            <Trophy className="h-5 w-5 text-text-tertiary" aria-hidden />
-            <span className="text-[10px] font-mono text-text-tertiary tabular-nums text-center leading-tight">Points</span>
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex gap-4 items-start justify-between">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-text-primary">Most Points Earned</p>
-                <p className="text-xs text-text-muted mt-1 tabular-nums">{mostPoints.monthlyPoints.toLocaleString()} points</p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <Link
-                    href={`/community/${mostPoints.userId}`}
-                    className="inline-flex items-center gap-1.5 py-1 pl-0 pr-2 rounded-lg bg-surface-card hover:bg-surface-overlay transition-colors text-xs text-text-secondary hover:text-text-primary"
-                  >
-                    <Avatar name={mostPoints.name} size="xs" />
-                    {mostPoints.name}
-                  </Link>
-                </div>
-              </div>
-
-              <Link href={`/community/${mostPoints.userId}`} className="text-right shrink-0 min-w-[5.5rem]">
-                <p className="text-lg sm:text-xl font-medium tabular-nums leading-tight text-text-primary">
-                  ${split.mostPoints.toLocaleString()}
-                </p>
-                <p className="mt-0.5 text-sm font-mono text-text-secondary tabular-nums">
-                  +{MOST_POINTS_BONUS_PTS.toLocaleString()} pts · 10%
-                </p>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -185,7 +145,6 @@ const DEMO_ROUNDS = [
     firstPlaceUser: { _id: "u3", fullName: "Jonah Elliot" },
     secondPlaceUser: { _id: "u1", fullName: "Alex Mi" },
     thirdPlaceUser: { _id: "u2", fullName: "Yichi Zhang" },
-    mostPointsUser: { _id: "u4", fullName: "Connor", monthlyPoints: 1840 },
   },
   {
     _id: "r2",
@@ -198,7 +157,6 @@ const DEMO_ROUNDS = [
     firstPlaceUser: { _id: "u5", fullName: "Seowoong Park" },
     secondPlaceUser: { _id: "u10", fullName: "Lars Ostervold" },
     thirdPlaceUser: null,
-    mostPointsUser: { _id: "u1", fullName: "Alex Mi", monthlyPoints: 1620 },
   },
 ];
 
@@ -230,16 +188,10 @@ export default function ResultsPage() {
       }
     }
 
-    const mp = pool.mostPointsUser;
     return {
       month: formatMonthYear(pool.monthYear),
       grossPool: pool.totalCollected,
       placements,
-      mostPoints: {
-        userId: mp?._id ?? "",
-        name: mp?.fullName ?? "N/A",
-        monthlyPoints: mp?.monthlyPoints ?? 0,
-      },
     };
   });
 
@@ -324,7 +276,7 @@ export default function ResultsPage() {
                   {open && (
                     <tr className="border-b border-border-subtle bg-surface-secondary/50">
                       <td colSpan={3} className="px-4 py-4" id={panelId}>
-                        <WinnerRows split={prizeSplit} placements={round.placements} mostPoints={round.mostPoints} />
+                        <WinnerRows split={prizeSplit} placements={round.placements} />
                       </td>
                     </tr>
                   )}

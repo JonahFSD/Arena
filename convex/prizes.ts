@@ -76,13 +76,6 @@ export const getPastRounds = query({
           ? await ctx.db.get(pool.thirdPlaceUserId)
           : null;
 
-        // Find the user with most points earned this month
-        // (approximate: use pointsThisMonth if available, else use first place)
-        const allUsers = await ctx.db.query("users").collect();
-        const topPointsUser = allUsers
-          .filter((u) => u.role !== "superadmin")
-          .sort((a, b) => (b.pointsThisMonth ?? 0) - (a.pointsThisMonth ?? 0))[0];
-
         return {
           ...pool,
           winningSubmissions,
@@ -94,13 +87,6 @@ export const getPastRounds = query({
             : null,
           thirdPlaceUser: third
             ? { _id: third._id, fullName: third.fullName, schoolName: third.schoolName }
-            : null,
-          mostPointsUser: topPointsUser
-            ? {
-                _id: topPointsUser._id,
-                fullName: topPointsUser.fullName,
-                monthlyPoints: topPointsUser.pointsThisMonth ?? 0,
-              }
             : null,
         };
       })

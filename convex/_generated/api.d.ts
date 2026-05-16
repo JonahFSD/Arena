@@ -24,6 +24,7 @@ import type * as memberships from "../memberships.js";
 import type * as messages from "../messages.js";
 import type * as nominators from "../nominators.js";
 import type * as notifications from "../notifications.js";
+import type * as prizeSplit from "../prizeSplit.js";
 import type * as prizes from "../prizes.js";
 import type * as resetAuth from "../resetAuth.js";
 import type * as seed from "../seed.js";
@@ -59,6 +60,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   nominators: typeof nominators;
   notifications: typeof notifications;
+  prizeSplit: typeof prizeSplit;
   prizes: typeof prizes;
   resetAuth: typeof resetAuth;
   seed: typeof seed;
