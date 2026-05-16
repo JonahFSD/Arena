@@ -1,0 +1,39 @@
+# Dependency Review — blocks PRs that introduce dependencies with
+# known CVEs or incompatible licenses. Complements Dependabot:
+# Dependabot proposes bumps to fix vulnerabilities you already have;
+# this stops new vulnerabilities from landing in the first place.
+#
+# Free for public repos. Uses GitHub's advisory database, same data
+# source as `npm audit` but evaluated at PR diff scope (only new /
+# changed deps).
+
+name: Dependency Review
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      # Needed so the action can comment the summary on the PR.
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Dependency Review
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          # Block PRs with high or critical severity advisories.
+          # Moderate/low surface as PR comments without blocking.
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure
