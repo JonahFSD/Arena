@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { type Id } from "../../../../../convex/_generated/dataModel";
+import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,22 +48,11 @@ function SlotCard({
   return (
     <Card padding="md" className="border-border-default flex items-center gap-4">
       <div className="flex-shrink-0">
-        {hasUser && position.avatarUrl ? (
-          <img
-            src={position.avatarUrl}
-            alt={position.name}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-surface-elevated flex items-center justify-center text-sm font-medium text-text-secondary">
-            {position.name
-              .split(" ")
-              .map((w) => w[0])
-              .join("")
-              .slice(0, 2)
-              .toUpperCase()}
-          </div>
-        )}
+        <Avatar
+          src={hasUser ? position.avatarUrl : null}
+          name={position.name}
+          size="md"
+        />
       </div>
 
       <div className="flex-1 min-w-0">
