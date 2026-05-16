@@ -108,3 +108,45 @@ jobs:
         run: npm ci
       - name: Next build (no Convex deploy)
         run: npm run build:ci
+
+  convex-preview:
+    name: Convex preview deploy (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Skip for PRs from forks — GitHub doesn't pass secrets to fork
+    # PRs, so the deploy key would be empty and the job would fail
+    # uselessly. Pushes to main have no head_repo and the OR is true.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    # Advisory until CONVEX_DEPLOY_KEY is wired as a repo secret.
+    # Generate via Convex dashboard:
+    #   Project Settings -> Deploy Keys -> Generate preview deploy key
+    # Then add as repo secret CONVEX_DEPLOY_KEY and flip this flag.
+    # Preview deployments auto-clean after 5 days on the free tier
+    # (14 days on paid tiers); free-tier project limit applies.
+    #
+    # What this catches that tsc + next build can't:
+    #   - Schema validator changes that don't match existing data
+    #     (we hit this twice in the security review work — bqType
+    #     migration and the storage validator widening).
+    #   - Convex function args / validator drift from the schema.
+    #   - Runtime errors that surface during `convex deploy`'s push.
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Convex preview deploy
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        # When CONVEX_DEPLOY_KEY is a preview-class key, the Convex
+        # CLI auto-derives the preview name from GitHub Actions env
+        # vars (no flag needed).
+        run: npx convex deploy
