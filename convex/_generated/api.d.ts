@@ -13,6 +13,7 @@ import type * as admin from "../admin.js";
 import type * as applications from "../applications.js";
 import type * as auth from "../auth.js";
 import type * as bounties from "../bounties.js";
+import type * as bqType from "../bqType.js";
 import type * as collaborators from "../collaborators.js";
 import type * as crons from "../crons.js";
 import type * as email from "../email.js";
@@ -47,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   applications: typeof applications;
   auth: typeof auth;
   bounties: typeof bounties;
+  bqType: typeof bqType;
   collaborators: typeof collaborators;
   crons: typeof crons;
   email: typeof email;

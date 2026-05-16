@@ -12,7 +12,7 @@ export function MultiSelectDropdown({
   emptyLabel,
 }: {
   label: string;
-  options: string[];
+  options: readonly string[];
   value: string[];
   onChange: (next: string[]) => void;
   emptyLabel: string;

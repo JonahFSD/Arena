@@ -1,6 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
+import { bqTypeValidator } from "./bqType";
 
 export default defineSchema({
   ...authTables,
@@ -27,16 +28,7 @@ export default defineSchema({
     ),
     skills: v.array(v.string()),
     lookingForCofounders: v.boolean(),
-    bqType: v.optional(
-      v.union(
-        v.literal("Anchor"),
-        v.literal("Visionary"),
-        v.literal("Operator"),
-        v.literal("Catalyst"),
-        v.literal("Strategist"),
-        v.literal("Builder")
-      )
-    ),
+    bqType: v.optional(bqTypeValidator),
     bqResultsUrl: v.optional(v.string()),
     linkedinUrl: v.optional(v.string()),
     referralCode: v.optional(v.string()),

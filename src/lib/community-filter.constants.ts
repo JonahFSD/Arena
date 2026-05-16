@@ -1,11 +1,6 @@
-export const BQ_TYPES = [
-  "Anchor",
-  "Visionary",
-  "Operator",
-  "Catalyst",
-  "Strategist",
-  "Builder",
-];
+// Re-exported from convex/bqType so the schema validator and frontend
+// filter dropdown share a single source of truth.
+export { BQ_TYPES } from "../../convex/bqType";
 
 export const SKILLS = [
   "React",
