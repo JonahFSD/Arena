@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import Stripe from "stripe";
 import { internal } from "./_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import type { Id } from "./_generated/dataModel";
 
 function getStripe() {
   const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -126,7 +127,7 @@ export const handleStripeWebhook = internalAction({
           bountyAmount: Number(meta.bountyAmount),
           dueDate: Number(meta.dueDate),
           requirements: JSON.parse(meta.requirements!),
-          creatorUserId: meta.creatorUserId! as any,
+          creatorUserId: meta.creatorUserId! as Id<"users">,
           stripeCheckoutSessionId: session.id,
           stripePaymentIntentId:
             typeof session.payment_intent === "string"

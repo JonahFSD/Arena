@@ -139,6 +139,15 @@ export const createFromWebhook = internalMutation({
       return { duplicate: true as const };
     }
 
+    // The `v.id("users")` validator only checks Id *shape*; confirm the
+    // referenced user actually exists before we trust webhook metadata.
+    const creator = await ctx.db.get(args.creatorUserId);
+    if (!creator) {
+      throw new Error(
+        `Stripe webhook event ${args.stripeEventId} references missing user ${args.creatorUserId}`
+      );
+    }
+
     await ctx.db.insert("stripeEvents", {
       eventId: args.stripeEventId,
       eventType: args.stripeEventType,
