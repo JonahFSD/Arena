@@ -1,0 +1,40 @@
+# Dependabot keeps SHA pins fresh without giving up the SHA-pinning
+# security model. Bumps are proposed as PRs that a human reviews —
+# this is the explicit human-in-the-loop the tj-actions postmortem
+# called out as load-bearing.
+
+version: 2
+updates:
+  # Pinned action SHAs in .github/workflows
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions-minor-and-patch:
+        update-types: [minor, patch]
+    labels: [ci, dependencies]
+    open-pull-requests-limit: 5
+
+  # JS dependencies. Convex/Next/React major bumps reviewed manually.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # Major bumps for the framework stack get manual review.
+      - dependency-name: next
+        update-types: [version-update:semver-major]
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: convex
+        update-types: [version-update:semver-major]
+    labels: [dependencies]
+    open-pull-requests-limit: 10

@@ -146,7 +146,7 @@ Per Convex agent guidelines: do not use `crons.daily` / `crons.weekly` / `crons.
 
 ## 12. The build pipeline does not deploy backend from preview branches
 
-`vercel.json`:
+Implemented in `vercel.json`:
 
 ```jsonc
 {
@@ -155,7 +155,9 @@ Per Convex agent guidelines: do not use `crons.daily` / `crons.weekly` / `crons.
 }
 ```
 
-Or use Convex's preview deploys (`--preview-create $VERCEL_GIT_COMMIT_REF`). Either way, the rule is: a preview-branch build never overwrites prod functions.
+Preview branches run plain `next build` — the static layout compiles, but the Convex backend is not redeployed. To get a per-branch Convex preview deployment later, swap the `else` arm to `npx convex deploy --preview-create $VERCEL_GIT_COMMIT_REF --cmd 'next build'`. Either way, the rule is: a preview-branch build never overwrites prod functions.
+
+CI (`.github/workflows/ci.yml`) calls `npm run build:ci` (= `next build`), never `npm run build` (= `convex deploy && next build`), so the CI runner can't deploy either.
 
 ## 13. Env vars are validated at startup, not at first use
 
@@ -179,24 +181,13 @@ Imported once from `next.config.ts` so a missing var fails the build, not a midn
 
 ## 14. PRs are gated by lint + typecheck + build
 
-`.github/workflows/ci.yml`:
+Implemented in `.github/workflows/ci.yml` — three parallel jobs (lint, typecheck, build) with a 10-minute timeout each, npm cache via `setup-node`, and `concurrency.cancel-in-progress` so superseded runs don't waste minutes. Target p95 < 10 minutes wallclock; current expected is ~90s warm.
 
-```yaml
-on: [pull_request]
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: npm }
-      - run: npm ci
-      - run: npm run lint
-      - run: npx tsc --noEmit
-      - run: npx next build
-```
+Third-party actions are pinned by full-length commit SHA (Fowler's 2024 CI essay; tj-actions/changed-files compromise, March 2025) with the corresponding semver in a trailing comment so renovate/dependabot diffs are reviewable. `.github/dependabot.yml` proposes weekly bumps as PRs.
 
-Without this gate, every regression in the audit comes back.
+Workflow files themselves are gated by `.github/workflows/workflow-lint.yml` (actionlint via reviewdog) — catches script injection from PR titles, unescaped shell vars, and unsafe `pull_request_target` patterns before they merge. Per rule 6: CI config is production code.
+
+`.github/CODEOWNERS` requires owner review for `/.github/`, `vercel.json`, the Convex schema/auth/billing/storage files, and the playbook docs themselves. Without this gate, every regression in the audit comes back.
 
 ## 15. Observability and rate limiting are not optional
 

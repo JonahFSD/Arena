@@ -1,3 +1,4 @@
 {
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "buildCommand": "[ \"$VERCEL_ENV\" = \"production\" ] && npx convex deploy --cmd 'next build' || next build"
 }

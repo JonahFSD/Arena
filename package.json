@@ -6,8 +6,10 @@
     "dev": "next dev",
     "dev:convex": "npx convex dev",
     "build": "npx convex deploy && next build",
+    "build:ci": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@auth/core": "^0.37.4",

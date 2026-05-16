@@ -1,0 +1,26 @@
+# Code review gate. Files listed here require the named owner's
+# approval to merge. Workflow files and security-sensitive backend
+# code go through @JonahFSD per docs/GOOD-CODE.md §6 ("treat CI
+# configuration as production code").
+
+# CI / repo plumbing
+/.github/                  @JonahFSD
+/vercel.json               @JonahFSD
+/package.json              @JonahFSD
+/package-lock.json         @JonahFSD
+/tsconfig.json             @JonahFSD
+/eslint.config.mjs         @JonahFSD
+
+# Convex backend — schema, auth, billing, anything talking to Stripe.
+/convex/schema.ts          @JonahFSD
+/convex/auth.ts            @JonahFSD
+/convex/auth.config.ts     @JonahFSD
+/convex/http.ts            @JonahFSD
+/convex/helpers.ts         @JonahFSD
+/convex/stripe.ts          @JonahFSD
+/convex/storage.ts         @JonahFSD
+
+# Documented playbook — changes here change the rules for everyone.
+/docs/GOOD-CODE.md         @JonahFSD
+/AGENTS.md                 @JonahFSD
+/CLAUDE.md                 @JonahFSD

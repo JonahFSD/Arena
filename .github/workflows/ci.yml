@@ -1,0 +1,110 @@
+# CI — runs on every PR to main and on pushes to main.
+#
+# Three parallel jobs (lint, typecheck, build). Target p95 < 10min total
+# wallclock; current expected is ~90s with the npm cache warm.
+#
+# Conventions enforced here per docs/GOOD-CODE.md:
+#   §10 — public queries are tested at the type level via tsc
+#   §12 — `npm run build:ci` runs `next build` only. The Convex deploy
+#         step is gated to VERCEL_ENV=production in vercel.json so a
+#         preview-branch build never overwrites prod functions, and
+#         likewise CI never deploys.
+#   §14 — this file IS the gate referenced by rule 14.
+#
+# Third-party actions are pinned by full-length commit SHA per the
+# tj-actions/changed-files compromise (Mar 2025). Comments record the
+# corresponding tag so renovate/dependabot bumps are reviewable.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel superseded runs on the same branch — saves CI minutes and
+# gives faster feedback on the latest push.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: read-only by default. Individual jobs that need
+# more (e.g. a future deploy job writing a deployment status) must
+# opt in explicitly.
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Advisory until the pre-existing lint baseline is cleared. As of
+    # the CI rollout there are 25 errors (mostly `@typescript-eslint/
+    # no-explicit-any` and React Compiler strict-mode complaints) and
+    # 46 warnings. Gating on lint right now would block every PR; per
+    # docs/GOOD-CODE.md principle 8 (quarantine with attribution),
+    # explicitly accept the baseline and surface new regressions via
+    # the job result while not blocking merges. Flip this to a hard
+    # gate by removing `continue-on-error` once the baseline is zero.
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: ESLint
+        run: npm run lint
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript
+        run: npm run typecheck
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # Next.js statically resolves NEXT_PUBLIC_* during the build. The
+      # ConvexReactClient is constructed lazily at runtime so any
+      # well-formed URL works here — CI is not exercising the network,
+      # only verifying that `next build` succeeds.
+      NEXT_PUBLIC_CONVEX_URL: https://ci-placeholder.convex.cloud
+      NEXT_PUBLIC_CONVEX_SITE_URL: https://ci-placeholder.convex.site
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Next build (no Convex deploy)
+        run: npm run build:ci
