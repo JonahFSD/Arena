@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUser, toPublicUser } from "./helpers";
+import { bumpPlatformStat, getAuthUser, toPublicUser } from "./helpers";
 import { requireOwnedUpload } from "./storage";
 
 /**
@@ -272,7 +272,7 @@ export const create = mutation({
       videoUrl = (await ctx.storage.getUrl(args.videoStorageId)) ?? undefined;
     }
 
-    return await ctx.db.insert("submissions", {
+    const submissionId = await ctx.db.insert("submissions", {
       userId: user._id,
       title: args.title,
       description: args.description,
@@ -286,6 +286,8 @@ export const create = mutation({
       status: "draft",
       isTeamSubmission: args.isTeamSubmission ?? false,
     });
+    await bumpPlatformStat(ctx, "totalSubmissions", 1);
+    return submissionId;
   },
 });
 

@@ -101,9 +101,45 @@ export const recomputeAll = internalMutation({
       }
     }
 
+    // platformStats — singleton admin-dashboard aggregate, rebuilt from
+    // the underlying tables we just walked (plus prizePools + aiScores).
+    const applications = await ctx.db.query("applications").collect();
+    const prizePools = await ctx.db.query("prizePools").collect();
+    const allVotes = await ctx.db.query("votes").collect();
+    const aiScores = await ctx.db.query("aiScores").collect();
+
+    const nextStats = {
+      key: "global" as const,
+      totalMembers: users.filter((u) => u.role === "member").length,
+      totalSubmissions: submissions.length,
+      pendingApplications: applications.filter((a) => a.status === "pending")
+        .length,
+      totalRevenue: prizePools.reduce((sum, p) => sum + p.totalCollected, 0),
+      totalVotes: allVotes.length,
+      aiScoreSum: aiScores.reduce((s, a) => s + a.overallScore, 0),
+      aiScoreCount: aiScores.length,
+    };
+    const existingStats = await ctx.db
+      .query("platformStats")
+      .withIndex("by_key", (q) => q.eq("key", "global"))
+      .unique();
+    if (existingStats) {
+      await ctx.db.patch(existingStats._id, {
+        totalMembers: nextStats.totalMembers,
+        totalSubmissions: nextStats.totalSubmissions,
+        pendingApplications: nextStats.pendingApplications,
+        totalRevenue: nextStats.totalRevenue,
+        totalVotes: nextStats.totalVotes,
+        aiScoreSum: nextStats.aiScoreSum,
+        aiScoreCount: nextStats.aiScoreCount,
+      });
+    } else {
+      await ctx.db.insert("platformStats", nextStats);
+    }
+
     console.log(
       `   ✅ Recomputed counters: ${submissionsTouched} submissions, ` +
-        `${bountiesTouched} bounties, ${usersTouched} user rows`
+        `${bountiesTouched} bounties, ${usersTouched} user rows, platformStats ok`
     );
     return {
       submissionsTouched,

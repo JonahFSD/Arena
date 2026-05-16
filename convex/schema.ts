@@ -554,6 +554,28 @@ export default defineSchema({
     .index("by_bountyId_userId", ["bountyId", "userId"]),
 
   // ============================================
+  // PLATFORM STATS — singleton aggregate for the admin dashboard
+  // ============================================
+  // One row, keyed by the literal "global". Maintained by the mutations
+  // that change each underlying source (auth.createOrUpdateUser,
+  // applications.submitApplication, voting.castVotes, etc.) and refreshed
+  // by counters.recomputeAll for drift repair / cold start.
+  //
+  // currentMonthSubmissions and avgAiScore are *derived* at read time —
+  // currentMonth shifts, and avg is just aiScoreSum / aiScoreCount — so
+  // they don't get stored fields here.
+  platformStats: defineTable({
+    key: v.literal("global"),
+    totalMembers: v.number(),
+    totalSubmissions: v.number(),
+    pendingApplications: v.number(),
+    totalRevenue: v.number(),
+    totalVotes: v.number(),
+    aiScoreSum: v.number(),
+    aiScoreCount: v.number(),
+  }).index("by_key", ["key"]),
+
+  // ============================================
   // USER COUNTERS — denormalized per-user totals for hot-path reads
   // ============================================
   // Separated from the users doc per Convex's "isolate high-churn fields"

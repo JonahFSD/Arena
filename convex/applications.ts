@@ -1,7 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-import { enforceRateLimit, requireAdmin } from "./helpers";
+import { bumpPlatformStat, enforceRateLimit, requireAdmin } from "./helpers";
 
 /**
  * Submit a new application. No auth required (public form).
@@ -76,6 +76,7 @@ export const submitApplication = mutation({
       ...args,
       status: "pending",
     });
+    await bumpPlatformStat(ctx, "pendingApplications", 1);
 
     // If a nomination token was supplied, backfill the nominations row.
     // Soft-fails — token is also valid as an audit hint by itself.
@@ -145,12 +146,20 @@ export const reviewApplication = mutation({
     const application = await ctx.db.get(args.applicationId);
     if (!application) throw new Error("Application not found");
 
+    // pendingApplications decrements only when we're actually flipping
+    // a pending row away from pending; idempotent re-reviews stay neutral.
+    const wasPending = application.status === "pending";
+
     await ctx.db.patch(args.applicationId, {
       status: args.decision,
       reviewerId: admin._id,
       reviewerNotes: args.notes,
       reviewedAt: Date.now(),
     });
+
+    if (wasPending) {
+      await bumpPlatformStat(ctx, "pendingApplications", -1);
+    }
 
     // If approved, create a user account (if one doesn't exist)
     if (args.decision === "approved") {
@@ -193,6 +202,7 @@ export const reviewApplication = mutation({
           phone: application.phone,
           ...(referrer ? { referredBy: referrer._id } : {}),
         });
+        await bumpPlatformStat(ctx, "totalMembers", 1);
       }
 
       // Award referrer 500 points (all-time + monthly)

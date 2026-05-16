@@ -218,6 +218,73 @@ export async function adjustUserCounter(
   }
 }
 
+/* ---- platform-level denormalized stats (admin dashboard) ---- */
+
+type PlatformStatField =
+  | "totalMembers"
+  | "totalSubmissions"
+  | "pendingApplications"
+  | "totalRevenue"
+  | "totalVotes"
+  | "aiScoreSum"
+  | "aiScoreCount";
+
+/**
+ * Read the platformStats singleton. Returns zeros when the row hasn't
+ * been initialized yet — `counters.recomputeAll` lazy-creates it.
+ */
+export async function readPlatformStats(ctx: QueryCtx | MutationCtx) {
+  const row = await ctx.db
+    .query("platformStats")
+    .withIndex("by_key", (q) => q.eq("key", "global"))
+    .unique();
+  return {
+    totalMembers: row?.totalMembers ?? 0,
+    totalSubmissions: row?.totalSubmissions ?? 0,
+    pendingApplications: row?.pendingApplications ?? 0,
+    totalRevenue: row?.totalRevenue ?? 0,
+    totalVotes: row?.totalVotes ?? 0,
+    aiScoreSum: row?.aiScoreSum ?? 0,
+    aiScoreCount: row?.aiScoreCount ?? 0,
+  };
+}
+
+/**
+ * Bump a platformStats field by `delta`. Lazy-creates the singleton row
+ * if missing and floors at 0 (drift self-heals at the boundary; full
+ * authoritative recompute is `counters.recomputeAll`).
+ */
+export async function bumpPlatformStat(
+  ctx: MutationCtx,
+  field: PlatformStatField,
+  delta: number
+): Promise<void> {
+  if (delta === 0) return;
+  const existing = await ctx.db
+    .query("platformStats")
+    .withIndex("by_key", (q) => q.eq("key", "global"))
+    .unique();
+  if (!existing) {
+    const seed = {
+      key: "global" as const,
+      totalMembers: 0,
+      totalSubmissions: 0,
+      pendingApplications: 0,
+      totalRevenue: 0,
+      totalVotes: 0,
+      aiScoreSum: 0,
+      aiScoreCount: 0,
+    };
+    seed[field] = Math.max(0, delta);
+    await ctx.db.insert("platformStats", seed);
+    return;
+  }
+  const next = Math.max(0, existing[field] + delta);
+  if (next !== existing[field]) {
+    await ctx.db.patch(existing._id, { [field]: next });
+  }
+}
+
 /**
  * Set a counter to an exact value. Used by "mark all read" flows where we
  * know the post-state without summing deltas.

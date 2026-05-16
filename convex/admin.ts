@@ -1,59 +1,48 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
-import { requireAdmin } from "./helpers";
+import { readPlatformStats, requireAdmin } from "./helpers";
 
 /**
  * Get aggregate stats for the admin dashboard.
+ *
+ * Six full-table .collect() calls used to run on every dashboard render.
+ * Now: one read of the platformStats singleton, plus a bounded indexed
+ * query for currentMonthSubmissions (since "current" shifts and isn't a
+ * stored field).
+ *
+ * The singleton is maintained inline by the mutations that change each
+ * underlying source; counters.recomputeAll rebuilds it from scratch for
+ * drift repair or cold starts.
  */
 export const getDashboardStats = query({
   args: {},
   handler: async (ctx) => {
     await requireAdmin(ctx);
 
-    const users = await ctx.db.query("users").collect();
-    const submissions = await ctx.db.query("submissions").collect();
-    const applications = await ctx.db.query("applications").collect();
-    const prizePools = await ctx.db.query("prizePools").collect();
-    const votes = await ctx.db.query("votes").collect();
-    const aiScores = await ctx.db.query("aiScores").collect();
+    const stats = await readPlatformStats(ctx);
 
-    const totalMembers = users.filter((u) => u.role === "member").length;
-    const totalSubmissions = submissions.length;
-    const pendingApplications = applications.filter(
-      (a) => a.status === "pending"
-    ).length;
-    const totalRevenue = prizePools.reduce(
-      (sum, p) => sum + p.totalCollected,
-      0
-    );
-
-    // Current month's submissions
-    const now = new Date();
-    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-    const currentMonthSubmissions = submissions.filter(
-      (s) => s.monthYear === currentMonth
-    ).length;
-
-    // Total votes cast
-    const totalVotes = votes.length;
-
-    // Average AI score
     const avgAiScore =
-      aiScores.length > 0
-        ? Math.round(
-            (aiScores.reduce((s, a) => s + a.overallScore, 0) /
-              aiScores.length) *
-              10
-          ) / 10
+      stats.aiScoreCount > 0
+        ? Math.round((stats.aiScoreSum / stats.aiScoreCount) * 10) / 10
         : 0;
 
+    // currentMonthSubmissions: scoped to one monthYear via the existing
+    // by_monthYear_status index. Capped at 1000 — realistic monthly
+    // throughput is far below that for this scale.
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const monthRows = await ctx.db
+      .query("submissions")
+      .withIndex("by_monthYear_status", (q) => q.eq("monthYear", currentMonth))
+      .take(1000);
+
     return {
-      totalMembers,
-      totalSubmissions,
-      pendingApplications,
-      totalRevenue,
-      currentMonthSubmissions,
-      totalVotes,
+      totalMembers: stats.totalMembers,
+      totalSubmissions: stats.totalSubmissions,
+      pendingApplications: stats.pendingApplications,
+      totalRevenue: stats.totalRevenue,
+      currentMonthSubmissions: monthRows.length,
+      totalVotes: stats.totalVotes,
       avgAiScore,
     };
   },

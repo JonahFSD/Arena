@@ -1,6 +1,7 @@
 import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 import Resend from "@auth/core/providers/resend";
+import { bumpPlatformStat } from "./helpers";
 
 export const { auth, signIn, signOut, store } = convexAuth({
   providers: [
@@ -35,7 +36,7 @@ export const { auth, signIn, signOut, store } = convexAuth({
       }
 
       // Create a new user with required defaults
-      return await ctx.db.insert("users", {
+      const newUserId = await ctx.db.insert("users", {
         email: email ?? "",
         fullName:
           (args.profile.name as string) ?? email ?? "New User",
@@ -47,6 +48,10 @@ export const { auth, signIn, signOut, store } = convexAuth({
         totalEarnings: 0,
         networkCount: 0,
       });
+      // Bump platformStats.totalMembers — auth-callback ctx is
+      // GenericMutationCtx, so the helper needs the cast.
+      await bumpPlatformStat(ctx as any, "totalMembers", 1);
+      return newUserId;
     },
   },
 });

@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUser } from "./helpers";
+import { bumpPlatformStat, getAuthUser } from "./helpers";
 
 /**
  * Get the currently open voting round with eligible submissions.
@@ -135,8 +135,12 @@ export const castVotes = mutation({
         q.eq("votingRoundId", args.roundId).eq("voterUserId", user._id)
       )
       .collect();
+    let votesDeleted = 0;
+    let votesInserted = 0;
+
     for (const vote of existing) {
       await ctx.db.delete(vote._id);
+      votesDeleted++;
       const previousSub = await ctx.db.get(vote.submissionId);
       if (previousSub) {
         await ctx.db.patch(previousSub._id, {
@@ -158,10 +162,14 @@ export const castVotes = mutation({
         voterUserId: user._id,
         submissionId,
       });
+      votesInserted++;
       await ctx.db.patch(submission._id, {
         voteCount: (submission.voteCount ?? 0) + 1,
       });
     }
+
+    // Maintain the platformStats.totalVotes singleton by net delta.
+    await bumpPlatformStat(ctx, "totalVotes", votesInserted - votesDeleted);
   },
 });
 
