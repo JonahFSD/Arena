@@ -229,7 +229,15 @@ export default defineSchema({
     submissionId: v.id("submissions"),
   })
     .index("by_roundId_submissionId", ["votingRoundId", "submissionId"])
-    .index("by_roundId_voterId", ["votingRoundId", "voterUserId"]),
+    .index("by_roundId_voterId", ["votingRoundId", "voterUserId"])
+    // Uniqueness invariant: at most one row per (round, voter, submission).
+    // Convex has no native unique constraint, so writers must enforce this
+    // (see `castVotes` — dedups input + delete-then-insert in one tx).
+    .index("by_roundId_voterId_submissionId", [
+      "votingRoundId",
+      "voterUserId",
+      "submissionId",
+    ]),
 
   // ============================================
   // VOTING AWARDS — per-user idempotency log for finalization point awards

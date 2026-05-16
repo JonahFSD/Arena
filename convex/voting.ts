@@ -93,7 +93,19 @@ export const getMyVotes = query({
 });
 
 /**
+ * Hard upper bound on submissions a single voter can rank in one round.
+ * The realistic per-round eligible count is well under this — the cap exists
+ * to prevent a malicious caller from writing thousands of vote rows in a
+ * single mutation. Raise if the eligible pool ever grows past it.
+ */
+const MAX_VOTES_PER_ROUND = 100;
+
+/**
  * Cast votes — deletes existing votes for this round and inserts new ones.
+ *
+ * Invariant: at most one (roundId, voterUserId, submissionId) row exists
+ * (enforced by dedup'ing the input + delete-then-insert in a single
+ * transaction; documented via the `by_roundId_voterId_submissionId` index).
  */
 export const castVotes = mutation({
   args: {
@@ -103,11 +115,21 @@ export const castVotes = mutation({
   handler: async (ctx, args) => {
     const user = await getAuthUser(ctx);
 
+    if (args.submissionIds.length > MAX_VOTES_PER_ROUND) {
+      throw new Error(
+        `Cannot rank more than ${MAX_VOTES_PER_ROUND} submissions in a single round`
+      );
+    }
+
     // Verify round is open
     const round = await ctx.db.get(args.roundId);
     if (!round || round.status !== "open") {
       throw new Error("Voting round is not open");
     }
+
+    // Dedup — a caller passing [s1, s1, s2] must not produce two rows for s1,
+    // which would double-count in finalization tallies.
+    const uniqueSubmissionIds = Array.from(new Set(args.submissionIds));
 
     // Delete existing votes for this user + round
     const existing = await ctx.db
@@ -121,7 +143,7 @@ export const castVotes = mutation({
     }
 
     // Insert new votes
-    for (const submissionId of args.submissionIds) {
+    for (const submissionId of uniqueSubmissionIds) {
       // Prevent voting for own submission
       const submission = await ctx.db.get(submissionId);
       if (submission && submission.userId === user._id) {
