@@ -130,9 +130,13 @@ export const getById = query({
 });
 
 /**
- * Create a new bounty. Any authenticated user can create one.
- * The bounty starts in "needs_review" status and requires admin approval.
- * Called after successful Stripe payment via webhook.
+ * Admin-only direct bounty creation (no Stripe payment).
+ *
+ * The paid path for entrepreneurs runs through Stripe Checkout and lands
+ * in `createFromWebhook` below; this mutation exists for the admin
+ * `/admin/bounties/new` form, where staff post bounties on behalf of
+ * partners outside the paid flow. Restricting to admin closes the path
+ * bypass where any authenticated user could insert a free bounty.
  */
 export const create = mutation({
   args: {
@@ -143,18 +147,16 @@ export const create = mutation({
     bountyAmount: v.number(),
     dueDate: v.number(),
     requirements: v.array(v.string()),
-    stripeCheckoutSessionId: v.optional(v.string()),
-    stripePaymentIntentId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthUser(ctx);
+    const admin = await requireAdmin(ctx);
     if (args.bountyAmount < 100) {
       throw new Error("Minimum bounty amount is $100");
     }
     return await ctx.db.insert("bounties", {
       ...args,
       status: "needs_review",
-      creatorUserId: user._id,
+      creatorUserId: admin._id,
     });
   },
 });
