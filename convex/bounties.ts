@@ -427,8 +427,11 @@ export const getReviewToken = query({
 // ---- Helpers ----
 
 function generateToken(): string {
-  // crypto.randomUUID is cryptographically secure and available in the
-  // Convex V8 runtime. Math.random is predictable and unsafe for tokens
-  // that gate a public route (/review/bounty/[token]).
-  return crypto.randomUUID();
+  // 256-bit token from crypto.getRandomValues, hex-encoded. Sidesteps
+  // Convex's known-buggy randomUUID variant nibble (get-convex/convex-
+  // backend#269) and matches OWASP's stricter "prefer explicit CSPRNG"
+  // guidance for tokens that gate a public route.
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
 }
