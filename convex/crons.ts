@@ -4,16 +4,16 @@ import { internal } from "./_generated/api";
 const crons = cronJobs();
 
 // 1st of each month at midnight UTC: open a new voting round
-crons.monthly(
+crons.cron(
   "open voting round",
-  { day: 1, hourUTC: 0, minuteUTC: 0 },
+  "0 0 1 * *",
   internal.votingActions.openNewRound
 );
 
 // 8th of each month at midnight UTC: close voting and finalize results
-crons.monthly(
+crons.cron(
   "close and finalize voting",
-  { day: 8, hourUTC: 0, minuteUTC: 0 },
+  "0 0 8 * *",
   internal.votingActions.closeAndFinalize
 );
 
