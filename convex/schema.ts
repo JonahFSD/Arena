@@ -376,9 +376,7 @@ export default defineSchema({
     uploaderUserId: v.id("users"),
     purpose: v.union(
       v.literal("avatar"),
-      v.literal("submission_video"),
-      v.literal("submission_thumbnail"),
-      v.literal("submission_slides")
+      v.literal("submission_video")
     ),
     contentType: v.string(),
     size: v.number(),

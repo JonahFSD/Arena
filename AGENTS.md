@@ -35,6 +35,19 @@ This project uses **Convex** (NOT Supabase) as the backend. Supabase has been fu
 - Demo data lives in the real Convex database (NOT mock arrays in frontend code)
 - See `docs/SEED-DATA.md` for commands and details
 - `npx convex run seed:clearAll` to wipe, `npx convex run seed:run` to re-seed
+
+## File Storage
+- **Any mutation that accepts a `v.id("_storage")` arg MUST call
+  `requireOwnedUpload(ctx, storageId, userId, purpose)` from
+  `convex/storage.ts` before attaching it to a row.** Without that
+  check a user can attach a storage ID they didn't upload (or one
+  uploaded for a different purpose), bypassing size/MIME validation.
+- The upload flow from the client is: `generateUploadUrl` → POST file
+  → `registerUpload({ storageId, purpose })` → check `result.ok` →
+  call the attach mutation (e.g. `updateAvatar`, `submissions.create`).
+- New upload purposes need to be added to **both** `UPLOAD_RULES` and
+  the `uploadPurposeValidator` union in `convex/storage.ts`, and to
+  the `purpose` validator on the `fileUploads` schema table.
 <!-- END:convex-agent-rules -->
 
 <!-- convex-ai-start -->

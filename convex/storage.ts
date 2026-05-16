@@ -18,23 +18,13 @@ const UPLOAD_RULES = {
     mimeTypes: ["video/mp4", "video/quicktime", "video/webm"] as const,
     maxBytes: 100 * 1024 * 1024,
   },
-  submission_thumbnail: {
-    mimeTypes: ["image/png", "image/jpeg", "image/webp"] as const,
-    maxBytes: 5 * 1024 * 1024,
-  },
-  submission_slides: {
-    mimeTypes: ["application/pdf"] as const,
-    maxBytes: 25 * 1024 * 1024,
-  },
 } as const;
 
 export type UploadPurpose = keyof typeof UPLOAD_RULES;
 
 const uploadPurposeValidator = v.union(
   v.literal("avatar"),
-  v.literal("submission_video"),
-  v.literal("submission_thumbnail"),
-  v.literal("submission_slides")
+  v.literal("submission_video")
 );
 
 /**
