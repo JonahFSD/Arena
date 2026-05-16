@@ -21,6 +21,11 @@ export const list = query({
 
 /**
  * Get count of unread notifications for the current user.
+ *
+ * The Convex guideline explicitly forbids `.collect().length` for counting
+ * since there's no built-in count operator. Phase A bounds this to 100
+ * (badge UI tops out at "99+"); Phase B replaces it with an O(1)
+ * denormalized counter on the user.
  */
 export const getUnreadCount = query({
   args: {},
@@ -31,7 +36,7 @@ export const getUnreadCount = query({
       .withIndex("by_userId_read", (q) =>
         q.eq("userId", user._id).eq("read", false)
       )
-      .collect();
+      .take(100);
     return unread.length;
   },
 });

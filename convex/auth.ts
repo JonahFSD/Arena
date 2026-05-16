@@ -19,13 +19,16 @@ export const { auth, signIn, signOut, store } = convexAuth({
 
       const email = args.profile.email as string | undefined;
 
-      // Check if a user with this email already exists (e.g., from seed data)
+      // Check if a user with this email already exists (e.g., from seed data).
+      // Use by_email index instead of scanning the whole users table on every
+      // login — that scan dominated cold-start latency once seed data grew.
+      // The convex-auth callback ctx is GenericMutationCtx (no schema-aware
+      // index types), so the .withIndex call needs an `any` cast.
       if (email) {
-        // Use untyped table query since ctx is GenericMutationCtx
-        const allUsers = await ctx.db.query("users").collect();
-        const existing = allUsers.find(
-          (u: any) => u.email === email
-        );
+        const existing = await (ctx.db as any)
+          .query("users")
+          .withIndex("by_email", (q: any) => q.eq("email", email))
+          .first();
         if (existing) {
           return existing._id;
         }

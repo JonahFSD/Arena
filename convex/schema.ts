@@ -65,7 +65,8 @@ export default defineSchema({
     .index("by_authSubject", ["authSubject"])
     .index("by_role", ["role"])
     .index("by_referralCode", ["referralCode"])
-    .index("by_points", ["points"]),
+    .index("by_points", ["points"])
+    .index("by_pointsThisMonth", ["pointsThisMonth"]),
 
   // ============================================
   // APPLICATIONS — registration/admission
@@ -290,7 +291,14 @@ export default defineSchema({
     readAt: v.optional(v.number()),
   })
     .index("by_threadId", ["threadId"])
-    .index("by_recipientUserId", ["recipientUserId"]),
+    .index("by_recipientUserId", ["recipientUserId"])
+    // Lets unread-badge queries scope to {recipient, unread} directly
+    // instead of scanning the whole mailbox and filtering in JS. Convex
+    // indexes `undefined` (unread === readAt undefined) before any number.
+    .index("by_recipientUserId_readAt", ["recipientUserId", "readAt"])
+    // Needed by messages.listThreads to walk a user's outbox without a
+    // full-table scan; the inbox already had by_recipientUserId.
+    .index("by_senderUserId", ["senderUserId"]),
 
   // ============================================
   // VENTURE STUDIO FLAGS — admin flagging

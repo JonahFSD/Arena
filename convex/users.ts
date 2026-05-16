@@ -37,20 +37,26 @@ export const getById = query({
 
 /**
  * Get the current user's stats for the dashboard.
+ *
+ * Rank is computed via an indexed range read on `by_points` instead of a
+ * full-table scan. Capped at 1000 — beyond that the dashboard would just
+ * show "1001" anyway, and we should denormalize rank if we ever hit that
+ * scale.
  */
 export const getMyStats = query({
   args: {},
   handler: async (ctx) => {
     const user = await getAuthUser(ctx);
-
-    // Calculate rank: count users with more points
-    const allUsers = await ctx.db.query("users").collect();
     const userPoints = user.points ?? 0;
-    const rank =
-      allUsers.filter((u) => (u.points ?? 0) > userPoints).length + 1;
+
+    const usersAhead = await ctx.db
+      .query("users")
+      .withIndex("by_points", (q) => q.gt("points", userPoints))
+      .take(1000);
+    const rank = usersAhead.length + 1;
 
     return {
-      points: user.points ?? 0,
+      points: userPoints,
       totalEarnings: user.totalEarnings ?? 0,
       networkCount: user.networkCount ?? 0,
       rank,
@@ -60,17 +66,34 @@ export const getMyStats = query({
 
 /**
  * List all members, optionally filtered by search string.
+ *
+ * Scopes the read by `by_role` instead of collecting every user (which
+ * scanned the entire users table on every directory page render). The
+ * cap of 500 members + tiny take()s for admin/superadmin are loose
+ * upper bounds for current scale; switch to .paginate() if the directory
+ * UI ever grows past that.
  */
 export const listMembers = query({
   args: { search: v.optional(v.string()) },
   handler: async (ctx, args) => {
     const viewer = await getAuthUser(ctx);
     const isAdmin = viewer.role === "admin" || viewer.role === "superadmin";
-    const allUsers = await ctx.db.query("users").collect();
 
-    let members = allUsers.filter(
-      (u) => u.role === "member" || u.role === "admin" || u.role === "superadmin"
-    );
+    const [memberRows, adminRows, superadminRows] = await Promise.all([
+      ctx.db
+        .query("users")
+        .withIndex("by_role", (q) => q.eq("role", "member"))
+        .take(500),
+      ctx.db
+        .query("users")
+        .withIndex("by_role", (q) => q.eq("role", "admin"))
+        .take(50),
+      ctx.db
+        .query("users")
+        .withIndex("by_role", (q) => q.eq("role", "superadmin"))
+        .take(10),
+    ]);
+    let members = [...memberRows, ...adminRows, ...superadminRows];
 
     // Email is searchable for admins (contact lookup) and remains
     // searchable for non-admins for backward compatibility — the result
@@ -104,20 +127,30 @@ export const listMembers = query({
 
 /**
  * Get top 10 leaderboard — by all-time points or this month’s points (excludes superadmin).
+ *
+ * Pulls the top 50 candidates from the appropriate descending index then
+ * applies the role filter + tie-breaker in JS. 50 is enough headroom to
+ * survive a few superadmin rows getting filtered out without re-querying.
  */
 export const getLeaderboard = query({
   args: {
     range: v.union(v.literal("allTime"), v.literal("thisMonth")),
   },
   handler: async (ctx, args) => {
-    const allUsers = await ctx.db.query("users").collect();
+    const candidates = await ctx.db
+      .query("users")
+      .withIndex(
+        args.range === "thisMonth" ? "by_pointsThisMonth" : "by_points"
+      )
+      .order("desc")
+      .take(50);
 
-    const score = (u: (typeof allUsers)[0]) =>
+    const score = (u: (typeof candidates)[0]) =>
       args.range === "thisMonth"
         ? (u.pointsThisMonth ?? 0)
         : (u.points ?? 0);
 
-    const top10 = allUsers
+    const top10 = candidates
       .filter((u) => u.role !== "superadmin")
       .sort((a, b) => {
         const diff = score(b) - score(a);

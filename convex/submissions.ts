@@ -174,7 +174,15 @@ export const listByMonth = query({
 export const listAll = query({
   args: { search: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    const submissions = await ctx.db.query("submissions").order("desc").collect();
+    // Bounded read of the most recent submissions, then JS-filter to the
+    // statuses Explore actually shows. 200 is enough headroom that the
+    // final 50-item slice fills up under realistic seed/staging scale.
+    // TODO: when status mix shifts past that ratio, add a by_status index
+    // and union two indexed queries (submitted + scored).
+    const submissions = await ctx.db
+      .query("submissions")
+      .order("desc")
+      .take(200);
 
     let filtered = submissions.filter(
       (s) => s.status === "submitted" || s.status === "scored"

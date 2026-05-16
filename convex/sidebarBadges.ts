@@ -22,16 +22,24 @@ export const getCounts = query({
     const user = await ctx.db.get(userId);
     if (!user) return null;
 
-    const received = await ctx.db
+    // Scope to {recipient, unread} via compound index instead of pulling
+    // the user's entire inbox and filtering in JS on every page render.
+    // Capped at 100 because the badge UI tops out at "99+" — Phase B will
+    // swap this for an O(1) denormalized counter.
+    const unread = await ctx.db
       .query("messages")
-      .withIndex("by_recipientUserId", (q) => q.eq("recipientUserId", user._id))
-      .collect();
-    const community = received.filter((m) => m.readAt === undefined).length;
+      .withIndex("by_recipientUserId_readAt", (q) =>
+        q.eq("recipientUserId", user._id).eq("readAt", undefined)
+      )
+      .take(100);
+    const community = unread.length;
 
+    // Bounded "new bounties since last visit". The active list is small
+    // (admin-curated), but the take cap defends against an "active flood".
     const listedBounties = await ctx.db
       .query("bounties")
       .withIndex("by_status", (q) => q.eq("status", "active"))
-      .collect();
+      .take(200);
     const lastViewed = user.lastViewedBountiesAt;
     const bounties =
       lastViewed === undefined
@@ -63,11 +71,14 @@ export const getSubTabBadges = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
-    const received = await ctx.db
+    // See getCounts above — same compound-index pattern, same 100 cap.
+    const unread = await ctx.db
       .query("messages")
-      .withIndex("by_recipientUserId", (q) => q.eq("recipientUserId", userId))
-      .collect();
-    const communityChat = received.filter((m) => m.readAt === undefined).length;
+      .withIndex("by_recipientUserId_readAt", (q) =>
+        q.eq("recipientUserId", userId).eq("readAt", undefined)
+      )
+      .take(100);
+    const communityChat = unread.length;
 
     return { communityChat };
   },

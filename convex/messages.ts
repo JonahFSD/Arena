@@ -19,12 +19,24 @@ export const listThreads = query({
   handler: async (ctx) => {
     const user = await getAuthUser(ctx);
 
-    // Get all messages where user is sender or recipient
-    const allMessages = await ctx.db.query("messages").collect();
-    const myMessages = allMessages.filter(
-      (m) =>
-        m.senderUserId === user._id || m.recipientUserId === user._id
-    );
+    // Walk inbox + outbox via dedicated indexes instead of scanning the
+    // entire messages table. A union covers both sides since either
+    // direction makes the user a thread participant.
+    const [received, sent] = await Promise.all([
+      ctx.db
+        .query("messages")
+        .withIndex("by_recipientUserId", (q) =>
+          q.eq("recipientUserId", user._id)
+        )
+        .collect(),
+      ctx.db
+        .query("messages")
+        .withIndex("by_senderUserId", (q) =>
+          q.eq("senderUserId", user._id)
+        )
+        .collect(),
+    ]);
+    const myMessages = [...received, ...sent];
 
     // Group by thread
     const threadMap = new Map<
