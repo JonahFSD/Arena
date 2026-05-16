@@ -160,6 +160,9 @@ export default defineSchema({
       v.literal("scored")
     ),
     isTeamSubmission: v.boolean(),
+    /** Denormalized vote tally. Maintained by voting.castVotes; recomputed
+     *  from scratch by counters.recomputeAll. Optional for backfill. */
+    voteCount: v.optional(v.number()),
   })
     .index("by_userId_monthYear", ["userId", "monthYear"])
     .index("by_monthYear_status", ["monthYear", "status"]),
@@ -447,6 +450,10 @@ export default defineSchema({
     stripePaymentIntentId: v.optional(v.string()),
     stripeCheckoutSessionId: v.optional(v.string()),
     adminNotes: v.optional(v.string()),
+    /** Denormalized count of bountySubmissions for this bounty.
+     *  Maintained by bounties.submitSolution; recomputed by
+     *  counters.recomputeAll. Optional for backfill. */
+    submissionsCount: v.optional(v.number()),
   })
     .index("by_status", ["status"])
     .index("by_reviewToken", ["reviewToken"])
@@ -540,5 +547,22 @@ export default defineSchema({
     entrepreneurPick: v.optional(v.boolean()),
   })
     .index("by_bountyId", ["bountyId"])
-    .index("by_userId", ["userId"]),
+    .index("by_userId", ["userId"])
+    // Lets submitSolution check "has this user submitted to this bounty?"
+    // with a single .unique() instead of collecting every submission for
+    // the bounty and JS-filtering by userId.
+    .index("by_bountyId_userId", ["bountyId", "userId"]),
+
+  // ============================================
+  // USER COUNTERS — denormalized per-user totals for hot-path reads
+  // ============================================
+  // Separated from the users doc per Convex's "isolate high-churn fields"
+  // guideline — every received message would otherwise force a rewrite of
+  // the entire profile doc, contending with profile reads. One row per
+  // user, lazy-created on first counter write.
+  userCounters: defineTable({
+    userId: v.id("users"),
+    unreadMessages: v.number(),
+    unreadNotifications: v.number(),
+  }).index("by_userId", ["userId"]),
 });

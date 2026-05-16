@@ -1,6 +1,11 @@
 import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUser } from "./helpers";
+import {
+  adjustUserCounter,
+  getAuthUser,
+  readUserCounters,
+  setUserCounter,
+} from "./helpers";
 import { Id } from "./_generated/dataModel";
 
 /**
@@ -21,23 +26,15 @@ export const list = query({
 
 /**
  * Get count of unread notifications for the current user.
- *
- * The Convex guideline explicitly forbids `.collect().length` for counting
- * since there's no built-in count operator. Phase A bounds this to 100
- * (badge UI tops out at "99+"); Phase B replaces it with an O(1)
- * denormalized counter on the user.
+ * O(1) read from the denormalized counter; maintained by create/markRead/
+ * markAllRead. Authoritative recompute lives in counters.recomputeAll.
  */
 export const getUnreadCount = query({
   args: {},
   handler: async (ctx) => {
     const user = await getAuthUser(ctx);
-    const unread = await ctx.db
-      .query("notifications")
-      .withIndex("by_userId_read", (q) =>
-        q.eq("userId", user._id).eq("read", false)
-      )
-      .take(100);
-    return unread.length;
+    const counters = await readUserCounters(ctx, user._id);
+    return counters.unreadNotifications;
   },
 });
 
@@ -52,12 +49,20 @@ export const markRead = mutation({
     if (!notification || notification.userId !== user._id) {
       throw new Error("Notification not found");
     }
-    await ctx.db.patch(args.notificationId, { read: true });
+    // Only decrement when the row was actually unread — re-marking a read
+    // notification shouldn't drift the counter below the true value.
+    if (!notification.read) {
+      await ctx.db.patch(args.notificationId, { read: true });
+      await adjustUserCounter(ctx, user._id, "unreadNotifications", -1);
+    }
   },
 });
 
 /**
  * Mark all of the current user's notifications as read.
+ *
+ * We still need to walk the unread rows to flip `read: true` on each, but
+ * the counter goes straight to 0 — no need to sum deltas.
  */
 export const markAllRead = mutation({
   args: {},
@@ -72,6 +77,7 @@ export const markAllRead = mutation({
     for (const n of unread) {
       await ctx.db.patch(n._id, { read: true });
     }
+    await setUserCounter(ctx, user._id, "unreadNotifications", 0);
   },
 });
 
@@ -96,5 +102,6 @@ export const create = internalMutation({
       read: false,
       actionUrl: args.actionUrl,
     });
+    await adjustUserCounter(ctx, args.userId, "unreadNotifications", 1);
   },
 });

@@ -67,10 +67,10 @@ export const getById = query({
       })
     );
 
-    const allVotes = await ctx.db.query("votes").collect();
-    const voteCount = allVotes.filter(
-      (v) => v.submissionId === args.submissionId
-    ).length;
+    // Read the denormalized voteCount on the submission instead of
+    // scanning the entire votes table on every detail-page render.
+    // Maintained by voting.castVotes.
+    const voteCount = submission.voteCount ?? 0;
 
     const viewerCollaborator = collaboratorsWithUsers.find(
       (c) => c.userId === viewer._id

@@ -25,7 +25,10 @@ export const getCurrentRound = query({
       )
       .collect();
 
-    // Attach AI scores and user info, filter by threshold
+    // Attach AI scores and user info, filter by threshold.
+    // voteCount is read from the submission's denormalized field (maintained
+    // by castVotes); we no longer collect every vote for every eligible
+    // submission on each voting-page render.
     const eligible = await Promise.all(
       submissions.map(async (sub) => {
         const score = await ctx.db
@@ -34,21 +37,13 @@ export const getCurrentRound = query({
           .first();
         const user = await ctx.db.get(sub.userId);
 
-        // Count votes for this submission in this round
-        const votes = await ctx.db
-          .query("votes")
-          .withIndex("by_roundId_submissionId", (q) =>
-            q.eq("votingRoundId", round._id).eq("submissionId", sub._id)
-          )
-          .collect();
-
         return {
           ...sub,
           aiScore: score ?? undefined,
           user: user
             ? { _id: user._id, fullName: user.fullName, schoolName: user.schoolName }
             : null,
-          voteCount: votes.length,
+          voteCount: sub.voteCount ?? 0,
         };
       })
     );
@@ -131,7 +126,9 @@ export const castVotes = mutation({
     // which would double-count in finalization tallies.
     const uniqueSubmissionIds = Array.from(new Set(args.submissionIds));
 
-    // Delete existing votes for this user + round
+    // Delete existing votes for this user + round.
+    // Decrement the denormalized voteCount on each affected submission as
+    // we go — keeps the counter eventually consistent with the table.
     const existing = await ctx.db
       .query("votes")
       .withIndex("by_roundId_voterId", (q) =>
@@ -140,19 +137,29 @@ export const castVotes = mutation({
       .collect();
     for (const vote of existing) {
       await ctx.db.delete(vote._id);
+      const previousSub = await ctx.db.get(vote.submissionId);
+      if (previousSub) {
+        await ctx.db.patch(previousSub._id, {
+          voteCount: Math.max(0, (previousSub.voteCount ?? 0) - 1),
+        });
+      }
     }
 
-    // Insert new votes
+    // Insert new votes; increment voteCount for each accepted insert.
     for (const submissionId of uniqueSubmissionIds) {
       // Prevent voting for own submission
       const submission = await ctx.db.get(submissionId);
-      if (submission && submission.userId === user._id) {
+      if (!submission) continue;
+      if (submission.userId === user._id) {
         continue; // Skip own submissions
       }
       await ctx.db.insert("votes", {
         votingRoundId: args.roundId,
         voterUserId: user._id,
         submissionId,
+      });
+      await ctx.db.patch(submission._id, {
+        voteCount: (submission.voteCount ?? 0) + 1,
       });
     }
   },

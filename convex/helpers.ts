@@ -164,3 +164,84 @@ export async function enforceRateLimit(
 
   await ctx.db.patch(existing._id, { count: existing.count + 1 });
 }
+
+/* ---- denormalized user counters ---- */
+
+type UserCounterField = "unreadMessages" | "unreadNotifications";
+
+/**
+ * Read denormalized counters for a user. Returns zeros when no row exists
+ * yet (lazy init — the first writer creates the row).
+ */
+export async function readUserCounters(
+  ctx: QueryCtx | MutationCtx,
+  userId: Id<"users">
+): Promise<{ unreadMessages: number; unreadNotifications: number }> {
+  const row = await ctx.db
+    .query("userCounters")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .unique();
+  return {
+    unreadMessages: row?.unreadMessages ?? 0,
+    unreadNotifications: row?.unreadNotifications ?? 0,
+  };
+}
+
+/**
+ * Adjust one of a user's denormalized counters by `delta`. Floors at 0 so
+ * we self-heal at the boundary if a write goes missing somewhere; the
+ * authoritative recompute is `counters.recomputeAll`.
+ */
+export async function adjustUserCounter(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  field: UserCounterField,
+  delta: number
+): Promise<void> {
+  if (delta === 0) return;
+  const existing = await ctx.db
+    .query("userCounters")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .unique();
+  if (!existing) {
+    await ctx.db.insert("userCounters", {
+      userId,
+      unreadMessages: field === "unreadMessages" ? Math.max(0, delta) : 0,
+      unreadNotifications:
+        field === "unreadNotifications" ? Math.max(0, delta) : 0,
+    });
+    return;
+  }
+  const next = Math.max(0, existing[field] + delta);
+  if (next !== existing[field]) {
+    await ctx.db.patch(existing._id, { [field]: next });
+  }
+}
+
+/**
+ * Set a counter to an exact value. Used by "mark all read" flows where we
+ * know the post-state without summing deltas.
+ */
+export async function setUserCounter(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  field: UserCounterField,
+  value: number
+): Promise<void> {
+  const clamped = Math.max(0, value);
+  const existing = await ctx.db
+    .query("userCounters")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .unique();
+  if (!existing) {
+    await ctx.db.insert("userCounters", {
+      userId,
+      unreadMessages: field === "unreadMessages" ? clamped : 0,
+      unreadNotifications: field === "unreadNotifications" ? clamped : 0,
+    });
+    return;
+  }
+  if (clamped !== existing[field]) {
+    await ctx.db.patch(existing._id, { [field]: clamped });
+  }
+}

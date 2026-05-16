@@ -21,6 +21,9 @@ export const run = internalAction({
   args: {},
   handler: async (ctx) => {
     await ctx.runMutation(internal.seed.insertAll);
+    // Backfill denormalized counters from the just-seeded rows so badge
+    // queries return the right values immediately.
+    await ctx.runMutation(internal.counters.recomputeAll);
   },
 });
 
@@ -1289,7 +1292,7 @@ export const clearAll = internalMutation({
       "auditLog", "ventureStudioFlags", "bountySubmissions", "bounties",
       "notifications", "messages", "votes", "prizePools", "votingRounds",
       "aiScores", "submissionCollaborators", "submissions", "applications",
-      "memberships", "users",
+      "memberships", "userCounters", "users",
     ] as const;
 
     for (const table of tables) {

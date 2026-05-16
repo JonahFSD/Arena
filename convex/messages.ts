@@ -1,7 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-import { getAuthUser } from "./helpers";
+import { adjustUserCounter, getAuthUser } from "./helpers";
 
 /**
  * Compute a deterministic thread ID from two user IDs.
@@ -179,6 +179,7 @@ export const send = mutation({
       recipientUserId: args.recipientUserId,
       body: args.body,
     });
+    await adjustUserCounter(ctx, args.recipientUserId, "unreadMessages", 1);
 
     // Notify the recipient (in-app)
     const preview =
@@ -227,6 +228,9 @@ export const markThreadRead = mutation({
     );
     for (const msg of unread) {
       await ctx.db.patch(msg._id, { readAt: Date.now() });
+    }
+    if (unread.length > 0) {
+      await adjustUserCounter(ctx, user._id, "unreadMessages", -unread.length);
     }
   },
 });

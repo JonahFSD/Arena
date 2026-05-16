@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { getAuthUser } from "./helpers";
+import { getAuthUser, readUserCounters } from "./helpers";
 
 export type SidebarBadgeCounts = {
   /** Unread direct messages (recipient = current user, not read). */
@@ -22,17 +22,11 @@ export const getCounts = query({
     const user = await ctx.db.get(userId);
     if (!user) return null;
 
-    // Scope to {recipient, unread} via compound index instead of pulling
-    // the user's entire inbox and filtering in JS on every page render.
-    // Capped at 100 because the badge UI tops out at "99+" — Phase B will
-    // swap this for an O(1) denormalized counter.
-    const unread = await ctx.db
-      .query("messages")
-      .withIndex("by_recipientUserId_readAt", (q) =>
-        q.eq("recipientUserId", user._id).eq("readAt", undefined)
-      )
-      .take(100);
-    const community = unread.length;
+    // O(1) read from the denormalized counter. Maintained by messages.send
+    // (++) and messages.markThreadRead (--N); authoritative recompute
+    // lives in counters.recomputeAll.
+    const counters = await readUserCounters(ctx, user._id);
+    const community = counters.unreadMessages;
 
     // Bounded "new bounties since last visit". The active list is small
     // (admin-curated), but the take cap defends against an "active flood".
@@ -71,14 +65,9 @@ export const getSubTabBadges = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
-    // See getCounts above — same compound-index pattern, same 100 cap.
-    const unread = await ctx.db
-      .query("messages")
-      .withIndex("by_recipientUserId_readAt", (q) =>
-        q.eq("recipientUserId", userId).eq("readAt", undefined)
-      )
-      .take(100);
-    const communityChat = unread.length;
+    // O(1) read from the denormalized counter (see getCounts above).
+    const counters = await readUserCounters(ctx, userId);
+    const communityChat = counters.unreadMessages;
 
     return { communityChat };
   },

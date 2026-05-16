@@ -44,27 +44,24 @@ export const list = query({
       }
     }
 
-    const withCounts = await Promise.all(
-      bounties.map(async (bounty) => {
-        const submissions = await ctx.db
-          .query("bountySubmissions")
-          .withIndex("by_bountyId", (q) => q.eq("bountyId", bounty._id))
-          .collect();
-        // Admin-only fields are also exposed to the bounty's creator so
-        // they can share the review link with their team.
-        const includeAdminFields = isAdmin || bounty.creatorUserId === user._id;
-        return {
-          ...toPublicBounty(bounty),
-          ...(includeAdminFields && {
-            reviewToken: bounty.reviewToken,
-            stripePaymentIntentId: bounty.stripePaymentIntentId,
-            stripeCheckoutSessionId: bounty.stripeCheckoutSessionId,
-            adminNotes: bounty.adminNotes,
-          }),
-          submissionsCount: submissions.length,
-        };
-      })
-    );
+    // Read submissionsCount from the denormalized field on each bounty
+    // instead of collecting every bounty's child submissions (the N+1 that
+    // dominated this query on the admin/bounties page).
+    const withCounts = bounties.map((bounty) => {
+      // Admin-only fields are also exposed to the bounty's creator so
+      // they can share the review link with their team.
+      const includeAdminFields = isAdmin || bounty.creatorUserId === user._id;
+      return {
+        ...toPublicBounty(bounty),
+        ...(includeAdminFields && {
+          reviewToken: bounty.reviewToken,
+          stripePaymentIntentId: bounty.stripePaymentIntentId,
+          stripeCheckoutSessionId: bounty.stripeCheckoutSessionId,
+          adminNotes: bounty.adminNotes,
+        }),
+        submissionsCount: bounty.submissionsCount ?? 0,
+      };
+    });
 
     return withCounts;
   },
@@ -336,15 +333,19 @@ export const submitSolution = mutation({
     if (bounty.status !== "active") {
       throw new Error("This bounty is not accepting submissions");
     }
-    // Check for duplicate submission
+    // Duplicate-check via the compound (bountyId, userId) index — a single
+    // .unique() lookup instead of collecting every submission for the
+    // bounty and JS-filtering by userId.
     const existing = await ctx.db
       .query("bountySubmissions")
-      .withIndex("by_bountyId", (q) => q.eq("bountyId", args.bountyId))
-      .collect();
-    if (existing.some((s) => s.userId === user._id)) {
+      .withIndex("by_bountyId_userId", (q) =>
+        q.eq("bountyId", args.bountyId).eq("userId", user._id)
+      )
+      .unique();
+    if (existing) {
       throw new Error("You have already submitted to this bounty");
     }
-    return await ctx.db.insert("bountySubmissions", {
+    const submissionId = await ctx.db.insert("bountySubmissions", {
       bountyId: args.bountyId,
       userId: user._id,
       submissionUrl: args.submissionUrl,
@@ -353,6 +354,12 @@ export const submitSolution = mutation({
       isWinner: false,
       submittedAt: Date.now(),
     });
+    // Bump the denormalized count on the parent bounty so list views can
+    // read it without collecting the children.
+    await ctx.db.patch(args.bountyId, {
+      submissionsCount: (bounty.submissionsCount ?? 0) + 1,
+    });
+    return submissionId;
   },
 });
 

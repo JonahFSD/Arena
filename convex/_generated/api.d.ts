@@ -15,6 +15,7 @@ import type * as auth from "../auth.js";
 import type * as bounties from "../bounties.js";
 import type * as bqType from "../bqType.js";
 import type * as collaborators from "../collaborators.js";
+import type * as counters from "../counters.js";
 import type * as crons from "../crons.js";
 import type * as email from "../email.js";
 import type * as helpers from "../helpers.js";
@@ -51,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   bounties: typeof bounties;
   bqType: typeof bqType;
   collaborators: typeof collaborators;
+  counters: typeof counters;
   crons: typeof crons;
   email: typeof email;
   helpers: typeof helpers;
