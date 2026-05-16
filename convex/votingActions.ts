@@ -1,6 +1,8 @@
 import { internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
 
 /**
  * Open a new voting round on the 1st of each month.
@@ -107,15 +109,77 @@ export const openNewRound = internalMutation({
   },
 });
 
+// Batch sizes chosen so each batch mutation stays well under Convex's
+// 16k-writes / 32k-reads / 16MiB per-transaction limits. Per-voter cost
+// is ~4 doc ops (lookup + insert award + read user + patch user).
+const VOTER_BATCH_SIZE = 100;
+const TOP10_POINTS = 400;
+const VOTER_POINTS = 100;
+const PLACE_POINTS = [1000, 750, 500] as const;
+
+type AwardKind = "place_1" | "place_2" | "place_3" | "top10" | "voter";
+
+/**
+ * Idempotent award helper. Inserts a votingAwards row and increments the
+ * user's points only if no row exists for (round, user, kind). Returns the
+ * fresh user doc on success, or null if the award was already recorded or
+ * the user is missing.
+ */
+async function recordAward(
+  ctx: MutationCtx,
+  args: {
+    votingRoundId: Id<"votingRounds">;
+    userId: Id<"users">;
+    kind: AwardKind;
+    points: number;
+  }
+) {
+  const existing = await ctx.db
+    .query("votingAwards")
+    .withIndex("by_round_user_kind", (q) =>
+      q
+        .eq("votingRoundId", args.votingRoundId)
+        .eq("userId", args.userId)
+        .eq("kind", args.kind)
+    )
+    .unique();
+
+  if (existing) return null;
+
+  const user = await ctx.db.get(args.userId);
+  if (!user) return null;
+
+  await ctx.db.insert("votingAwards", {
+    votingRoundId: args.votingRoundId,
+    userId: args.userId,
+    kind: args.kind,
+    points: args.points,
+    awardedAt: Date.now(),
+  });
+
+  await ctx.db.patch(user._id, {
+    points: (user.points ?? 0) + args.points,
+  });
+
+  return user;
+}
+
 /**
  * Close the current voting round and finalize results.
- * Called by cron job on the 8th of each month.
- * Tallies votes, determines winners, awards points, and notifies winners.
+ *
+ * Orchestrator only: closes the round, tallies votes, records winners on the
+ * prize pool, and schedules batch mutations for point awards. Point awards
+ * and winner notifications run in separate transactions via
+ * ctx.scheduler.runAfter so the whole flow stays under the per-transaction
+ * doc limit even when scale grows.
+ *
+ * Idempotency is enforced by the votingAwards table — each batch checks the
+ * (roundId, userId, kind) index before granting points, so a re-run (manual
+ * trigger, cron drift) is safe.
  */
 export const closeAndFinalize = internalMutation({
   args: {},
   handler: async (ctx) => {
-    // Find the current open voting round
     const round = await ctx.db
       .query("votingRounds")
       .withIndex("by_status", (q) => q.eq("status", "open"))
@@ -126,13 +190,11 @@ export const closeAndFinalize = internalMutation({
       return;
     }
 
-    // Close the round
     await ctx.db.patch(round._id, {
       status: "finalized",
       closesAt: Date.now(),
     });
 
-    // Tally all votes for this round
     const allVotes = await ctx.db
       .query("votes")
       .withIndex("by_roundId_submissionId", (q) =>
@@ -140,146 +202,204 @@ export const closeAndFinalize = internalMutation({
       )
       .collect();
 
-    // Count votes per submission
     const tallies: Record<string, number> = {};
     for (const vote of allVotes) {
       const key = vote.submissionId as string;
       tallies[key] = (tallies[key] ?? 0) + 1;
     }
 
-    // Sort by vote count descending
-    const ranked = Object.entries(tallies)
-      .sort(([, a], [, b]) => b - a);
+    const rankedSubmissionIds = Object.entries(tallies)
+      .sort(([, a], [, b]) => b - a)
+      .map(([id]) => id as Id<"submissions">);
 
-    // Determine top 3 winners
+    // Resolve top 3 winners (skip submissions whose author is gone)
     const winners: {
-      place: number;
-      submissionId: string;
-      userId: Id<"users"> | null;
+      place: 1 | 2 | 3;
+      submissionId: Id<"submissions">;
+      submissionTitle: string;
+      userId: Id<"users">;
       points: number;
     }[] = [];
 
-    const pointsByPlace = [1000, 750, 500];
-
-    for (let i = 0; i < Math.min(3, ranked.length); i++) {
-      const [submissionId] = ranked[i];
-      const submission = await ctx.db.get(submissionId as Id<"submissions">);
+    for (let i = 0; i < Math.min(3, rankedSubmissionIds.length); i++) {
+      const submission = await ctx.db.get(rankedSubmissionIds[i]);
+      if (!submission) continue;
       winners.push({
-        place: i + 1,
-        submissionId,
-        userId: submission?.userId ?? null,
-        points: pointsByPlace[i],
+        place: (i + 1) as 1 | 2 | 3,
+        submissionId: rankedSubmissionIds[i],
+        submissionTitle: submission.title,
+        userId: submission.userId,
+        points: PLACE_POINTS[i],
       });
     }
 
-    // Update prize pool with winners
+    // Persist winners on the prize pool (idempotent — same data on re-run)
     const prizePool = await ctx.db
       .query("prizePools")
       .withIndex("by_monthYear", (q) => q.eq("monthYear", round.monthYear))
       .first();
 
     if (prizePool) {
-      const patchData: Record<string, unknown> = {
-        finalizedAt: Date.now(),
-      };
-      if (winners[0]?.userId) patchData.firstPlaceUserId = winners[0].userId;
-      if (winners[1]?.userId) patchData.secondPlaceUserId = winners[1].userId;
-      if (winners[2]?.userId) patchData.thirdPlaceUserId = winners[2].userId;
+      const patchData: Record<string, unknown> = { finalizedAt: Date.now() };
+      if (winners[0]) patchData.firstPlaceUserId = winners[0].userId;
+      if (winners[1]) patchData.secondPlaceUserId = winners[1].userId;
+      if (winners[2]) patchData.thirdPlaceUserId = winners[2].userId;
       await ctx.db.patch(prizePool._id, patchData);
     }
 
-    // Award points to top 3 winners
-    for (const winner of winners) {
-      if (winner.userId) {
-        const user = await ctx.db.get(winner.userId);
-        if (user) {
-          await ctx.db.patch(user._id, {
-            points: (user.points ?? 0) + winner.points,
-          });
-        }
-      }
+    // Top-10 authors (excluding anyone already in top 3), deduped by user
+    const top3UserIds = new Set(winners.map((w) => w.userId as string));
+    const top10AuthorIds: Id<"users">[] = [];
+    const seenTop10 = new Set<string>();
+    for (const subId of rankedSubmissionIds.slice(0, 10)) {
+      const submission = await ctx.db.get(subId);
+      if (!submission) continue;
+      const uid = submission.userId as string;
+      if (top3UserIds.has(uid) || seenTop10.has(uid)) continue;
+      seenTop10.add(uid);
+      top10AuthorIds.push(submission.userId);
     }
 
-    // Award +400 points to all users with submissions in the top 10
-    const top10SubmissionIds = ranked.slice(0, 10).map(([id]) => id);
-    const top3UserIds = new Set(
-      winners.map((w) => w.userId).filter(Boolean) as Id<"users">[]
-    );
-    const top10AwardedUserIds = new Set<string>();
-
-    for (const subId of top10SubmissionIds) {
-      const submission = await ctx.db.get(subId as Id<"submissions">);
-      if (submission && !top3UserIds.has(submission.userId)) {
-        // Don't double-award top 3 winners, and don't award same user twice
-        if (!top10AwardedUserIds.has(submission.userId as string)) {
-          top10AwardedUserIds.add(submission.userId as string);
-          const user = await ctx.db.get(submission.userId);
-          if (user) {
-            await ctx.db.patch(user._id, {
-              points: (user.points ?? 0) + 400,
-            });
-          }
-        }
-      }
-    }
-
-    // Award +100 points to all users who voted in this round
-    const voterIds = new Set<string>();
+    // Unique voter IDs from this round
+    const voterIdSet = new Set<string>();
     for (const vote of allVotes) {
-      voterIds.add(vote.voterUserId as string);
+      voterIdSet.add(vote.voterUserId as string);
+    }
+    const voterIds = [...voterIdSet] as Id<"users">[];
+
+    // Schedule award batches. Each batch is its own transaction.
+    if (winners.length > 0) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.votingActions.awardWinnersBatch,
+        { votingRoundId: round._id, monthYear: round.monthYear, winners }
+      );
     }
 
-    for (const voterId of voterIds) {
-      const user = await ctx.db.get(voterId as Id<"users">);
-      if (user) {
-        await ctx.db.patch(user._id, {
-          points: (user.points ?? 0) + 100,
-        });
-      }
+    if (top10AuthorIds.length > 0) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.votingActions.awardTop10Batch,
+        { votingRoundId: round._id, userIds: top10AuthorIds }
+      );
     }
 
-    // Create notifications for winners + send email
-    const placeLabels = ["1st", "2nd", "3rd"];
-    for (const winner of winners) {
-      if (winner.userId) {
-        const submission = await ctx.db.get(
-          winner.submissionId as Id<"submissions">
-        );
-        const winnerUser = await ctx.db.get(winner.userId);
-        const title = `Congratulations! You placed ${placeLabels[winner.place - 1]}!`;
-        const body = `Your submission "${submission?.title ?? "Unknown"}" won ${placeLabels[winner.place - 1]} place in the ${round.monthYear} voting round! You earned +${winner.points} points.`;
-
-        await ctx.db.insert("notifications", {
-          userId: winner.userId,
-          type: "voting_winner",
-          title,
-          body,
-          read: false,
-          actionUrl: "/pitches/results",
-        });
-
-        // Send winner email
-        if (winnerUser) {
-          const prefs = winnerUser.notificationPreferences;
-          if (!prefs || prefs.winnersEmail !== false) {
-            await ctx.scheduler.runAfter(0, internal.email.sendNotification, {
-              to: winnerUser.email,
-              recipientName: winnerUser.fullName.split(" ")[0],
-              subject: `You placed ${placeLabels[winner.place - 1]} — ${round.monthYear}!`,
-              heading: title,
-              body,
-              ctaLabel: "View Results",
-              ctaUrl: "/pitches/results",
-            });
-          }
+    for (let i = 0; i < voterIds.length; i += VOTER_BATCH_SIZE) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.votingActions.awardVotersBatch,
+        {
+          votingRoundId: round._id,
+          userIds: voterIds.slice(i, i + VOTER_BATCH_SIZE),
         }
-      }
+      );
     }
 
     console.log(
       `Finalized voting round for ${round.monthYear}. ` +
-        `${allVotes.length} total votes, ${ranked.length} submissions received votes, ` +
-        `${voterIds.size} voters awarded participation points.`
+        `${allVotes.length} total votes, ${rankedSubmissionIds.length} submissions received votes, ` +
+        `${voterIds.length} voters queued in ${Math.ceil(voterIds.length / VOTER_BATCH_SIZE)} batch(es).`
     );
+  },
+});
+
+/**
+ * Award 1st/2nd/3rd place points + send winner notifications and emails.
+ * Idempotent on (roundId, userId, kind=place_N) — re-runs are no-ops.
+ */
+export const awardWinnersBatch = internalMutation({
+  args: {
+    votingRoundId: v.id("votingRounds"),
+    monthYear: v.string(),
+    winners: v.array(
+      v.object({
+        place: v.union(v.literal(1), v.literal(2), v.literal(3)),
+        submissionId: v.id("submissions"),
+        submissionTitle: v.string(),
+        userId: v.id("users"),
+        points: v.number(),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const placeLabels = ["1st", "2nd", "3rd"] as const;
+
+    for (const winner of args.winners) {
+      const kind = `place_${winner.place}` as AwardKind;
+      const user = await recordAward(ctx, {
+        votingRoundId: args.votingRoundId,
+        userId: winner.userId,
+        kind,
+        points: winner.points,
+      });
+      if (!user) continue;
+
+      const title = `Congratulations! You placed ${placeLabels[winner.place - 1]}!`;
+      const body = `Your submission "${winner.submissionTitle}" won ${placeLabels[winner.place - 1]} place in the ${args.monthYear} voting round! You earned +${winner.points} points.`;
+
+      await ctx.db.insert("notifications", {
+        userId: winner.userId,
+        type: "voting_winner",
+        title,
+        body,
+        read: false,
+        actionUrl: "/pitches/results",
+      });
+
+      const prefs = user.notificationPreferences;
+      if (!prefs || prefs.winnersEmail !== false) {
+        await ctx.scheduler.runAfter(0, internal.email.sendNotification, {
+          to: user.email,
+          recipientName: user.fullName.split(" ")[0],
+          subject: `You placed ${placeLabels[winner.place - 1]} — ${args.monthYear}!`,
+          heading: title,
+          body,
+          ctaLabel: "View Results",
+          ctaUrl: "/pitches/results",
+        });
+      }
+    }
+  },
+});
+
+/**
+ * Award +400 points to top-10 submission authors (excluding top 3).
+ * Idempotent on (roundId, userId, kind=top10).
+ */
+export const awardTop10Batch = internalMutation({
+  args: {
+    votingRoundId: v.id("votingRounds"),
+    userIds: v.array(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    for (const userId of args.userIds) {
+      await recordAward(ctx, {
+        votingRoundId: args.votingRoundId,
+        userId,
+        kind: "top10",
+        points: TOP10_POINTS,
+      });
+    }
+  },
+});
+
+/**
+ * Award +100 voter-participation points. Idempotent on (roundId, userId,
+ * kind=voter). Called once per VOTER_BATCH_SIZE-sized slice of voters.
+ */
+export const awardVotersBatch = internalMutation({
+  args: {
+    votingRoundId: v.id("votingRounds"),
+    userIds: v.array(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    for (const userId of args.userIds) {
+      await recordAward(ctx, {
+        votingRoundId: args.votingRoundId,
+        userId,
+        kind: "voter",
+        points: VOTER_POINTS,
+      });
+    }
   },
 });

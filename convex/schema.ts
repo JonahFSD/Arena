@@ -240,6 +240,23 @@ export default defineSchema({
     .index("by_roundId_voterId", ["votingRoundId", "voterUserId"]),
 
   // ============================================
+  // VOTING AWARDS — per-user idempotency log for finalization point awards
+  // ============================================
+  votingAwards: defineTable({
+    votingRoundId: v.id("votingRounds"),
+    userId: v.id("users"),
+    kind: v.union(
+      v.literal("place_1"),
+      v.literal("place_2"),
+      v.literal("place_3"),
+      v.literal("top10"),
+      v.literal("voter")
+    ),
+    points: v.number(),
+    awardedAt: v.number(),
+  }).index("by_round_user_kind", ["votingRoundId", "userId", "kind"]),
+
+  // ============================================
   // PRIZE POOLS — monthly prize distribution
   // ============================================
   prizePools: defineTable({
