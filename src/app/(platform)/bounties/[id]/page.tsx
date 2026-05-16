@@ -119,7 +119,7 @@ export default function BountyDetailPage() {
   }
 
   return (
-    <PaywallGate feature="submit for bounties">
+    <PaywallGate>
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="space-y-2">
         <div className="flex items-center gap-3 flex-wrap">

@@ -193,7 +193,7 @@ export default function MembersPage() {
   }
 
   return (
-    <PaywallGate feature="view the member directory">
+    <PaywallGate>
     <div className="space-y-6">
       {networkView === "network" && (
         <InfoCallout>

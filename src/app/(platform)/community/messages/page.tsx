@@ -461,7 +461,7 @@ function MessagesPageInner() {
 
 export default function MessagesPage() {
   return (
-    <PaywallGate feature="use messaging">
+    <PaywallGate>
       <Suspense
         fallback={
           <div className="flex min-h-[calc(100dvh-10rem)] items-center justify-center">

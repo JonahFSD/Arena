@@ -193,7 +193,7 @@ export default function NewSubmissionPage() {
   };
 
   return (
-    <PaywallGate feature="submit pitches">
+    <PaywallGate>
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
       {/* Progress */}
       <div className="flex items-center gap-2">
