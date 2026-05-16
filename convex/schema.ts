@@ -189,6 +189,12 @@ export default defineSchema({
   // ============================================
   // AI SCORES — AI-evaluated submission scores
   // ============================================
+  // platformStats.aiScoreSum + .aiScoreCount mirror this table. Any
+  // writer that inserts a new aiScores row MUST call
+  // bumpPlatformStat(ctx, "aiScoreSum", overallScore) and
+  // bumpPlatformStat(ctx, "aiScoreCount", 1) in the same mutation, or
+  // the admin dashboard's avgAiScore will drift until
+  // counters.recomputeAll runs.
   aiScores: defineTable({
     submissionId: v.id("submissions"),
     rubricVersion: v.string(),
@@ -263,6 +269,11 @@ export default defineSchema({
   // ============================================
   // PRIZE POOLS — monthly prize distribution
   // ============================================
+  // platformStats.totalRevenue is a sum across all prizePools.totalCollected
+  // rows. Any writer that changes totalCollected MUST call
+  // bumpPlatformStat(ctx, "totalRevenue", delta) with the delta in the
+  // same mutation, or the admin dashboard's totalRevenue will drift
+  // until counters.recomputeAll runs.
   prizePools: defineTable({
     monthYear: v.string(),
     totalCollected: v.number(),
@@ -423,7 +434,11 @@ export default defineSchema({
     key: v.string(),
     windowStart: v.number(),
     count: v.number(),
-  }).index("by_key", ["key"]),
+  })
+    .index("by_key", ["key"])
+    // Indexed for the cleanup cron — rateLimit.purgeStale scans
+    // windowStart < cutoff and deletes in batches.
+    .index("by_windowStart", ["windowStart"]),
 
   // ============================================
   // BOUNTIES — marketplace funding opportunities

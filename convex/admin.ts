@@ -13,6 +13,12 @@ import { readPlatformStats, requireAdmin } from "./helpers";
  * The singleton is maintained inline by the mutations that change each
  * underlying source; counters.recomputeAll rebuilds it from scratch for
  * drift repair or cold starts.
+ *
+ * Known writer gaps (today): no code path writes prizePools.totalCollected
+ * after init, and aiScores has no production writer yet, so totalRevenue
+ * and aiScoreSum/Count rely entirely on the recompute. Schema-level
+ * comments on those tables flag the invariant the future writers must
+ * uphold.
  */
 export const getDashboardStats = query({
   args: {},

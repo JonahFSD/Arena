@@ -17,4 +17,12 @@ crons.monthly(
   internal.votingActions.closeAndFinalize
 );
 
+// Every 6 hours: clear expired rateLimits rows so the table doesn't grow
+// unbounded. Self-reschedules in batches if there's more to clean.
+crons.interval(
+  "purge stale rate limits",
+  { hours: 6 },
+  internal.rateLimit.purgeStale
+);
+
 export default crons;

@@ -1,4 +1,5 @@
 import { internalMutation } from "./_generated/server";
+import { bumpPlatformStat } from "./helpers";
 
 /**
  * Add real user accounts.
@@ -47,6 +48,7 @@ export const run = internalMutation({
       totalEarnings: 0,
       networkCount: 0,
     });
+    await bumpPlatformStat(ctx, "totalMembers", 1);
     console.log("✅ Created Connor Dore (member):", connorId);
 
     // Braden Peays — member
@@ -60,6 +62,7 @@ export const run = internalMutation({
       totalEarnings: 0,
       networkCount: 0,
     });
+    await bumpPlatformStat(ctx, "totalMembers", 1);
     console.log("✅ Created Braden Peays (member):", bradenId);
 
     console.log("\n🎉 All real user accounts created.");

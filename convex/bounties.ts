@@ -121,7 +121,11 @@ export const getById = query({
         adminNotes: bounty.adminNotes,
       }),
       submissions: submissionsWithUsers,
-      submissionsCount: submissions.length,
+      // Read the denormalized count to stay consistent with list()
+      // (which reads bounty.submissionsCount). The detail view collected
+      // the rows anyway, but using the same source for both endpoints
+      // avoids a future split-brain when one path drifts.
+      submissionsCount: bounty.submissionsCount ?? 0,
     };
   },
 });
@@ -400,7 +404,9 @@ export const getByReviewToken = query({
     return {
       ...bounty,
       submissions: submissionsWithUsers,
-      submissionsCount: submissions.length,
+      // Match list() / getById() — denormalized count is the single
+      // source of truth for the badge.
+      submissionsCount: bounty.submissionsCount ?? 0,
     };
   },
 });

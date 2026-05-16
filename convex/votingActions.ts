@@ -132,31 +132,37 @@ export const notifyVotingOpenBatch = internalMutation({
   },
   handler: async (ctx, args) => {
     const body = `The ${args.monthYear} voting round is now open. Cast your votes before the 8th!`;
-    for (const userId of args.userIds) {
-      const user = await ctx.db.get(userId);
-      if (!user) continue;
+    // Each iteration is independent — different userId, different
+    // userCounters row — so we can fan out the per-user work in parallel
+    // within the batch. Doc-op budget is per-transaction not per-call,
+    // so this is purely a wall-clock win.
+    await Promise.all(
+      args.userIds.map(async (userId) => {
+        const user = await ctx.db.get(userId);
+        if (!user) return;
 
-      await insertNotification(ctx, {
-        userId,
-        type: "voting_open",
-        title: "Voting is Open!",
-        body,
-        actionUrl: "/pitches/voting",
-      });
-
-      const prefs = user.notificationPreferences;
-      if (!prefs || prefs.votingRoundEmail !== false) {
-        await ctx.scheduler.runAfter(0, internal.email.sendNotification, {
-          to: user.email,
-          recipientName: user.fullName.split(" ")[0],
-          subject: `Voting is Open — ${args.monthYear}`,
-          heading: "Voting is Open!",
+        await insertNotification(ctx, {
+          userId,
+          type: "voting_open",
+          title: "Voting is Open!",
           body,
-          ctaLabel: "Vote Now",
-          ctaUrl: "/pitches/voting",
+          actionUrl: "/pitches/voting",
         });
-      }
-    }
+
+        const prefs = user.notificationPreferences;
+        if (!prefs || prefs.votingRoundEmail !== false) {
+          await ctx.scheduler.runAfter(0, internal.email.sendNotification, {
+            to: user.email,
+            recipientName: user.fullName.split(" ")[0],
+            subject: `Voting is Open — ${args.monthYear}`,
+            heading: "Voting is Open!",
+            body,
+            ctaLabel: "Vote Now",
+            ctaUrl: "/pitches/voting",
+          });
+        }
+      })
+    );
   },
 });
 
