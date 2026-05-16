@@ -4,6 +4,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { getAuthUser } from "./helpers";
 import type { Doc } from "./_generated/dataModel";
 import { bqTypeValidator } from "./bqType";
+import { requireOwnedUpload } from "./storage";
 
 /**
  * Get the currently authenticated user document.
@@ -173,6 +174,7 @@ export const updateAvatar = mutation({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
     const user = await getAuthUser(ctx);
+    await requireOwnedUpload(ctx, args.storageId, user._id, "avatar");
     await ctx.db.patch(user._id, { avatarStorageId: args.storageId });
   },
 });
@@ -268,7 +270,10 @@ export const updateProfile = mutation({
     if (args.bqType !== undefined) updates.bqType = args.bqType;
     if (args.bqResultsUrl !== undefined) updates.bqResultsUrl = args.bqResultsUrl;
     if (args.linkedinUrl !== undefined) updates.linkedinUrl = args.linkedinUrl;
-    if (args.avatarStorageId !== undefined) updates.avatarStorageId = args.avatarStorageId;
+    if (args.avatarStorageId !== undefined) {
+      await requireOwnedUpload(ctx, args.avatarStorageId, user._id, "avatar");
+      updates.avatarStorageId = args.avatarStorageId;
+    }
 
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(user._id, updates);

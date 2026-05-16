@@ -369,6 +369,24 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ============================================
+  // FILE UPLOADS — ownership + validation log for ctx.storage uploads
+  // ============================================
+  fileUploads: defineTable({
+    storageId: v.id("_storage"),
+    uploaderUserId: v.id("users"),
+    purpose: v.union(
+      v.literal("avatar"),
+      v.literal("submission_video"),
+      v.literal("submission_thumbnail"),
+      v.literal("submission_slides")
+    ),
+    contentType: v.string(),
+    size: v.number(),
+  })
+    .index("by_storageId", ["storageId"])
+    .index("by_uploader", ["uploaderUserId"]),
+
+  // ============================================
   // STRIPE EVENTS — webhook idempotency log
   // ============================================
   stripeEvents: defineTable({

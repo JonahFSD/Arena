@@ -41,6 +41,7 @@ export default function SettingsPage() {
   const user = useCurrentUser();
   const updateProfile = useMutation(api.users.updateProfile);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const registerUpload = useMutation(api.storage.registerUpload);
   const updateAvatar = useMutation(api.users.updateAvatar);
   const referralCode = useQuery(api.users.getMyReferralCode);
   const generateReferralCode = useMutation(api.users.generateReferralCode);
@@ -193,6 +194,11 @@ export default function SettingsPage() {
         body: blob,
       });
       const { storageId } = await uploadRes.json();
+
+      // Register the upload (records ownership + validates size/MIME).
+      // Must happen before updateAvatar — that mutation checks the
+      // uploader matches the caller.
+      await registerUpload({ storageId, purpose: "avatar" });
 
       // Save to user profile
       await updateAvatar({ storageId });

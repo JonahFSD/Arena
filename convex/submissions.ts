@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUser, getAuthUserIdOrNull } from "./helpers";
+import { requireOwnedUpload } from "./storage";
 
 /**
  * List the current user's submissions with AI scores.
@@ -250,9 +251,17 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const user = await getAuthUser(ctx);
 
-    // Resolve video URL from storage if a storageId was provided
+    // Resolve video URL from storage if a storageId was provided.
+    // Ownership-check the storage ID first so a user can't attach a
+    // video uploaded by someone else.
     let videoUrl = args.videoUrl;
     if (args.videoStorageId) {
+      await requireOwnedUpload(
+        ctx,
+        args.videoStorageId,
+        user._id,
+        "submission_video"
+      );
       videoUrl = (await ctx.storage.getUrl(args.videoStorageId)) ?? undefined;
     }
 
