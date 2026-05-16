@@ -285,6 +285,12 @@ export default defineSchema({
     firstPlaceUserId: v.optional(v.id("users")),
     secondPlaceUserId: v.optional(v.id("users")),
     thirdPlaceUserId: v.optional(v.id("users")),
+    // Persisted at finalization so read paths (prizes.getPastRounds) can
+    // attach winning submission titles without re-tallying votes on every
+    // page render. counters.recomputeAll backfills these for legacy pools.
+    firstPlaceSubmissionId: v.optional(v.id("submissions")),
+    secondPlaceSubmissionId: v.optional(v.id("submissions")),
+    thirdPlaceSubmissionId: v.optional(v.id("submissions")),
     payoutStatus: v.union(
       v.literal("pending"),
       v.literal("paid"),

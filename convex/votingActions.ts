@@ -298,9 +298,18 @@ export const closeAndFinalize = internalMutation({
 
     if (prizePool) {
       const patchData: Record<string, unknown> = { finalizedAt: Date.now() };
-      if (winners[0]) patchData.firstPlaceUserId = winners[0].userId;
-      if (winners[1]) patchData.secondPlaceUserId = winners[1].userId;
-      if (winners[2]) patchData.thirdPlaceUserId = winners[2].userId;
+      if (winners[0]) {
+        patchData.firstPlaceUserId = winners[0].userId;
+        patchData.firstPlaceSubmissionId = winners[0].submissionId;
+      }
+      if (winners[1]) {
+        patchData.secondPlaceUserId = winners[1].userId;
+        patchData.secondPlaceSubmissionId = winners[1].submissionId;
+      }
+      if (winners[2]) {
+        patchData.thirdPlaceUserId = winners[2].userId;
+        patchData.thirdPlaceSubmissionId = winners[2].submissionId;
+      }
       await ctx.db.patch(prizePool._id, patchData);
     }
 

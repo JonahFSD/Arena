@@ -101,10 +101,62 @@ export const recomputeAll = internalMutation({
       }
     }
 
+    // Backfill prizePools.firstPlaceSubmissionId / etc for legacy finalized
+    // pools that pre-date the schema change. New finalizations populate
+    // these inline in votingActions.closeAndFinalize; this loop only does
+    // the one-time repair so prizes.getPastRounds can drop the per-render
+    // vote re-tally.
+    const prizePools = await ctx.db.query("prizePools").collect();
+    let poolsTouched = 0;
+    for (const pool of prizePools) {
+      if (!pool.finalizedAt) continue;
+      const needsBackfill =
+        (pool.firstPlaceUserId !== undefined &&
+          pool.firstPlaceSubmissionId === undefined) ||
+        (pool.secondPlaceUserId !== undefined &&
+          pool.secondPlaceSubmissionId === undefined) ||
+        (pool.thirdPlaceUserId !== undefined &&
+          pool.thirdPlaceSubmissionId === undefined);
+      if (!needsBackfill) continue;
+
+      const round = await ctx.db
+        .query("votingRounds")
+        .withIndex("by_monthYear", (q) => q.eq("monthYear", pool.monthYear))
+        .first();
+      if (!round) continue;
+
+      const roundVotes = await ctx.db
+        .query("votes")
+        .withIndex("by_roundId_submissionId", (q) =>
+          q.eq("votingRoundId", round._id)
+        )
+        .collect();
+
+      const tallies: Record<string, number> = {};
+      for (const v of roundVotes) {
+        const key = v.submissionId as string;
+        tallies[key] = (tallies[key] ?? 0) + 1;
+      }
+      const ranked = Object.entries(tallies)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 3);
+
+      const patch: Record<string, unknown> = {};
+      if (ranked[0] && !pool.firstPlaceSubmissionId)
+        patch.firstPlaceSubmissionId = ranked[0][0];
+      if (ranked[1] && !pool.secondPlaceSubmissionId)
+        patch.secondPlaceSubmissionId = ranked[1][0];
+      if (ranked[2] && !pool.thirdPlaceSubmissionId)
+        patch.thirdPlaceSubmissionId = ranked[2][0];
+      if (Object.keys(patch).length > 0) {
+        await ctx.db.patch(pool._id, patch);
+        poolsTouched++;
+      }
+    }
+
     // platformStats — singleton admin-dashboard aggregate, rebuilt from
     // the underlying tables we just walked (plus prizePools + aiScores).
     const applications = await ctx.db.query("applications").collect();
-    const prizePools = await ctx.db.query("prizePools").collect();
     const allVotes = await ctx.db.query("votes").collect();
     const aiScores = await ctx.db.query("aiScores").collect();
 
@@ -139,12 +191,14 @@ export const recomputeAll = internalMutation({
 
     console.log(
       `   ✅ Recomputed counters: ${submissionsTouched} submissions, ` +
-        `${bountiesTouched} bounties, ${usersTouched} user rows, platformStats ok`
+        `${bountiesTouched} bounties, ${usersTouched} user rows, ` +
+        `${poolsTouched} prizePools backfilled, platformStats ok`
     );
     return {
       submissionsTouched,
       bountiesTouched,
       usersTouched,
+      poolsTouched,
     };
   },
 });
