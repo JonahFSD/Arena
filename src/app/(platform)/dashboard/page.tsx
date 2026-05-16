@@ -173,7 +173,7 @@ export default function DashboardPage() {
     {
       label: "Points",
       value:
-        stats === undefined
+        stats == null
           ? "—"
           : `+${stats.points.toLocaleString()}`,
       delta: momPoints,
@@ -186,7 +186,7 @@ export default function DashboardPage() {
     {
       label: "Network",
       value:
-        stats === undefined
+        stats == null
           ? "—"
           : `+${stats.networkCount.toLocaleString()}`,
       delta: momNetwork,
@@ -194,7 +194,7 @@ export default function DashboardPage() {
     {
       label: "Earnings",
       value:
-        stats === undefined
+        stats == null
           ? "—"
           : `$${stats.totalEarnings.toLocaleString()}`,
       delta: momEarnings,
