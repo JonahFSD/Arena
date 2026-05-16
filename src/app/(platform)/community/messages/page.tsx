@@ -77,6 +77,8 @@ function MessagesPageInner() {
 
   const [selectedThread, setSelectedThread] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showNewThread, setShowNewThread] = useState(false);
   const [newThreadSearch, setNewThreadSearch] = useState("");
@@ -176,19 +178,24 @@ function MessagesPageInner() {
   );
 
   const handleSend = async () => {
-    if (!messageInput.trim()) return;
+    if (!messageInput.trim() || isSending) return;
     // Use thread data's other user, or the new thread target
     const recipientId = selectedThreadData?.otherUser?._id ?? newThreadTargetId;
     if (!recipientId) return;
-    await sendMessage({
-      recipientUserId: recipientId as Id<"users">,
-      body: messageInput.trim(),
-    });
-    setMessageInput("");
-    // Clear the new thread target after first message (thread now exists in list)
-    if (newThreadTargetId && !existingNewThread) {
-      // Keep the thread selected, clear the target flag
-      // The thread will appear in the list on next query refresh
+
+    setIsSending(true);
+    setSendError(null);
+    try {
+      await sendMessage({
+        recipientUserId: recipientId as Id<"users">,
+        body: messageInput.trim(),
+      });
+      setMessageInput("");
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      setSendError("Couldn't send message. Try again.");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -418,6 +425,11 @@ function MessagesPageInner() {
                 </div>
 
                 <div className="p-4 border-t border-border-default shrink-0">
+                  {sendError && (
+                    <p className="mb-2 text-xs text-error" role="alert">
+                      {sendError}
+                    </p>
+                  )}
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
@@ -435,7 +447,7 @@ function MessagesPageInner() {
                     <Button
                       variant="brand"
                       size="icon"
-                      disabled={!messageInput.trim()}
+                      disabled={!messageInput.trim() || isSending}
                       onClick={() => void handleSend()}
                     >
                       <Send className="h-4 w-4" />
