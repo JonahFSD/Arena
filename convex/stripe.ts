@@ -117,6 +117,8 @@ export const handleStripeWebhook = internalAction({
 
       if (meta?.type === "bounty") {
         await ctx.runMutation(internal.bounties.createFromWebhook, {
+          stripeEventId: event.id,
+          stripeEventType: event.type,
           title: meta.title!,
           description: meta.description!,
           founderName: meta.founderName!,

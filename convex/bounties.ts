@@ -108,9 +108,17 @@ export const create = mutation({
 
 /**
  * Internal create — used by Stripe webhook (no auth context).
+ *
+ * Idempotent on `stripeEventId`: Stripe retries failed deliveries and may
+ * occasionally redeliver successful ones, so the dedupe check + bounty insert
+ * must happen in a single transactional mutation. Returns `{ duplicate: true }`
+ * on re-delivery; the action treats both outcomes as success (200) so Stripe
+ * stops retrying.
  */
 export const createFromWebhook = internalMutation({
   args: {
+    stripeEventId: v.string(),
+    stripeEventType: v.string(),
     title: v.string(),
     description: v.string(),
     founderName: v.string(),
@@ -123,10 +131,26 @@ export const createFromWebhook = internalMutation({
     stripePaymentIntentId: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("bounties", {
-      ...args,
+    const existing = await ctx.db
+      .query("stripeEvents")
+      .withIndex("by_eventId", (q) => q.eq("eventId", args.stripeEventId))
+      .unique();
+    if (existing) {
+      return { duplicate: true as const };
+    }
+
+    await ctx.db.insert("stripeEvents", {
+      eventId: args.stripeEventId,
+      eventType: args.stripeEventType,
+      processedAt: Date.now(),
+    });
+
+    const { stripeEventId, stripeEventType, ...bountyFields } = args;
+    const bountyId = await ctx.db.insert("bounties", {
+      ...bountyFields,
       status: "needs_review",
     });
+    return { duplicate: false as const, bountyId };
   },
 });
 

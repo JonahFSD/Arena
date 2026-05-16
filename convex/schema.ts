@@ -360,6 +360,15 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ============================================
+  // STRIPE EVENTS — webhook idempotency log
+  // ============================================
+  stripeEvents: defineTable({
+    eventId: v.string(),
+    eventType: v.string(),
+    processedAt: v.number(),
+  }).index("by_eventId", ["eventId"]),
+
+  // ============================================
   // BOUNTIES — marketplace funding opportunities
   // ============================================
   bounties: defineTable({
