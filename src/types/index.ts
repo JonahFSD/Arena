@@ -31,12 +31,22 @@ export type NotificationType =
 // ============================================
 
 export type BQType =
-  | "Anchor"
-  | "Visionary"
-  | "Operator"
-  | "Catalyst"
+  | "Pathfinder"
+  | "Theorist"
+  | "Cartographer"
+  | "Prospector"
   | "Strategist"
-  | "Builder";
+  | "Catalyst"
+  | "Optimizer"
+  | "Sentinel"
+  | "Luminary"
+  | "Weaver"
+  | "Navigator"
+  | "Steward"
+  | "Torchbearer"
+  | "Alchemist"
+  | "Builder"
+  | "Anchor";
 
 export interface User {
   id: string;
