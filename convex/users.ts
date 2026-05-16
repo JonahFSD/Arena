@@ -2,6 +2,7 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { getAuthUser } from "./helpers";
+import type { Doc } from "./_generated/dataModel";
 
 /**
  * Get the currently authenticated user document.
@@ -260,13 +261,22 @@ export const updateProfile = mutation({
   handler: async (ctx, args) => {
     const user = await getAuthUser(ctx);
 
-    // Only patch fields that were provided
-    const updates: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(args)) {
-      if (value !== undefined) {
-        updates[key] = value;
-      }
-    }
+    // Explicit allow-list — never patch fields from `args` by iteration.
+    // Adding a new editable field requires touching this block deliberately.
+    const updates: Partial<Doc<"users">> = {};
+    if (args.fullName !== undefined) updates.fullName = args.fullName;
+    if (args.bio !== undefined) updates.bio = args.bio;
+    if (args.schoolName !== undefined) updates.schoolName = args.schoolName;
+    if (args.graduationYear !== undefined) updates.graduationYear = args.graduationYear;
+    if (args.age !== undefined) updates.age = args.age;
+    if (args.city !== undefined) updates.city = args.city;
+    if (args.state !== undefined) updates.state = args.state;
+    if (args.skills !== undefined) updates.skills = args.skills;
+    if (args.lookingForCofounders !== undefined) updates.lookingForCofounders = args.lookingForCofounders;
+    if (args.bqType !== undefined) updates.bqType = args.bqType;
+    if (args.bqResultsUrl !== undefined) updates.bqResultsUrl = args.bqResultsUrl;
+    if (args.linkedinUrl !== undefined) updates.linkedinUrl = args.linkedinUrl;
+    if (args.avatarStorageId !== undefined) updates.avatarStorageId = args.avatarStorageId;
 
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(user._id, updates);
