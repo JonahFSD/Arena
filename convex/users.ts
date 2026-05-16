@@ -1,7 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { getAuthUser } from "./helpers";
+import { getAuthUser, toPublicUser } from "./helpers";
 import type { Doc } from "./_generated/dataModel";
 import { bqTypeValidator } from "./bqType";
 import { requireOwnedUpload } from "./storage";
@@ -25,14 +25,13 @@ export const getMe = query({
 export const getById = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    await getAuthUser(ctx);
     const user = await ctx.db.get(args.userId);
     if (!user) return null;
-    // Strip internal fields, resolve avatar URL
-    const { authSubject, ...publicProfile } = user;
     const avatarUrl = user.avatarStorageId
       ? await ctx.storage.getUrl(user.avatarStorageId)
       : null;
-    return { ...publicProfile, avatarUrl };
+    return { ...toPublicUser(user), avatarUrl };
   },
 });
 
@@ -65,12 +64,17 @@ export const getMyStats = query({
 export const listMembers = query({
   args: { search: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    const viewer = await getAuthUser(ctx);
+    const isAdmin = viewer.role === "admin" || viewer.role === "superadmin";
     const allUsers = await ctx.db.query("users").collect();
 
     let members = allUsers.filter(
       (u) => u.role === "member" || u.role === "admin" || u.role === "superadmin"
     );
 
+    // Email is searchable for admins (contact lookup) and remains
+    // searchable for non-admins for backward compatibility — the result
+    // strips email below, so it's only ever an internal predicate.
     if (args.search && args.search.trim() !== "") {
       const searchLower = args.search.toLowerCase();
       members = members.filter(
@@ -81,13 +85,18 @@ export const listMembers = query({
       );
     }
 
-    // Strip internal fields and resolve avatar URLs
     return await Promise.all(
-      members.map(async ({ authSubject, ...rest }) => {
-        const avatarUrl = rest.avatarStorageId
-          ? await ctx.storage.getUrl(rest.avatarStorageId)
+      members.map(async (member) => {
+        const avatarUrl = member.avatarStorageId
+          ? await ctx.storage.getUrl(member.avatarStorageId)
           : null;
-        return { ...rest, avatarUrl };
+        return {
+          ...toPublicUser(member),
+          avatarUrl,
+          // Admin tooling (e.g. admin/leadership) needs contact info to
+          // attach members to leadership positions, send outreach, etc.
+          ...(isAdmin && { email: member.email, phone: member.phone }),
+        };
       })
     );
   },

@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUser, getAuthUserIdOrNull } from "./helpers";
+import { getAuthUser, toPublicUser } from "./helpers";
 import { requireOwnedUpload } from "./storage";
 
 /**
@@ -44,19 +44,17 @@ export const listMine = query({
 export const getById = query({
   args: { submissionId: v.id("submissions") },
   handler: async (ctx, args) => {
+    const viewer = await getAuthUser(ctx);
     const submission = await ctx.db.get(args.submissionId);
     if (!submission) return null;
 
-    // Get the submitting user
     const user = await ctx.db.get(submission.userId);
 
-    // Get AI score
     const aiScore = await ctx.db
       .query("aiScores")
       .withIndex("by_submissionId", (q) => q.eq("submissionId", args.submissionId))
       .first();
 
-    // Get collaborators with user info
     const collaborators = await ctx.db
       .query("submissionCollaborators")
       .withIndex("by_submissionId", (q) => q.eq("submissionId", args.submissionId))
@@ -65,20 +63,18 @@ export const getById = query({
     const collaboratorsWithUsers = await Promise.all(
       collaborators.map(async (c) => {
         const collabUser = await ctx.db.get(c.userId);
-        return { ...c, user: collabUser };
+        return { ...c, user: collabUser ? toPublicUser(collabUser) : null };
       })
     );
 
-    // Get vote count
     const allVotes = await ctx.db.query("votes").collect();
     const voteCount = allVotes.filter(
       (v) => v.submissionId === args.submissionId
     ).length;
 
-    const viewerId = await getAuthUserIdOrNull(ctx);
-    const viewerCollaborator = viewerId
-      ? collaboratorsWithUsers.find((c) => c.userId === viewerId)
-      : undefined;
+    const viewerCollaborator = collaboratorsWithUsers.find(
+      (c) => c.userId === viewer._id
+    );
 
     const sumCollaboratorPct = collaboratorsWithUsers.reduce(
       (s, c) => s + c.revenueSplitPct,
@@ -106,14 +102,17 @@ export const getById = query({
 
     return {
       ...submission,
-      user: user ? {
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        schoolName: user.schoolName,
-        avatarStorageId: user.avatarStorageId,
-        avatarUrl: user.avatarStorageId ? await ctx.storage.getUrl(user.avatarStorageId) : null,
-      } : null,
+      user: user
+        ? {
+            _id: user._id,
+            fullName: user.fullName,
+            schoolName: user.schoolName,
+            avatarStorageId: user.avatarStorageId,
+            avatarUrl: user.avatarStorageId
+              ? await ctx.storage.getUrl(user.avatarStorageId)
+              : null,
+          }
+        : null,
       aiScore: aiScore ?? undefined,
       collaborators: collaboratorsWithUsers,
       voteCount,

@@ -1,34 +1,66 @@
 import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { getAuthUser, requireAdmin } from "./helpers";
+import { getAuthUser, requireAdmin, toPublicBounty } from "./helpers";
+
+const bountyStatusValidator = v.union(
+  v.literal("needs_review"),
+  v.literal("reviewing"),
+  v.literal("active"),
+  v.literal("completed"),
+  v.literal("archived"),
+  v.literal("rejected")
+);
+
+const PUBLIC_BOUNTY_STATUSES = ["active", "completed"] as const;
 
 /**
- * List bounties, optionally filtered by status.
- * Non-admin users only see "active" and "completed" bounties.
+ * List bounties, optionally filtered by status. Non-admin callers only see
+ * "active" and "completed" — needs_review / reviewing / archived / rejected
+ * leak founder names, descriptions, and amounts, so they require admin role.
  */
 export const list = query({
-  args: { status: v.optional(v.string()) },
+  args: { status: v.optional(bountyStatusValidator) },
   handler: async (ctx, args) => {
+    const user = await getAuthUser(ctx);
+    const isAdmin = user.role === "admin" || user.role === "superadmin";
+
+    if (!isAdmin && args.status && !PUBLIC_BOUNTY_STATUSES.includes(args.status as typeof PUBLIC_BOUNTY_STATUSES[number])) {
+      return [];
+    }
+
     let bounties;
     if (args.status) {
       bounties = await ctx.db
         .query("bounties")
-        .withIndex("by_status", (q) => q.eq("status", args.status as any))
+        .withIndex("by_status", (q) => q.eq("status", args.status!))
         .collect();
     } else {
       bounties = await ctx.db.query("bounties").collect();
+      if (!isAdmin) {
+        bounties = bounties.filter((b) =>
+          PUBLIC_BOUNTY_STATUSES.includes(b.status as typeof PUBLIC_BOUNTY_STATUSES[number])
+        );
+      }
     }
 
-    // Attach submission counts
     const withCounts = await Promise.all(
       bounties.map(async (bounty) => {
         const submissions = await ctx.db
           .query("bountySubmissions")
           .withIndex("by_bountyId", (q) => q.eq("bountyId", bounty._id))
           .collect();
+        // Admin-only fields are also exposed to the bounty's creator so
+        // they can share the review link with their team.
+        const includeAdminFields = isAdmin || bounty.creatorUserId === user._id;
         return {
-          ...bounty,
+          ...toPublicBounty(bounty),
+          ...(includeAdminFields && {
+            reviewToken: bounty.reviewToken,
+            stripePaymentIntentId: bounty.stripePaymentIntentId,
+            stripeCheckoutSessionId: bounty.stripeCheckoutSessionId,
+            adminNotes: bounty.adminNotes,
+          }),
           submissionsCount: submissions.length,
         };
       })
@@ -39,13 +71,27 @@ export const list = query({
 });
 
 /**
- * Get a bounty by ID with its submissions and user info.
+ * Get a bounty by ID with its submissions and user info. Non-admin callers
+ * can only fetch bounties in "active" / "completed" state — pre-approval
+ * statuses (needs_review, reviewing) and post-cleanup statuses (archived,
+ * rejected) are admin-only.
  */
 export const getById = query({
   args: { bountyId: v.id("bounties") },
   handler: async (ctx, args) => {
+    const user = await getAuthUser(ctx);
+    const isAdmin = user.role === "admin" || user.role === "superadmin";
+
     const bounty = await ctx.db.get(args.bountyId);
     if (!bounty) return null;
+    if (
+      !isAdmin &&
+      !PUBLIC_BOUNTY_STATUSES.includes(
+        bounty.status as typeof PUBLIC_BOUNTY_STATUSES[number]
+      )
+    ) {
+      return null;
+    }
 
     const submissions = await ctx.db
       .query("bountySubmissions")
@@ -54,22 +100,29 @@ export const getById = query({
 
     const submissionsWithUsers = await Promise.all(
       submissions.map(async (sub) => {
-        const user = await ctx.db.get(sub.userId);
+        const subUser = await ctx.db.get(sub.userId);
         return {
           ...sub,
-          user: user
+          user: subUser
             ? {
-                _id: user._id,
-                fullName: user.fullName,
-                schoolName: user.schoolName,
+                _id: subUser._id,
+                fullName: subUser.fullName,
+                schoolName: subUser.schoolName,
               }
             : null,
         };
       })
     );
 
+    const includeAdminFields = isAdmin || bounty.creatorUserId === user._id;
     return {
-      ...bounty,
+      ...toPublicBounty(bounty),
+      ...(includeAdminFields && {
+        reviewToken: bounty.reviewToken,
+        stripePaymentIntentId: bounty.stripePaymentIntentId,
+        stripeCheckoutSessionId: bounty.stripeCheckoutSessionId,
+        adminNotes: bounty.adminNotes,
+      }),
       submissions: submissionsWithUsers,
       submissionsCount: submissions.length,
     };

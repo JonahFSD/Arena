@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUser } from "./helpers";
+import { getAuthUser, toPublicUser } from "./helpers";
 
 /**
  * Invite a user to collaborate on a submission.
@@ -180,6 +180,7 @@ export const listMyInvitations = query({
 export const getBySubmission = query({
   args: { submissionId: v.id("submissions") },
   handler: async (ctx, args) => {
+    await getAuthUser(ctx);
     const collaborators = await ctx.db
       .query("submissionCollaborators")
       .withIndex("by_submissionId", (q) => q.eq("submissionId", args.submissionId))
@@ -190,15 +191,7 @@ export const getBySubmission = query({
         const user = await ctx.db.get(c.userId);
         return {
           ...c,
-          user: user
-            ? {
-                _id: user._id,
-                fullName: user.fullName,
-                email: user.email,
-                schoolName: user.schoolName,
-                avatarStorageId: user.avatarStorageId,
-              }
-            : null,
+          user: user ? toPublicUser(user) : null,
         };
       })
     );
