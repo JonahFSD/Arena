@@ -13,6 +13,7 @@ import {
   splitCompetitorPrizePool,
   type CompetitorPrizeSplit,
 } from "@/lib/hall-of-fame-prize-pool";
+import { formatMonthYear } from "@/lib/utils";
 import {
   Calendar,
   DollarSign,
@@ -34,12 +35,6 @@ type MonthRound = {
   grossPool: number;
   placements: PitchPlacement[];
 };
-
-function formatMonthYear(monthYear: string): string {
-  const [yearStr, monthStr] = monthYear.split("-");
-  const date = new Date(Number(yearStr), Number(monthStr) - 1, 1);
-  return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-}
 
 const placeColors = {
   1: { trophy: "text-yellow-400", prize: "text-text-primary" },

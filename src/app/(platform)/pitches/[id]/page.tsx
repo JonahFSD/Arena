@@ -35,12 +35,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { useState } from "react";
+import { formatMonthYear } from "@/lib/utils";
 
-function formatMonthYear(my: string): string {
-  const [year, month] = my.split("-");
-  const date = new Date(Number(year), Number(month) - 1);
-  return date.toLocaleString("default", { month: "long", year: "numeric" });
-}
 
 const statusVariant = (status: string) => {
   switch (status) {

@@ -62,6 +62,13 @@ export function getMonthYear(date?: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
+// Inverse of getMonthYear's serialization: turn "2026-03" into "March 2026".
+export function formatMonthYear(monthYear: string): string {
+  const [yearStr, monthStr] = monthYear.split("-");
+  const date = new Date(Number(yearStr), Number(monthStr) - 1, 1);
+  return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
 export function getInitials(name: string): string {
   return name
     .split(" ")

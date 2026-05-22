@@ -52,6 +52,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { formatMonthYear } from "@/lib/utils";
 import {
   Clock,
   Play,
@@ -270,13 +271,7 @@ export default function VotingPage() {
   const msRemaining = roundData.closesAt - now;
   const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
 
-  // Format month for display
-  const [yearStr, monthStr] = roundData.monthYear.split("-");
-  const roundDate = new Date(Number(yearStr), Number(monthStr) - 1, 1);
-  const roundLabel = roundDate.toLocaleDateString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
+  const roundLabel = formatMonthYear(roundData.monthYear);
 
   const prizePoolAmount = roundData.prizePool?.totalCollected;
 
