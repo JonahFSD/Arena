@@ -39,7 +39,7 @@ import {
 } from "lucide-react";
 
 interface TeamMember {
-  id: string;
+  id: Id<"users">;
   name: string;
   school: string;
   splitPct: number;
@@ -119,11 +119,11 @@ export default function NewSubmissionPage() {
     setMemberSearch("");
   };
 
-  const removeMember = (id: string) => {
+  const removeMember = (id: Id<"users">) => {
     setTeamMembers(teamMembers.filter((m) => m.id !== id));
   };
 
-  const updateSplit = (id: string, pct: number) => {
+  const updateSplit = (id: Id<"users">, pct: number) => {
     setTeamMembers(
       teamMembers.map((m) =>
         m.id === id ? { ...m, splitPct: Math.min(100, Math.max(0, pct)) } : m
@@ -189,7 +189,7 @@ export default function NewSubmissionPage() {
           teamMembers.map((member) =>
             inviteCollaborator({
               submissionId,
-              userId: member.id as any,
+              userId: member.id,
               role: "collaborator",
               revenueSplitPct: member.splitPct,
             })
