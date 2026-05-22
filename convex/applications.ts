@@ -116,12 +116,19 @@ export const listPending = query({
  * List all applications by status (admin only).
  */
 export const listByStatus = query({
-  args: { status: v.string() },
+  args: {
+    status: v.union(
+      v.literal("pending"),
+      v.literal("approved"),
+      v.literal("rejected"),
+      v.literal("more_info"),
+    ),
+  },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     return await ctx.db
       .query("applications")
-      .withIndex("by_status", (q) => q.eq("status", args.status as any))
+      .withIndex("by_status", (q) => q.eq("status", args.status))
       .order("desc")
       .collect();
   },
