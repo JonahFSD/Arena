@@ -36,6 +36,22 @@ export function formatRelativeTime(date: string | Date): string {
   return "just now";
 }
 
+// Like formatRelativeTime, but takes epoch ms and continues into weeks
+// instead of falling back to the absolute date — used in chat-style lists
+// where bounded short labels matter more than precise calendar dates.
+export function formatTimeAgo(epochMs: number): string {
+  const diffMs = Date.now() - epochMs;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  const diffWeeks = Math.floor(diffDays / 7);
+  return `${diffWeeks}w ago`;
+}
+
 export function getMonthYear(date?: Date): string {
   const d = date || new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;

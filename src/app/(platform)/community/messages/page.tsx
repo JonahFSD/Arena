@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, Send, Plus, Search, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatTimeAgo } from "@/lib/utils";
 import {
   platformPaneBleedClass,
   platformPaneGridCellFillClass,
@@ -30,20 +30,6 @@ import {
 /** Same deterministic thread ID as convex/messages.ts */
 function computeThreadId(userId1: string, userId2: string): string {
   return [userId1, userId2].sort().join("_");
-}
-
-function formatRelativeTime(epochMs: number): string {
-  const now = Date.now();
-  const diffMs = now - epochMs;
-  const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
-  const diffHours = Math.floor(diffMin / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  const diffWeeks = Math.floor(diffDays / 7);
-  return `${diffWeeks}w ago`;
 }
 
 function formatMessageTime(epochMs: number): string {
@@ -292,7 +278,7 @@ function MessagesPageInner() {
                             </p>
                             <span className="text-xs text-text-muted flex-shrink-0">
                               {thread.lastMessage
-                                ? formatRelativeTime(
+                                ? formatTimeAgo(
                                     thread.lastMessage._creationTime
                                   )
                                 : ""}
