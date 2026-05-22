@@ -3,13 +3,7 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { adjustUserCounter, getAuthUser } from "./helpers";
-
-/**
- * Compute a deterministic thread ID from two user IDs.
- */
-function computeThreadId(userId1: string, userId2: string): string {
-  return [userId1, userId2].sort().join("_");
-}
+import { computeThreadId } from "./threadId";
 
 /**
  * List all message threads for the current user.

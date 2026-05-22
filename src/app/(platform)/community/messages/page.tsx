@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id } from "../../../../../convex/_generated/dataModel";
+import { computeThreadId } from "../../../../../convex/threadId";
 import { useCurrentUser } from "@/contexts/user-context";
 import { PaywallGate } from "@/components/auth/paywall-gate";
 import { Avatar } from "@/components/ui/avatar";
@@ -26,11 +27,6 @@ import {
   parseMessagesSortFromSearch,
   sortMessagesThreads,
 } from "@/lib/messages-list-filters";
-
-/** Same deterministic thread ID as convex/messages.ts */
-function computeThreadId(userId1: string, userId2: string): string {
-  return [userId1, userId2].sort().join("_");
-}
 
 function formatMessageTime(epochMs: number): string {
   const date = new Date(epochMs);
