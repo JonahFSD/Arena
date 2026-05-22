@@ -26,12 +26,7 @@ import {
   Check,
   Star,
 } from "lucide-react";
-import { daysUntilDue } from "@/lib/utils";
-
-function formatBountyDate(epochMs: number) {
-  const d = new Date(epochMs);
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
+import { daysUntilDue, formatDate } from "@/lib/utils";
 
 export default function BountyDetailPage() {
   const params = useParams();
@@ -139,7 +134,7 @@ export default function BountyDetailPage() {
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-1 text-sm text-text-secondary">
           <span className="flex items-center gap-1">
             <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
-            Due {formatBountyDate(bounty.dueDate)}
+            Due {formatDate(bounty.dueDate)}
           </span>
           {bounty.status === "active" && (
             <span
@@ -301,7 +296,7 @@ export default function BountyDetailPage() {
                         View submission
                       </a>
                       <span className="text-[11px] text-text-muted">
-                        {formatBountyDate(sub.submittedAt)}
+                        {formatDate(sub.submittedAt)}
                       </span>
                     </div>
 
