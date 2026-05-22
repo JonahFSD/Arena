@@ -148,5 +148,21 @@ jobs:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         # When CONVEX_DEPLOY_KEY is a preview-class key, the Convex
         # CLI auto-derives the preview name from GitHub Actions env
-        # vars (no flag needed).
-        run: npx convex deploy
+        # vars (no flag needed). If the secret isn't wired yet, skip
+        # cleanly instead of failing with the unhelpful "developing
+        # anonymously with a locally running project" message that
+        # `npx convex deploy` produces when it sees no credentials.
+        run: |
+          if [ -z "$CONVEX_DEPLOY_KEY" ]; then
+            echo "::notice title=Convex preview deploy skipped::CONVEX_DEPLOY_KEY secret is not set."
+            echo
+            echo "To enable preview deploys:"
+            echo "  1. Convex Dashboard -> Project Settings -> Deploy Keys"
+            echo "  2. Generate a preview deploy key"
+            echo "  3. Add as repo secret named CONVEX_DEPLOY_KEY"
+            echo
+            echo "This job will then push a per-branch preview deployment"
+            echo "of the Convex backend on every PR."
+            exit 0
+          fi
+          npx convex deploy
