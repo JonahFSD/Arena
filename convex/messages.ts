@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { adjustUserCounter, getAuthUser } from "./helpers";
 
 /**
@@ -41,14 +42,14 @@ export const listThreads = query({
     // Group by thread
     const threadMap = new Map<
       string,
-      { messages: typeof myMessages; otherUserId: string }
+      { messages: typeof myMessages; otherUserId: Id<"users"> }
     >();
     for (const msg of myMessages) {
       if (!threadMap.has(msg.threadId)) {
         const otherUserId =
           msg.senderUserId === user._id
-            ? (msg.recipientUserId as string)
-            : (msg.senderUserId as string);
+            ? msg.recipientUserId
+            : msg.senderUserId;
         threadMap.set(msg.threadId, { messages: [], otherUserId });
       }
       threadMap.get(msg.threadId)!.messages.push(msg);
@@ -58,8 +59,7 @@ export const listThreads = query({
     const threads = await Promise.all(
       Array.from(threadMap.entries()).map(
         async ([threadId, { messages, otherUserId }]) => {
-          const otherUserDoc = await ctx.db.get(otherUserId as any);
-          const otherUser = otherUserDoc as any;
+          const otherUser = await ctx.db.get(otherUserId);
           const sorted = messages.sort(
             (a, b) => b._creationTime - a._creationTime
           );

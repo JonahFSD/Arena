@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { bumpPlatformStat, getAuthUser } from "./helpers";
 
 /**
@@ -191,19 +192,18 @@ export const getResults = query({
       .collect();
 
     // Tally by submission
-    const tallies: Record<string, number> = {};
+    const tallies = new Map<Id<"submissions">, number>();
     for (const vote of allVotes) {
-      const key = vote.submissionId;
-      tallies[key] = (tallies[key] ?? 0) + 1;
+      tallies.set(vote.submissionId, (tallies.get(vote.submissionId) ?? 0) + 1);
     }
 
     // Get submission details
     const results = await Promise.all(
-      Object.entries(tallies)
+      Array.from(tallies.entries())
         .sort(([, a], [, b]) => b - a)
         .map(async ([submissionId, voteCount]) => {
-          const submissionDoc = await ctx.db.get(submissionId as any) as any;
-          const user = submissionDoc ? await ctx.db.get(submissionDoc.userId) as any : null;
+          const submissionDoc = await ctx.db.get(submissionId);
+          const user = submissionDoc ? await ctx.db.get(submissionDoc.userId) : null;
           return {
             submissionId,
             title: submissionDoc?.title ?? "Unknown",
