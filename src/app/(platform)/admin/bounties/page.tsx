@@ -22,11 +22,7 @@ import {
   Link2,
   AlertTriangle,
 } from "lucide-react";
-import { cn, formatDate } from "@/lib/utils";
-
-function daysUntilDue(epochMs: number) {
-  return Math.ceil((epochMs - Date.now()) / (1000 * 60 * 60 * 24));
-}
+import { cn, formatDate, daysUntilDue } from "@/lib/utils";
 
 const STATUS_BADGE: Record<
   string,

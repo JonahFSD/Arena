@@ -52,6 +52,11 @@ export function formatTimeAgo(epochMs: number): string {
   return `${diffWeeks}w ago`;
 }
 
+// Whole days from now until the given epoch ms. Negative for past dates.
+export function daysUntilDue(epochMs: number): number {
+  return Math.ceil((epochMs - Date.now()) / (1000 * 60 * 60 * 24));
+}
+
 export function getMonthYear(date?: Date): string {
   const d = date || new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;

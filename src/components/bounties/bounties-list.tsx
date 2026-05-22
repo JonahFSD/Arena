@@ -18,7 +18,7 @@ const DEMO_BOUNTIES = [
 ];
 import { Badge } from "@/components/ui/badge";
 import { CircleDollarSign, Send } from "lucide-react";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, daysUntilDue } from "@/lib/utils";
 import {
   parseBountiesSearchFromSearch,
   parseBountiesFilterFromSearch,
@@ -28,11 +28,6 @@ import {
   type BountiesActiveFilter,
   type BountiesPastFilter,
 } from "@/lib/bounties-list-filters";
-
-function daysUntilDue(epochMs: number) {
-  const now = Date.now();
-  return Math.ceil((epochMs - now) / (1000 * 60 * 60 * 24));
-}
 
 function BountiesListInner({ mode }: { mode: "active" | "past" }) {
   const pathname = usePathname();

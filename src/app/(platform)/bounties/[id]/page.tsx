@@ -26,15 +26,11 @@ import {
   Check,
   Star,
 } from "lucide-react";
+import { daysUntilDue } from "@/lib/utils";
 
 function formatBountyDate(epochMs: number) {
   const d = new Date(epochMs);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
-function daysUntilDue(epochMs: number) {
-  const now = Date.now();
-  return Math.ceil((epochMs - now) / (1000 * 60 * 60 * 24));
 }
 
 export default function BountyDetailPage() {
