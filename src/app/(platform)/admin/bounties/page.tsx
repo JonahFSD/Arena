@@ -22,15 +22,7 @@ import {
   Link2,
   AlertTriangle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-function formatDate(epochMs: number) {
-  return new Date(epochMs).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+import { cn, formatDate } from "@/lib/utils";
 
 function daysUntilDue(epochMs: number) {
   return Math.ceil((epochMs - Date.now()) / (1000 * 60 * 60 * 24));

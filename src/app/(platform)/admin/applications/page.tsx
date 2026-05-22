@@ -23,6 +23,7 @@ import {
   Clock,
 } from "lucide-react";
 import Link from "next/link";
+import { formatDate } from "@/lib/utils";
 
 export default function ApplicationsPage() {
   const [activeTab, setActiveTab] = useState("pending");
@@ -45,14 +46,6 @@ export default function ApplicationsPage() {
 
   const currentApps = appsByTab[activeTab] ?? [];
   const selectedApp = currentApps.find((a) => a._id === selectedAppId) ?? null;
-
-  function formatDate(epochMs: number) {
-    return new Date(epochMs).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  }
 
   async function handleReview(decision: "approved" | "rejected") {
     if (!selectedAppId) return;

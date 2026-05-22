@@ -18,7 +18,7 @@ const DEMO_BOUNTIES = [
 ];
 import { Badge } from "@/components/ui/badge";
 import { CircleDollarSign, Send } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import {
   parseBountiesSearchFromSearch,
   parseBountiesFilterFromSearch,
@@ -28,14 +28,6 @@ import {
   type BountiesActiveFilter,
   type BountiesPastFilter,
 } from "@/lib/bounties-list-filters";
-
-function formatDate(epochMs: number) {
-  return new Date(epochMs).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 function daysUntilDue(epochMs: number) {
   const now = Date.now();

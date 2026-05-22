@@ -13,14 +13,7 @@ import {
   Star,
   ExternalLink,
 } from "lucide-react";
-
-function formatDate(epochMs: number) {
-  return new Date(epochMs).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+import { formatDate } from "@/lib/utils";
 
 export default function BountyReviewPage() {
   const params = useParams();
