@@ -1,0 +1,26 @@
+# eslint-seatbelt temporarily allowed errors
+# docs: https://github.com/justjake/eslint-seatbelt#readme
+
+"src/app/(marketing)/page.tsx"	"react-hooks/set-state-in-effect"	1
+"src/app/(platform)/bounties/[id]/page.tsx"	"react-hooks/preserve-manual-memoization"	1
+"src/app/(platform)/community/messages/page.tsx"	"react-hooks/exhaustive-deps"	3
+"src/app/(platform)/community/messages/page.tsx"	"react-hooks/preserve-manual-memoization"	1
+"src/app/(platform)/community/messages/page.tsx"	"react-hooks/set-state-in-effect"	2
+"src/app/(platform)/pitches/voting/page.tsx"	"react-hooks/purity"	1
+"src/app/(platform)/settings/notifications/page.tsx"	"react-hooks/set-state-in-effect"	1
+"src/app/(platform)/settings/page.tsx"	"react-hooks/set-state-in-effect"	1
+"src/app/(platform)/settings/subscription/page.tsx"	"react-hooks/set-state-in-effect"	1
+"src/components/bounties/bounties-header-actions.tsx"	"react-hooks/refs"	1
+"src/components/bounties/bounties-header-actions.tsx"	"react-hooks/set-state-in-effect"	1
+"src/components/bounties/bounties-list.tsx"	"react-hooks/exhaustive-deps"	1
+"src/components/community/messages-header-actions.tsx"	"react-hooks/refs"	1
+"src/components/community/messages-header-actions.tsx"	"react-hooks/set-state-in-effect"	1
+"src/components/invite-link-card.tsx"	"react-hooks/set-state-in-effect"	1
+"src/components/layout/mobile-nav.tsx"	"react-hooks/set-state-in-effect"	1
+"src/components/layout/top-bar.tsx"	"react-hooks/exhaustive-deps"	1
+"src/components/pitches/pitches-explore-header-actions.tsx"	"react-hooks/refs"	1
+"src/components/pitches/pitches-explore-header-actions.tsx"	"react-hooks/set-state-in-effect"	1
+"src/components/pitches/pitches-my-header-actions.tsx"	"react-hooks/refs"	1
+"src/components/pitches/pitches-my-header-actions.tsx"	"react-hooks/set-state-in-effect"	1
+"src/components/profile-photo-crop-modal.tsx"	"react-hooks/set-state-in-effect"	1
+"src/components/school-picker.tsx"	"react-hooks/set-state-in-effect"	1
