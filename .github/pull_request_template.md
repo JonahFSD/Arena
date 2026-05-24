@@ -29,6 +29,17 @@ catch.
 - [ ] Components without hooks/handlers are server components.
 - [ ] `npm run lint` and `npm run typecheck` clean locally.
 
-## Test plan
+## Verification
 
-<!-- How was this verified? Browser smoke test? `npm run build:ci`? -->
+<!-- Restate this PR's central claim as something that could be proven
+     false, then show baseline-vs-treatment evidence and land one verdict.
+     This mirrors the `verify-this` skill in arena-team-kit. -->
+
+**Claim:** <the change, stated so it could be falsified>
+
+**Evidence:**
+- Baseline (before): <observed behaviour, failing check, or metric>
+- Treatment (after): <observed behaviour, passing check, or metric>
+- How checked: <`npm run typecheck`, `npm run build:ci`, browser steps, `gh pr checks`>
+
+**Verdict:** `VERIFIED` / `NOT VERIFIED` / `INCONCLUSIVE`

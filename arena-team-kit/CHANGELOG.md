@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.3.0] — 2026-05-23
+
+### Added
+- `loop-on-ci` skill — iterate a branch to green CI: read failures via `gh pr checks`,
+  apply one actionable fix per iteration, push, wait, repeat.
+- `fix-ci` skill — diagnose and fix a specific failing CI check using `gh pr checks`
+  as the single source of truth.
+- `verify-this` skill — prove or disprove a change with falsifiable evidence; scoped
+  to what Arena can produce today (`npm run typecheck`, `npm run build:ci`, manual
+  browser checks). `unit-test-verified` and `live-ui-verified` verdict tiers are
+  present but marked unavailable until Phase 7 adds the test harness.
+- `review-and-ship` skill — final pre-merge review and ship workflow; runs available
+  checks, references `convex-review` for Convex PRs, opens or updates a PR.
+- `fix-merge-conflicts` skill — resolve merge/rebase conflicts safely; never
+  bypasses hooks.
+- `what-did-i-get-done` skill — summarise authored commits over a user-specified
+  time range into a concise status update.
+- `ci-watcher` agent — the plugin's first subagent; polls `gh pr checks` for the
+  current PR, reports which checks fail and why, and hands back one actionable
+  next step. Runs as a background agent.
+
+### Changed
+- `agents/.gitkeep` removed now that the `agents/` directory has a real occupant.
+- `.github/pull_request_template.md` — replaced the vague `## Test plan` section
+  with a falsifiable `## Verification` block (claim → evidence → verdict),
+  mirroring the `verify-this` skill.
+
 All notable changes to `arena-team-kit` are documented here. The format follows
 Keep a Changelog, and this plugin uses semantic versioning.
 
