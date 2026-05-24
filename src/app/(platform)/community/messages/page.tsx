@@ -136,7 +136,7 @@ function MessagesPageInner() {
     if (displayThreadId) {
       const thread = threads.find((t) => t.threadId === displayThreadId);
       if (thread && thread.unreadCount > 0) {
-        markRead({ threadId: displayThreadId });
+        void markRead({ threadId: displayThreadId });
       }
     }
   }, [displayThreadId, threads, markRead]);

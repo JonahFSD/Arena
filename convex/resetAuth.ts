@@ -15,7 +15,9 @@ export const resetByEmail = internalMutation({
   handler: async (ctx, { email }) => {
     // Find the auth account(s) for this email
     const allAccounts = await ctx.db.query("authAccounts").collect();
+    // authAccounts is a convex-auth internal table with no public schema type.
     const matchingAccounts = allAccounts.filter(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (a: any) => a.providerAccountId === email || a.email === email
     );
 

@@ -4,6 +4,22 @@ import { useState, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { InfoCallout } from "@/components/ui/info-callout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
+import { formatMonthYear } from "@/lib/utils";
+import {
+  Clock,
+  Play,
+  GripVertical,
+  Send,
+  Pencil,
+  Lock,
+  Info,
+  Vote,
+} from "lucide-react";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
@@ -47,22 +63,6 @@ const DEMO_ROUND = {
     },
   ],
 };
-import { InfoCallout } from "@/components/ui/info-callout";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
-import { formatMonthYear } from "@/lib/utils";
-import {
-  Clock,
-  Play,
-  GripVertical,
-  Send,
-  Pencil,
-  Lock,
-  Info,
-  Vote,
-} from "lucide-react";
 
 type VotingState = "idle" | "submitted" | "editing";
 

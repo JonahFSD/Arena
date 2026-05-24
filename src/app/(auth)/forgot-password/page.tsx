@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
                 Reset your password
               </h1>
               <p className="mt-2 text-sm text-text-secondary">
-                Enter your email and we'll send you a verification code
+                Enter your email and we&apos;ll send you a verification code
               </p>
             </div>
 
@@ -213,7 +213,7 @@ export default function ForgotPasswordPage() {
               }}
               className="mt-4 w-full text-center text-sm text-text-tertiary hover:text-text-secondary transition-colors"
             >
-              Didn't receive it? Try again
+              Didn&apos;t receive it? Try again
             </button>
           </>
         )}

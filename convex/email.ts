@@ -1,6 +1,9 @@
 import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 
+// Need this import for internal references
+import { internal } from "./_generated/api";
+
 /**
  * Send an email via Resend.
  * Called by other Convex functions via ctx.scheduler.runAfter().
@@ -98,6 +101,3 @@ export const sendNotification = internalAction({
     });
   },
 });
-
-// Need this import for internal references
-import { internal } from "./_generated/api";

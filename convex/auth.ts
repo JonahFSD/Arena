@@ -26,8 +26,10 @@ export const { auth, signIn, signOut, store } = convexAuth({
       // The convex-auth callback ctx is GenericMutationCtx (no schema-aware
       // index types), so the .withIndex call needs an `any` cast.
       if (email) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const existing = await (ctx.db as any)
           .query("users")
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .withIndex("by_email", (q: any) => q.eq("email", email))
           .first();
         if (existing) {
@@ -50,6 +52,7 @@ export const { auth, signIn, signOut, store } = convexAuth({
       });
       // Bump platformStats.totalMembers — auth-callback ctx is
       // GenericMutationCtx, so the helper needs the cast.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await bumpPlatformStat(ctx as any, "totalMembers", 1);
       return newUserId;
     },

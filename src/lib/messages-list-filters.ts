@@ -84,12 +84,13 @@ function sortKey(t: MessagesThreadForFilters, sort: MessagesSort): number {
   switch (sort) {
     case "activity":
       return t.lastMessage._creationTime;
+    case "unread":
+      // Unread sort is handled specially in sortThreads before sortKey is called.
+      return t.lastMessage._creationTime;
     case "sent":
       return t.lastSentAt;
     case "received":
       return t.lastReceivedAt;
-    default:
-      return t.lastMessage._creationTime;
   }
 }
 

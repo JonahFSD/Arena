@@ -5,6 +5,26 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Video,
+  Calendar,
+  ExternalLink,
+  Clock,
+  Users,
+  Play,
+  FileQuestion,
+  Mail,
+} from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import type { SubmissionStatus } from "@/types";
+import {
+  parsePitchesStageFromSearch,
+  parsePitchesSearchFromSearch,
+  filterSubmissionsByPitchesStage,
+  filterSubmissionsByPitchesSearch,
+} from "@/lib/pitches-my-stage-filter";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
@@ -69,26 +89,6 @@ const DEMO_INVITES = [
     },
   },
 ];
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Video,
-  Calendar,
-  ExternalLink,
-  Clock,
-  Users,
-  Play,
-  FileQuestion,
-  Mail,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
-import type { SubmissionStatus } from "@/types";
-import {
-  parsePitchesStageFromSearch,
-  parsePitchesSearchFromSearch,
-  filterSubmissionsByPitchesStage,
-  filterSubmissionsByPitchesSearch,
-} from "@/lib/pitches-my-stage-filter";
 
 const statusConfig: Record<
   SubmissionStatus,

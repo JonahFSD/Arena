@@ -6,21 +6,6 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { bqDisplayName } from "../../../../../convex/bqType";
-
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
-
-const DEMO_MEMBERS = [
-  { _id: "u1", fullName: "Alex Mi", schoolName: "Valley Christian", city: "Cupertino", state: "CA", graduationYear: 2027, bio: "Founder of Dermi AI. Computer vision for skin health.", skills: ["React", "Python", "Computer Vision"], lookingForCofounders: true, bqType: "Strategist", networkCount: 142, points: 4280, totalEarnings: 2400, avatarUrl: null, linkedinUrl: "https://linkedin.com" },
-  { _id: "u2", fullName: "Yichi Zhang", schoolName: "Valley Christian", city: "Cupertino", state: "CA", graduationYear: 2028, bio: "Building Safelock. VP Ops at The Arena.", skills: ["Hardware", "Bluetooth", "Operations"], lookingForCofounders: false, bqType: "Optimizer", networkCount: 98, points: 4110, totalEarnings: 1800, avatarUrl: null, linkedinUrl: null },
-  { _id: "u3", fullName: "Jonah Elliot", schoolName: "ACU", city: "Abilene", state: "TX", graduationYear: 2028, bio: "Sola founder. Christian apologetics for Gen Z.", skills: ["Theology", "Product", "Next.js"], lookingForCofounders: true, bqType: "Luminary", networkCount: 76, points: 3905, totalEarnings: 1200, avatarUrl: null, linkedinUrl: null },
-  { _id: "u4", fullName: "Connor", schoolName: "ACU", city: "Abilene", state: "TX", graduationYear: 2026, bio: "AI integration consulting. Building Onion.", skills: ["AI", "Strategy", "Vibecoding"], lookingForCofounders: false, bqType: "Luminary", networkCount: 87, points: 3780, totalEarnings: 1250, avatarUrl: null, linkedinUrl: null },
-  { _id: "u5", fullName: "Seowoong Park", schoolName: "Cedar Park", city: "Cedar Park", state: "TX", graduationYear: 2028, bio: "Building Milestone. Teen driver coaching app.", skills: ["iOS", "Sensors", "UX"], lookingForCofounders: true, bqType: "Optimizer", networkCount: 64, points: 3540, totalEarnings: 900, avatarUrl: null, linkedinUrl: null },
-  { _id: "u6", fullName: "Toi Stepp", schoolName: "Jefferson Christian", city: "Tampa", state: "FL", graduationYear: 2027, bio: "Networker. Entrepreneurship board.", skills: ["Sales", "Community"], lookingForCofounders: false, bqType: "Strategist", networkCount: 58, points: 3200, totalEarnings: 750, avatarUrl: null, linkedinUrl: null },
-  { _id: "u7", fullName: "Chelsea Gunn", schoolName: "Jefferson Christian", city: "Tampa", state: "FL", graduationYear: 2026, bio: "Chief fundraiser. Heavy Claude user.", skills: ["Fundraising", "Storytelling"], lookingForCofounders: false, bqType: "Optimizer", networkCount: 51, points: 2980, totalEarnings: 600, avatarUrl: null, linkedinUrl: null },
-  { _id: "u8", fullName: "Adam Richardson", schoolName: "Jefferson Christian", city: "Tampa", state: "FL", graduationYear: 2027, bio: "Business teacher. College prep through projects.", skills: ["Curriculum", "Coaching"], lookingForCofounders: false, bqType: "Luminary", networkCount: 44, points: 2750, totalEarnings: 500, avatarUrl: null, linkedinUrl: null },
-  { _id: "u9", fullName: "Jake Oswald", schoolName: "ACU", city: "Abilene", state: "TX", graduationYear: 2026, bio: "Advisor. Owns Arena / Accelerators.", skills: ["Strategy", "Advising"], lookingForCofounders: false, bqType: "Strategist", networkCount: 39, points: 2450, totalEarnings: 400, avatarUrl: null, linkedinUrl: null },
-  { _id: "u10", fullName: "Lars Ostervold", schoolName: "ACU", city: "Abilene", state: "TX", graduationYear: 2027, bio: "Legal + regulatory. Lexx AI co-founder.", skills: ["Legal", "Compliance"], lookingForCofounders: true, bqType: "Luminary", networkCount: 31, points: 2100, totalEarnings: 250, avatarUrl: null, linkedinUrl: null },
-];
 import { PaywallGate } from "@/components/auth/paywall-gate";
 import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
@@ -40,6 +25,21 @@ import {
 } from "@/lib/community-filter.constants";
 import { useCommunityMembersFilters } from "@/contexts/community-members-filters-context";
 import { Search, Handshake, Info, Link2, MessageCircle } from "lucide-react";
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+const DEMO_MEMBERS = [
+  { _id: "u1", fullName: "Alex Mi", schoolName: "Valley Christian", city: "Cupertino", state: "CA", graduationYear: 2027, bio: "Founder of Dermi AI. Computer vision for skin health.", skills: ["React", "Python", "Computer Vision"], lookingForCofounders: true, bqType: "Strategist", networkCount: 142, points: 4280, totalEarnings: 2400, avatarUrl: null, linkedinUrl: "https://linkedin.com" },
+  { _id: "u2", fullName: "Yichi Zhang", schoolName: "Valley Christian", city: "Cupertino", state: "CA", graduationYear: 2028, bio: "Building Safelock. VP Ops at The Arena.", skills: ["Hardware", "Bluetooth", "Operations"], lookingForCofounders: false, bqType: "Optimizer", networkCount: 98, points: 4110, totalEarnings: 1800, avatarUrl: null, linkedinUrl: null },
+  { _id: "u3", fullName: "Jonah Elliot", schoolName: "ACU", city: "Abilene", state: "TX", graduationYear: 2028, bio: "Sola founder. Christian apologetics for Gen Z.", skills: ["Theology", "Product", "Next.js"], lookingForCofounders: true, bqType: "Luminary", networkCount: 76, points: 3905, totalEarnings: 1200, avatarUrl: null, linkedinUrl: null },
+  { _id: "u4", fullName: "Connor", schoolName: "ACU", city: "Abilene", state: "TX", graduationYear: 2026, bio: "AI integration consulting. Building Onion.", skills: ["AI", "Strategy", "Vibecoding"], lookingForCofounders: false, bqType: "Luminary", networkCount: 87, points: 3780, totalEarnings: 1250, avatarUrl: null, linkedinUrl: null },
+  { _id: "u5", fullName: "Seowoong Park", schoolName: "Cedar Park", city: "Cedar Park", state: "TX", graduationYear: 2028, bio: "Building Milestone. Teen driver coaching app.", skills: ["iOS", "Sensors", "UX"], lookingForCofounders: true, bqType: "Optimizer", networkCount: 64, points: 3540, totalEarnings: 900, avatarUrl: null, linkedinUrl: null },
+  { _id: "u6", fullName: "Toi Stepp", schoolName: "Jefferson Christian", city: "Tampa", state: "FL", graduationYear: 2027, bio: "Networker. Entrepreneurship board.", skills: ["Sales", "Community"], lookingForCofounders: false, bqType: "Strategist", networkCount: 58, points: 3200, totalEarnings: 750, avatarUrl: null, linkedinUrl: null },
+  { _id: "u7", fullName: "Chelsea Gunn", schoolName: "Jefferson Christian", city: "Tampa", state: "FL", graduationYear: 2026, bio: "Chief fundraiser. Heavy Claude user.", skills: ["Fundraising", "Storytelling"], lookingForCofounders: false, bqType: "Optimizer", networkCount: 51, points: 2980, totalEarnings: 600, avatarUrl: null, linkedinUrl: null },
+  { _id: "u8", fullName: "Adam Richardson", schoolName: "Jefferson Christian", city: "Tampa", state: "FL", graduationYear: 2027, bio: "Business teacher. College prep through projects.", skills: ["Curriculum", "Coaching"], lookingForCofounders: false, bqType: "Luminary", networkCount: 44, points: 2750, totalEarnings: 500, avatarUrl: null, linkedinUrl: null },
+  { _id: "u9", fullName: "Jake Oswald", schoolName: "ACU", city: "Abilene", state: "TX", graduationYear: 2026, bio: "Advisor. Owns Arena / Accelerators.", skills: ["Strategy", "Advising"], lookingForCofounders: false, bqType: "Strategist", networkCount: 39, points: 2450, totalEarnings: 400, avatarUrl: null, linkedinUrl: null },
+  { _id: "u10", fullName: "Lars Ostervold", schoolName: "ACU", city: "Abilene", state: "TX", graduationYear: 2027, bio: "Legal + regulatory. Lexx AI co-founder.", skills: ["Legal", "Compliance"], lookingForCofounders: true, bqType: "Luminary", networkCount: 31, points: 2100, totalEarnings: 250, avatarUrl: null, linkedinUrl: null },
+];
 
 function LinkedInIcon({ className }: { className?: string }) {
   return (

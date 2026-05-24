@@ -197,34 +197,49 @@ Workflow files themselves are gated by `.github/workflows/workflow-lint.yml` (ac
 
 ---
 
-## ESLint rules that catch most violations of the above
+## ESLint rules enforced (Phase 1, wired in `eslint.config.mjs`)
 
-Add to `eslint.config.mjs`:
+These rules are active for all `**/*.{ts,tsx,mts}` files. New violations block CI
+via the `eslint-seatbelt` ratchet (baseline snapshotted in `eslint.seatbelt.tsv`
+— per-file allowed-error counts can only trend down, never up).
 
 ```js
 rules: {
   "@typescript-eslint/no-explicit-any": "error",
-  "@typescript-eslint/no-floating-promises": "error",
+  "@typescript-eslint/no-floating-promises": "error",       // type-aware
   "@typescript-eslint/no-non-null-assertion": "warn",
+  "@typescript-eslint/switch-exhaustiveness-check": "error", // type-aware
   "react-hooks/exhaustive-deps": "error",
+  "import-x/first": "error",
   "no-console": ["warn", { allow: ["warn", "error"] }],
 }
 ```
 
-## tsconfig flags to enable
+`no-floating-promises` and `switch-exhaustiveness-check` are type-aware rules
+enabled via `parserOptions.projectService`. `import-x/first` uses
+`eslint-plugin-import-x` (the ESLint 10–compatible fork of eslint-plugin-import).
+
+The lint CI job is still advisory (`continue-on-error: true`) until Phase 6 flips
+it to a hard gate. The ratchet means "no new errors" is already enforced locally.
+
+## tsconfig flags enabled (Phase 1, wired in `tsconfig.json`)
 
 ```jsonc
 {
   "compilerOptions": {
-    "strict": true,                       // already on
-    "noUncheckedIndexedAccess": true,     // catches array[i] vs array[i]!
-    "noImplicitOverride": true,
-    "noFallthroughCasesInSwitch": true
+    "strict": true,                       // was already on
+    "noImplicitOverride": true,           // added Phase 1
+    "noFallthroughCasesInSwitch": true    // added Phase 1
   }
 }
 ```
 
-`noUncheckedIndexedAccess` alone would have surfaced multiple `as any` casts the audit found.
+`typecheck` (`tsc --noEmit`) is a **hard CI gate** — these flags must stay green.
+
+`noUncheckedIndexedAccess` is **deferred** to a follow-up PR: enabling it
+surfaced 138 errors across 16 files (mostly `Record<string, T>` indexing in seed
+files and array destructuring in business logic). The fixes are mechanical but
+numerous; a dedicated PR with a focused review is the right venue.
 
 ## Pull-request checklist (copy into `.github/pull_request_template.md`)
 

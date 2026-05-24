@@ -4,6 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Search, Compass, Sparkles } from "lucide-react";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
@@ -15,12 +21,6 @@ const DEMO_EXPLORE = [
   { _id: "ep5", title: "Milestone: Teen Driver Coach", description: "Real-time driving feedback.", monthYear: "Feb 2026", user: { fullName: "Seowoong Park", avatarUrl: null, schoolName: "Cedar Park" }, aiScore: { overallScore: 79 } },
   { _id: "ep6", title: "Lexx AI: Construction Litigation", description: "AI-powered legal research for builders.", monthYear: "Feb 2026", user: { fullName: "Lars Ostervold", avatarUrl: null, schoolName: "ACU" }, aiScore: { overallScore: 82 } },
 ];
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Search, Compass, Sparkles } from "lucide-react";
 
 export default function ExplorePage() {
   const [search, setSearch] = useState("");

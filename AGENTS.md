@@ -48,6 +48,7 @@ This project uses **Convex** (NOT Supabase) as the backend. Supabase has been fu
 - New upload purposes need to be added to **both** `UPLOAD_RULES` and
   the `uploadPurposeValidator` union in `convex/storage.ts`, and to
   the `purpose` validator on the `fileUploads` schema table.
+The judgment rules from `docs/GOOD-CODE.md` (auth-first mutations, bounded reads, idempotency, etc.) are encoded as the `convex-review` skill in `arena-team-kit/skills/convex-review/SKILL.md` — run it on any PR that touches `convex/`.
 <!-- END:convex-agent-rules -->
 
 <!-- convex-ai-start -->

@@ -21,7 +21,7 @@ export function filterSubmissionsByPitchesStage<
       return subs.filter(
         (s) => s.status === "submitted" || s.status === "scored"
       );
-    default:
+    case null:
       return subs;
   }
 }
