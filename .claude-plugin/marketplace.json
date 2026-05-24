@@ -1,0 +1,11 @@
+{
+  "name": "arena",
+  "owner": { "name": "Arena", "email": "jonahwelliott@gmail.com" },
+  "plugins": [
+    {
+      "name": "arena-team-kit",
+      "source": "./arena-team-kit",
+      "description": "Arena's first-party agent workflows: code quality, CI, memory, orchestration."
+    }
+  ]
+}

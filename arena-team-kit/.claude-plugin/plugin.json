@@ -1,0 +1,8 @@
+{
+  "name": "arena-team-kit",
+  "description": "Arena's first-party agent workflows: code quality, CI, memory, orchestration.",
+  "version": "0.1.0",
+  "author": { "name": "Arena", "email": "jonahwelliott@gmail.com" },
+  "homepage": "https://github.com/JonahFSD/Arena",
+  "license": "MIT"
+}

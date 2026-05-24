@@ -1,0 +1,10 @@
+{
+  "extraKnownMarketplaces": {
+    "arena": {
+      "source": { "source": "directory", "path": "." }
+    }
+  },
+  "enabledPlugins": {
+    "arena-team-kit@arena": true
+  }
+}
