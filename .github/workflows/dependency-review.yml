@@ -21,6 +21,9 @@ jobs:
     name: Dependency Review
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # Advisory until Dependency Graph is enabled in repo settings:
+    # Settings -> Security -> Code security -> Dependency graph
+    continue-on-error: true
     permissions:
       contents: read
       # Needed so the action can comment the summary on the PR.

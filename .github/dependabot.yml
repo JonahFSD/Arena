@@ -27,6 +27,10 @@ updates:
       npm-minor-and-patch:
         update-types: [minor, patch]
     ignore:
+      # @auth/core version is controlled by @convex-dev/auth's peer dep
+      # (^0.37.0). Bumping it breaks npm ci. Let @convex-dev/auth widen
+      # the range before upgrading.
+      - dependency-name: "@auth/core"
       # Major bumps for the framework stack get manual review.
       - dependency-name: next
         update-types: [version-update:semver-major]
